@@ -8,10 +8,8 @@ import (
 	"time"
 
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -54,7 +52,7 @@ func IronstarAPILogin(args []string, passwordFlag string) error {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
 
-	err = services.UpdateCredentialsFile(types.Credentials{
+	err = services.UpdateCredentialsFile(types.Keylink{
 		Login:     email,
 		AuthToken: c.IDToken,
 		Expiry:    c.Expiry,
@@ -63,13 +61,9 @@ func IronstarAPILogin(args []string, passwordFlag string) error {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
 
-	pr := fs.ProjectRoot()
-	if pr != constants.ProjectRootNotFound {
-		err = services.UpdateGlobalProjectLogin(pr, email)
-		if err != nil {
-			fmt.Println()
-			color.Yellow("Authentication succeeded, but Tokaido was unable to update global credentials: ", err.Error())
-		}
+	_, err = services.UpdateActiveCredentials(email)
+	if err != nil {
+		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
 
 	fmt.Println()

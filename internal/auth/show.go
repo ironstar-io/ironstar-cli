@@ -1,63 +1,42 @@
 package auth
 
 import (
-// "fmt"
-// "os"
+	"fmt"
+	"os"
 
-// "gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 
-// "github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter"
 )
 
 func IronstarShowCredentials(args []string) error {
-	// credSet, err := services.ReadInCredentials()
-	// if err != nil {
-	// 	return err
-	// }
+	credSet, err := services.ReadInCredentials()
+	if err != nil {
+		return err
+	}
 
-	// globals, err := services.ReadInGlobals()
-	// if err != nil {
-	// 	return err
-	// }
+	fmt.Println("Active Credentials:")
 
-	// if globals.DefaultLogin == "" {
-	// 	globals.DefaultLogin = "UNSET"
-	// }
-	// fmt.Println()
-	// fmt.Println("Default Login: " + globals.DefaultLogin)
-	// fmt.Println()
-	// fmt.Println("Project Credentials:")
+	active := credSet.Active
+	if active == "" {
+		active = "UNSET"
+	}
+	fmt.Println(active)
+	fmt.Println()
 
-	// pcreds := make([][]string, len(globals.Projects))
+	fmt.Println("Available Credentials:")
 
-	// for _, v := range globals.Projects {
-	// 	if v.Login == "" {
-	// 		v.Login = "UNSET"
-	// 	}
-	// 	pcreds = append(pcreds, []string{v.Name, v.Path, v.Login})
-	// }
+	acreds := make([][]string, len(credSet.Keychain))
 
-	// table := tablewriter.NewWriter(os.Stdout)
-	// table.SetHeader([]string{"Name", "Path", "Login"})
-	// table.SetAlignment(tablewriter.ALIGN_LEFT)
-	// table.AppendBulk(pcreds)
-	// table.Render()
+	for _, v := range credSet.Keychain {
+		acreds = append(acreds, []string{v.Login, v.Expiry.String()})
+	}
 
-	// fmt.Println()
-
-	// fmt.Println("Available Credentials:")
-
-	// acreds := make([][]string, len(credSet))
-
-	// for _, v := range credSet {
-	// 	acreds = append(acreds, []string{v.Login, v.Expiry.String()})
-	// }
-
-	// table = tablewriter.NewWriter(os.Stdout)
-	// table.SetHeader([]string{"Login", "Expiry"})
-	// table.SetAlignment(tablewriter.ALIGN_LEFT)
-	// table.AppendBulk(acreds)
-	// table.Render()
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Login", "Expiry"})
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	table.AppendBulk(acreds)
+	table.Render()
 
 	return nil
 }

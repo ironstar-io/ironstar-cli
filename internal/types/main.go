@@ -4,10 +4,15 @@ import (
 	"time"
 )
 
-type Credentials struct {
+type Keylink struct {
 	Login     string    `json:"login"`
 	AuthToken string    `json:"auth_token"`
 	Expiry    time.Time `json:"expiry"`
+}
+
+type Credentials struct {
+	Active   string    `json:"active"`
+	Keychain []Keylink `json:"keychain"`
 }
 
 type AuthLoginBody struct {

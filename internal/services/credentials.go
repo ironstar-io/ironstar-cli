@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func ResolveUserCredentials(project types.ProjectConfig) (types.Credentials, error) {
+func ResolveUserCredentials(project types.ProjectConfig) (types.Keylink, error) {
 	// empty := types.Credentials{}
 	// ist := os.Getenv("IRONSTAR_SUBSCRIPTION_TOKEN")
 	// if ist != "" {
@@ -34,8 +34,8 @@ func ResolveUserCredentials(project types.ProjectConfig) (types.Credentials, err
 	return PullLoginFromCredentials(project.Login)
 }
 
-func PullLoginFromCredentials(login string) (types.Credentials, error) {
-	empty := types.Credentials{}
+func PullLoginFromCredentials(login string) (types.Keylink, error) {
+	empty := types.Keylink{}
 	if login == "" {
 		return empty, errs.NoSuitableCreds
 	}
@@ -45,8 +45,8 @@ func PullLoginFromCredentials(login string) (types.Credentials, error) {
 		return empty, errors.Wrap(err, errs.SetCredentialsErrorMsg)
 	}
 
-	var credMatch types.Credentials
-	for _, cred := range creds {
+	var credMatch types.Keylink
+	for _, cred := range creds.Keychain {
 		if cred.Login == login {
 			credMatch = cred
 		}

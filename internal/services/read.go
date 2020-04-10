@@ -32,23 +32,24 @@ func ReadInProjectConfig(projectRoot string) (types.ProjectConfig, error) {
 	return projConf, nil
 }
 
-func ReadInCredentials() ([]types.Credentials, error) {
+func ReadInCredentials() (types.Credentials, error) {
+	empty := types.Credentials{}
 	cp := filepath.Join(fs.HomeDir(), ".ironstar", "credentials.yml")
 
 	err := SafeTouchConfigYAML(cp)
 	if err != nil {
-		return nil, err
+		return empty, err
 	}
 
 	cBytes, err := ioutil.ReadFile(cp)
 	if err != nil {
-		return nil, err
+		return empty, err
 	}
 
-	creds := []types.Credentials{}
+	creds := types.Credentials{}
 	err = yaml.Unmarshal(cBytes, &creds)
 	if err != nil {
-		return nil, err
+		return empty, err
 	}
 
 	return creds, nil

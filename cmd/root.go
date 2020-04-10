@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// RootCmd - `tok`
+// RootCmd - `iron`
 var rootCmd = cobra.Command{
 	Use:   "ironstar",
 	Short: "",
@@ -28,8 +28,7 @@ func init() {
 	rootCmd.AddCommand(auth.AuthCmd)
 	auth.AuthCmd.AddCommand(auth.LoginCmd)
 	auth.AuthCmd.AddCommand(auth.ShowCmd)
-	auth.AuthCmd.AddCommand(auth.SetProjectCredentialsCmd)
-	auth.AuthCmd.AddCommand(auth.SetDefaultCredentials)
+	auth.AuthCmd.AddCommand(auth.SetActiveCmd)
 
 	rootCmd.AddCommand(subscription.SubscriptionCmd)
 	subscription.SubscriptionCmd.AddCommand(subscription.ListCmd)
@@ -46,9 +45,9 @@ func Execute() {
 
 // RootCmd will setup and return the root command
 func RootCmd() *cobra.Command {
-	rootCmd.PersistentFlags().BoolP("force", "", false, "Forcefully skip destructive confirmation prompts")
-	rootCmd.PersistentFlags().BoolP("yes", "y", false, "Auto-accept any non-destructive confirmation prompts")
-	rootCmd.PersistentFlags().BoolP("debug", "d", false, "Enable debug mode, command output is printed to the console")
+	// rootCmd.PersistentFlags().BoolP("force", "", false, "Forcefully skip destructive confirmation prompts")
+	// rootCmd.PersistentFlags().BoolP("yes", "y", false, "Auto-accept any non-destructive confirmation prompts")
+	// rootCmd.PersistentFlags().BoolP("debug", "d", false, "Enable debug mode, command output is printed to the console")
 
 	auth.LoginCmd.PersistentFlags().StringVarP(&auth.PasswordFlag, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
 
@@ -58,11 +57,10 @@ func RootCmd() *cobra.Command {
 func run(cmd *cobra.Command, args []string) {
 	if viper.GetBool("version") == true {
 		fmt.Printf("v%s\n", version.Get().Version)
-	} else {
-		fmt.Printf("Ironstar v%s\n\n", version.Get().Version)
 	}
+	fmt.Printf("Ironstar v%s\n\n", version.Get().Version)
 
-	// çversion.SelfInstall(false)
+	// version.SelfInstall(false)
 }
 
 func initConfig() {
