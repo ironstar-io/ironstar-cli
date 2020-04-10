@@ -5,14 +5,13 @@ import (
 	"os"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/auth"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-var PasswordFlag string
 
 // RootCmd - `iron`
 var rootCmd = cobra.Command{
@@ -50,8 +49,9 @@ func RootCmd() *cobra.Command {
 	// rootCmd.PersistentFlags().BoolP("force", "", false, "Forcefully skip destructive confirmation prompts")
 	// rootCmd.PersistentFlags().BoolP("yes", "y", false, "Auto-accept any non-destructive confirmation prompts")
 	// rootCmd.PersistentFlags().BoolP("debug", "d", false, "Enable debug mode, command output is printed to the console")
+	rootCmd.PersistentFlags().StringVarP(&flags.Login, "login", "l", "", "Force use of a specified logins' credentials")
 
-	LoginCmd.PersistentFlags().StringVarP(&PasswordFlag, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
+	LoginCmd.PersistentFlags().StringVarP(&flags.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
 
 	return &rootCmd
 }

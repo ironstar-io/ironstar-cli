@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/subscription"
 
@@ -17,7 +18,7 @@ var LinkCmd = &cobra.Command{
 	Short: "Link your project to a subscription",
 	Long:  "Link your project to a subscription",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := subscription.Link(args)
+		err := subscription.Link(args, flags.Login)
 		if err != nil {
 			if err != api.ErrIronstarAPICall {
 				fmt.Println()

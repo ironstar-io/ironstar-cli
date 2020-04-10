@@ -12,13 +12,13 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func Link(args []string) error {
+func Link(args []string, loginFlag string) error {
 	proj, err := services.GetProjectData()
 	if err != nil {
 		return err
 	}
 
-	user, err := services.ResolveUserCredentials(proj)
+	user, err := services.ResolveUserCredentials(loginFlag)
 	if err != nil {
 		return err
 	}

@@ -9,13 +9,8 @@ import (
 
 var APISubListErrorMsg = "Ironstar API failed to retrieve subscriptions"
 
-func List(args []string) error {
-	proj, err := services.GetProjectData()
-	if err != nil {
-		return err
-	}
-
-	user, err := services.ResolveUserCredentials(proj)
+func List(args []string, loginFlag string) error {
+	user, err := services.ResolveUserCredentials(loginFlag)
 	if err != nil {
 		return err
 	}

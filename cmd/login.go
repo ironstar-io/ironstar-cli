@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/auth"
 
@@ -17,7 +18,7 @@ var LoginCmd = &cobra.Command{
 	Short: "Authenticate for the Ironstar API",
 	Long:  "Authenticate and store credentials for use against the Ironstar API",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := auth.IronstarAPILogin(args, PasswordFlag)
+		err := auth.IronstarAPILogin(args, flags.Password)
 		if err != nil {
 			if err != api.ErrIronstarAPICall {
 				fmt.Println()

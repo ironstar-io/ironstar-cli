@@ -10,36 +10,15 @@ import (
 )
 
 func GetProjectData() (types.ProjectConfig, error) {
-	// empty := types.ProjectConfig{}
+	empty := types.ProjectConfig{}
 
-	// pr := fs.ProjectRoot()
-	// globals, err := ReadInGlobals()
-	// if err != nil {
-	// 	return empty, errors.Wrap(err, errs.SetCredentialsErrorMsg)
-	// }
+	pr := fs.ProjectRoot()
+	proj, err := ReadInProjectConfig(pr)
+	if err != nil {
+		return empty, errors.Wrap(err, errs.NoProjectFoundErrorMsg)
+	}
 
-	// var projMatch types.ProjectConfig
-	// if pr == constants.ProjectRootNotFound {
-	// 	for _, proj := range globals.Projects {
-	// 		if proj.Path == pr {
-	// 			projMatch = proj
-	// 		}
-	// 	}
-	// } else {
-	// 	pn, err := GetCLIProjectName()
-	// 	if err != nil {
-	// 		return empty, errors.Wrap(err, errs.GetCredentialsErrorMsg)
-	// 	}
-
-	// 	for _, proj := range globals.Projects {
-	// 		if proj.Name == pn {
-	// 			projMatch = proj
-	// 		}
-	// 	}
-	// }
-
-	// return projMatch, nil
-	return types.ProjectConfig{}, nil
+	return proj, nil
 }
 
 func SetProjectSubscription(args []string) error {
