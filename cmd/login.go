@@ -1,4 +1,4 @@
-package auth
+package cmd
 
 import (
 	"fmt"
@@ -10,8 +10,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
-
-var PasswordFlag string
 
 // LoginCmd - `tok auth login`
 var LoginCmd = &cobra.Command{

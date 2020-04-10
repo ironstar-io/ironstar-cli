@@ -12,6 +12,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var PasswordFlag string
+
 // RootCmd - `iron`
 var rootCmd = cobra.Command{
 	Use:   "ironstar",
@@ -24,9 +26,9 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.AddCommand(VersionCmd)
+	rootCmd.AddCommand(LoginCmd)
 
 	rootCmd.AddCommand(auth.AuthCmd)
-	auth.AuthCmd.AddCommand(auth.LoginCmd)
 	auth.AuthCmd.AddCommand(auth.ShowCmd)
 	auth.AuthCmd.AddCommand(auth.SetActiveCmd)
 
@@ -49,7 +51,7 @@ func RootCmd() *cobra.Command {
 	// rootCmd.PersistentFlags().BoolP("yes", "y", false, "Auto-accept any non-destructive confirmation prompts")
 	// rootCmd.PersistentFlags().BoolP("debug", "d", false, "Enable debug mode, command output is printed to the console")
 
-	auth.LoginCmd.PersistentFlags().StringVarP(&auth.PasswordFlag, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
+	LoginCmd.PersistentFlags().StringVarP(&PasswordFlag, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
 
 	return &rootCmd
 }
