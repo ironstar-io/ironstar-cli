@@ -9,13 +9,14 @@ import (
 )
 
 func List(args []string, loginFlag string) error {
-	user, err := services.ResolveUserCredentials(loginFlag)
+	creds, err := services.ResolveUserCredentials(loginFlag)
 	if err != nil {
 		return err
 	}
 
 	req := &api.Request{
-		AuthToken:        user.AuthToken,
+		RunTokenRefresh:  true,
+		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/user/subscriptions",
 		MapStringPayload: map[string]string{},

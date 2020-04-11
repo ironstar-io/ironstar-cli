@@ -28,9 +28,10 @@ func IronstarAPILogin(args []string, passwordFlag string) error {
 	}
 
 	req := &api.Request{
-		AuthToken: "",
-		Method:    "POST",
-		Path:      "/auth/login",
+		RunTokenRefresh: false,
+		Credentials:     types.Keylink{},
+		Method:          "POST",
+		Path:            "/auth/login",
 		MapStringPayload: map[string]string{
 			"email":    email,
 			"password": password,
@@ -95,8 +96,8 @@ func IronstarAPILogin(args []string, passwordFlag string) error {
 	return nil
 }
 
-func mfaCredentialCheck(body []byte, email string) (*types.AuthLoginBody, error) {
-	b := &types.AuthLoginBody{}
+func mfaCredentialCheck(body []byte, email string) (*types.AuthResponseBody, error) {
+	b := &types.AuthResponseBody{}
 	err := json.Unmarshal(body, b)
 	if err != nil {
 		return nil, err
@@ -115,16 +116,19 @@ func mfaCredentialCheck(body []byte, email string) (*types.AuthLoginBody, error)
 	return b, nil
 }
 
-func validateMFAPasscode(logResBody *types.AuthLoginBody) (*types.AuthLoginBody, error) {
+func validateMFAPasscode(logResBody *types.AuthResponseBody) (*types.AuthResponseBody, error) {
 	passcode, err := services.GetCLIMFAPasscode()
 	if err != nil {
 		return nil, err
 	}
 
 	req := &api.Request{
-		AuthToken: logResBody.IDToken,
-		Method:    "POST",
-		Path:      "/auth/mfa/validate",
+		RunTokenRefresh: false,
+		Credentials: types.Keylink{
+			AuthToken: logResBody.IDToken,
+		},
+		Method: "POST",
+		Path:   "/auth/mfa/validate",
 		MapStringPayload: map[string]string{
 			"passcode": passcode,
 			"expiry":   time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
@@ -136,7 +140,7 @@ func validateMFAPasscode(logResBody *types.AuthLoginBody) (*types.AuthLoginBody,
 		return nil, err
 	}
 
-	m := &types.AuthLoginBody{}
+	m := &types.AuthResponseBody{}
 	err = json.Unmarshal(res.Body, m)
 	if err != nil {
 		return nil, err

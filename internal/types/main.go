@@ -15,7 +15,7 @@ type Credentials struct {
 	Keychain []Keylink `json:"keychain"`
 }
 
-type AuthLoginBody struct {
+type AuthResponseBody struct {
 	IDToken          string    `json:"id_token"`
 	RedirectEndpoint string    `json:"redirect_endpoint"` // If this is set, user is MFA registered
 	Expiry           time.Time `json:"expiry"`

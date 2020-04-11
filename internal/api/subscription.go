@@ -8,10 +8,11 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func GetSubscription(authToken, hashOrAlias string) (types.Subscription, error) {
+func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscription, error) {
 	empty := types.Subscription{}
 	req := &Request{
-		AuthToken:        authToken,
+		RunTokenRefresh:  true,
+		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + hashOrAlias,
 		MapStringPayload: map[string]string{},

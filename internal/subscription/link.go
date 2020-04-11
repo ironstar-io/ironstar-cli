@@ -11,7 +11,7 @@ func Link(args []string, loginFlag string) error {
 		return err
 	}
 
-	user, err := services.ResolveUserCredentials(loginFlag)
+	creds, err := services.ResolveUserCredentials(loginFlag)
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func Link(args []string, loginFlag string) error {
 		hashOrAlias = args[0]
 	}
 
-	sub, err := api.GetSubscription(user.AuthToken, hashOrAlias)
+	sub, err := api.GetSubscription(creds, hashOrAlias)
 	if err != nil {
 		return err
 	}

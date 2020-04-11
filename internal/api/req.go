@@ -6,11 +6,20 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"math"
+	"fmt"
 	"os"
+	"time"
+
+	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+
+	"github.com/fatih/color"
 )
 
 type Request struct {
-	AuthToken        string
+	RunTokenRefresh  bool
+	Credentials      types.Keylink
 	Method           string
 	Path             string
 	MapStringPayload map[string]string
@@ -44,6 +53,8 @@ func (r *Request) BuildBytePayload() error {
 
 // Send - Make a HTTP request to the Ironstar API
 func (r *Request) Send() (*RawResponse, error) {
+	r.RefreshToken()
+
 	err := r.BuildBytePayload()
 	if err != nil {
 		return nil, err
@@ -56,7 +67,7 @@ func (r *Request) Send() (*RawResponse, error) {
 	}
 
 	req.Header.Add("content-type", "application/json")
-	req.Header.Add("authorization", "Bearer "+r.AuthToken)
+	req.Header.Add("authorization", "Bearer "+r.Credentials.AuthToken)
 
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -86,4 +97,67 @@ func (r *Request) Send() (*RawResponse, error) {
 	defer resp.Body.Close()
 
 	return ir, nil
+}
+
+func (r *Request) RefreshToken() {
+	//
+	// If any leg fails, return silently, user will need to relog manually
+	//
+
+	if r.RunTokenRefresh != true || r.Credentials == (types.Keylink{})|| r.Credentials.Login == "" || r.Credentials.AuthToken == "" || r.Credentials.Expiry.IsZero() {
+		return
+	}
+
+	// Get the time difference in days
+	expDiff := int(math.RoundToEven(r.Credentials.Expiry.Sub(time.Now().UTC()).Hours() / 24))
+	// Only refresh if there's less than three days remaining and not already expired
+	if expDiff > 3 || expDiff < 0 {
+		return
+	}
+
+	newReq := Request{
+		RunTokenRefresh: false,
+		Credentials: types.Keylink{
+			AuthToken: r.Credentials.AuthToken,
+		},
+		Method: "POST",
+		Path:   "/auth/token/refresh",
+		MapStringPayload: map[string]string{
+			"expiry": time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
+		},
+	}
+
+	res, err := newReq.Send()
+	if err != nil {
+		return
+	}
+
+	if res.StatusCode != 200 {
+		return
+	}
+
+	b := &types.AuthResponseBody{}
+	err = json.Unmarshal(res.Body, b)
+	if err != nil {
+		return
+	}
+
+	newCreds := types.Keylink{
+		Login: r.Credentials.Login,
+		AuthToken: b.IDToken,
+		Expiry: b.Expiry,
+	}
+
+	
+	err = services.UpdateCredentialsFile(newCreds)
+	if err != nil {
+		return
+	} 
+
+	r.Credentials = newCreds
+
+	color.Yellow("Authentication token has been automatically refreshed")
+	fmt.Println()
+
+	return
 }
