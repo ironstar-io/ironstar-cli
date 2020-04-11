@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -8,6 +9,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
+	"github.com/fatih/color"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -33,6 +35,11 @@ func LinkSubscriptionToProject(config types.ProjectConfig, sub types.Subscriptio
 	projConf, err := ReadInProjectConfig(wd)
 	if err != nil {
 		return errors.Wrap(err, errs.APISubLinkErrorMsg)
+	}
+
+	if projConf.Subscription.Alias != "" {
+		color.Yellow("This project has been previously linked to [" + projConf.Subscription.Alias + "]. The link will be replaced with the new subscription.")
+		fmt.Println()
 	}
 
 	if projConf.Project.Name == "" {

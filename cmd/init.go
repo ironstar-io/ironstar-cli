@@ -28,5 +28,7 @@ var InitCmd = &cobra.Command{
 		}
 
 		color.Green("Successfully created the required Ironstar configuration files!")
+		fmt.Println()
+		color.Green("Run `iron subscription link [subscription-name]` to link this project to a remote Ironstar subscription")
 	},
 }
