@@ -26,8 +26,12 @@ const (
 	APISubLinkErrorMsg = "Failed to link subscription"
 
 	APIGetSubscriptionErrorMsg = "Failed to get subscription"
+
+	UnexpectedErrorMsg = "An unexpected error occurred"
 )
 
 var NoCredentialMatch = errors.New("There are no credentials available for the supplied email")
+
+var UnexpectedError = errors.New(UnexpectedErrorMsg)
 
 var NoSuitableCreds = errors.New(NoSuitableCredsMsg)
