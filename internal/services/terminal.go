@@ -101,3 +101,40 @@ func GetCLIMFAPasscode() (string, error) {
 
 	return passcode, nil
 }
+
+// ConfirmationPrompt - The 'weighting' param should be one of [ "y", "n" ].
+func ConfirmationPrompt(prompt string, weighting string) bool {
+	response, err := StdinPrompt(prompt + weightedString(weighting))
+	if err != nil {
+		return false
+	}
+
+	var cutResponse string
+	if response == "" {
+		cutResponse = weighting
+	} else {
+		cutResponse = strings.ToLower(string([]rune(response)[0]))
+	}
+
+	if weighting == "n" {
+		if cutResponse == "y" {
+			return true
+		}
+
+		return false
+	}
+
+	if cutResponse == "n" {
+		return false
+	}
+
+	return true
+}
+
+func weightedString(weighting string) string {
+	if weighting == "y" {
+		return " (Y/n): "
+	}
+
+	return " (y/N): "
+}

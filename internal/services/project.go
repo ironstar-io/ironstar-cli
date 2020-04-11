@@ -16,6 +16,26 @@ import (
 
 func GetProjectData() (types.ProjectConfig, error) {
 	empty := types.ProjectConfig{}
+	wd, err := os.Getwd()
+	if err != nil {
+		return empty, err
+	}
+
+	confPath := filepath.Join(wd, ".ironstar", "config.yml")
+
+	exists := fs.CheckExists(confPath)
+	if !exists {
+		createNewProj := ConfirmationPrompt("Couldn't find a project configuration in this directory. Would you like to create one?", "y")
+		if createNewProj == true {
+			err = InitializeIronstarProject()
+			if err != nil {
+				return empty, err
+			}
+		} else {
+			return empty, errors.New("This command requires a project to be configured.")
+		}
+
+	}
 
 	pr := fs.ProjectRoot()
 	proj, err := ReadInProjectConfig(pr)
