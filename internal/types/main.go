@@ -21,18 +21,21 @@ type AuthLoginBody struct {
 	Expiry           time.Time `json:"expiry"`
 }
 
-// Project is a singular entry of a project name and path used in global config
 type ProjectConfig struct {
-	Name         string       `yaml:"name,omitempty"`
-	Path         string       `yaml:"path,omitempty"`
-	Login        string       `yaml:"login,omitempty"`
+	Version      string       `yaml:"version,omitempty"`
+	Project      Project      `yaml:"project,omitempty"`
 	Subscription Subscription `yaml:"subscription,omitempty"`
+}
+
+type Project struct {
+	Name string `yaml:"name,omitempty"`
+	Path string `yaml:"path,omitempty"`
 }
 
 // Subscription
 type Subscription struct {
-	HashedID        string `json:"subscription_id,omitempty" example:"98hreHs"`
-	ApplicationType string `json:"application_type,omitempty" example:"drupal"`
-	Ref             string `json:"ref,omitempty" example:"au1999"`
-	Alias           string `json:"alias,omitempty" example:"umami-food-blog"`
+	HashedID        string `yaml:"subscription_id,omitempty" example:"98hreHs"`
+	Alias           string `yaml:"alias,omitempty" example:"umami-food-blog"`
+	Ref             string `yaml:"ref,omitempty" example:"au1999"`
+	ApplicationType string `yaml:"application_type,omitempty" example:"drupal"`
 }

@@ -1,12 +1,15 @@
 package services
 
 import (
-	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
+	"os"
+	"path/filepath"
+
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/pkg/errors"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func GetProjectData() (types.ProjectConfig, error) {
@@ -21,23 +24,36 @@ func GetProjectData() (types.ProjectConfig, error) {
 	return proj, nil
 }
 
-func SetProjectSubscription(args []string) error {
-	pr := fs.ProjectRoot()
-	if pr == constants.ProjectRootNotFound {
-		return errors.New(errs.NoProjectFoundErrorMsg)
+func LinkSubscriptionToProject(config types.ProjectConfig, sub types.Subscription) error {
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
 	}
 
+	projConf, err := ReadInProjectConfig(wd)
+	if err != nil {
+		return errors.Wrap(err, errs.APISubLinkErrorMsg)
+	}
+
+	if projConf.Project.Name == "" {
+		pn, err := StdinPrompt("Project Name: ")
+		if err != nil {
+			return errors.Wrap(err, errs.APISubLinkErrorMsg)
+		}
+
+		projConf.Project.Name = pn
+	}
+
+	projConf.Version = "1.0"
+	projConf.Subscription = sub
+
+	newMarhsalled, err := yaml.Marshal(projConf)
+	if err != nil {
+		return err
+	}
+
+	py := filepath.Join(wd, ".ironstar", "config.yml")
+	fs.Replace(py, newMarhsalled)
+
 	return nil
-	// var credMatch types.Credentials
-	// for _, cred := range creds {
-	// 	if cred.Login == email {
-	// 		credMatch = cred
-	// 	}
-	// }
-
-	// if (types.Credentials{}) == credMatch {
-	// 	return errors.Wrap(errs.NoCredentialMatch, errs.SetCredentialsErrorMsg)
-	// }
-
-	// return utils.UpdateGlobalProjectLogin(pr, email)
 }

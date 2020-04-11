@@ -27,5 +27,7 @@ var LinkCmd = &cobra.Command{
 
 			os.Exit(1)
 		}
+
+		color.Green("Successfully linked project!")
 	},
 }

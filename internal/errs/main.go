@@ -19,9 +19,13 @@ const (
 
 	NoSuitableCredsMsg = "There were no suitable credentials found for this project. Have you run `tok auth login`?"
 
-	APISubLinkErrorMsg = "Ironstar API failed to link subscription"
-
 	ProjectRootNotFoundError = "Unable to find a matching project"
+
+	APISubListErrorMsg = "Failed to retrieve subscriptions"
+
+	APISubLinkErrorMsg = "Failed to link subscription"
+
+	APIGetSubscriptionErrorMsg = "Failed to get subscription"
 )
 
 var NoCredentialMatch = errors.New("There are no credentials available for the supplied email")

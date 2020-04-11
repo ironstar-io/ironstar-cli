@@ -1,15 +1,8 @@
 package subscription
 
 import (
-	"path/filepath"
-
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
-
-	"github.com/pkg/errors"
-	yaml "gopkg.in/yaml.v2"
 )
 
 func Link(args []string, loginFlag string) error {
@@ -23,46 +16,22 @@ func Link(args []string, loginFlag string) error {
 		return err
 	}
 
-	req := &api.Request{
-		AuthToken:        user.AuthToken,
-		Method:           "GET",
-		Path:             "/user/subscriptions",
-		MapStringPayload: map[string]string{},
+	var hashOrAlias string
+	if len(args) == 0 {
+		ha, err := services.StdinPrompt("Subscription ID or Alias: ")
+		if err != nil {
+			return err
+		}
+
+		hashOrAlias = ha
+	} else {
+		hashOrAlias = args[0]
 	}
 
-	res, err := req.Send()
-	if err != nil {
-		return errors.Wrap(err, APISubListErrorMsg)
-	}
-
-	if res.StatusCode != 200 {
-		return res.HandleFailure()
-	}
-
-	var sub types.Subscription
-	err = yaml.Unmarshal(res.Body, &sub)
+	sub, err := api.GetSubscription(user.AuthToken, hashOrAlias)
 	if err != nil {
 		return err
 	}
 
-	return LinkSubscriptionToProject(proj, sub)
-}
-
-func LinkSubscriptionToProject(proj types.ProjectConfig, sub types.Subscription) error {
-	projConf, err := services.ReadInProjectConfig(proj.Path)
-	if err != nil {
-		return errors.Wrap(err, APISubListErrorMsg)
-	}
-
-	projConf.Subscription = sub
-
-	newMarhsalled, err := yaml.Marshal(projConf)
-	if err != nil {
-		return err
-	}
-
-	py := filepath.Join(proj.Path, ".ironstar", "global.yml")
-	fs.Replace(py, newMarhsalled)
-
-	return nil
+	return services.LinkSubscriptionToProject(proj, sub)
 }

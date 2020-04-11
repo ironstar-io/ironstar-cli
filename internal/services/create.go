@@ -14,7 +14,7 @@ func SafeTouchConfigYAML(path string) error {
 		// The global .ironstar path requires appropriate permissions
 		np := filepath.Dir(path)
 		if !fs.CheckExists(np) {
-			err := os.MkdirAll(np, 0600)
+			err := os.MkdirAll(np, 0700)
 			if err != nil {
 				return err
 			}
