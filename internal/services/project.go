@@ -46,6 +46,29 @@ func GetProjectData() (types.ProjectConfig, error) {
 	return proj, nil
 }
 
+func GetProjectDataSkipNew() (types.ProjectConfig, error) {
+	empty := types.ProjectConfig{}
+	wd, err := os.Getwd()
+	if err != nil {
+		return empty, err
+	}
+
+	confPath := filepath.Join(wd, ".ironstar", "config.yml")
+
+	exists := fs.CheckExists(confPath)
+	if !exists {
+		return types.ProjectConfig{}, nil
+	}
+
+	pr := fs.ProjectRoot()
+	proj, err := ReadInProjectConfig(pr)
+	if err != nil {
+		return empty, errors.Wrap(err, errs.NoProjectFoundErrorMsg)
+	}
+
+	return proj, nil
+}
+
 func LinkSubscriptionToProject(config types.ProjectConfig, sub types.Subscription) error {
 	wd, err := os.Getwd()
 	if err != nil {
