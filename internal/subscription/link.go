@@ -3,6 +3,8 @@ package subscription
 import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+
+	"github.com/fatih/color"
 )
 
 func Link(args []string, loginFlag string) error {
@@ -15,6 +17,8 @@ func Link(args []string, loginFlag string) error {
 	if err != nil {
 		return err
 	}
+
+	color.Green("Using login [" + creds.Login + "]")
 
 	var hashOrAlias string
 	if len(args) == 0 {

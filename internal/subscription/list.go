@@ -5,6 +5,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 
+	"github.com/fatih/color"
 	"github.com/pkg/errors"
 )
 
@@ -13,6 +14,8 @@ func List(args []string, loginFlag string) error {
 	if err != nil {
 		return err
 	}
+
+	color.Green("Using login [" + creds.Login + "]")
 
 	req := &api.Request{
 		RunTokenRefresh:  true,
