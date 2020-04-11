@@ -35,6 +35,7 @@ func init() {
 	rootCmd.AddCommand(subscription.SubscriptionCmd)
 	subscription.SubscriptionCmd.AddCommand(subscription.ListCmd)
 	subscription.SubscriptionCmd.AddCommand(subscription.LinkCmd)
+	subscription.SubscriptionCmd.AddCommand(subscription.ShowCmd)
 }
 
 // Execute - Root executable

@@ -11,11 +11,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// SubscriptionCmd - `tok subscription`
-var SubscriptionCmd = &cobra.Command{
-	Use:   "subscription",
-	Short: "",
-	Long:  "",
+// ShowCmd - `iron subscription show`
+var ShowCmd = &cobra.Command{
+	Use:   "show",
+	Short: "Show linked subscription",
+	Long:  "Show linked subscription",
 	Run: func(cmd *cobra.Command, args []string) {
 		err := subscription.Show(args)
 		if err != nil {
