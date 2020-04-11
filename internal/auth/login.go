@@ -83,6 +83,15 @@ func IronstarAPILogin(args []string, passwordFlag string) error {
 	expDiff := strconv.Itoa(int(math.RoundToEven(c.Expiry.Sub(time.Now().UTC()).Hours() / 24)))
 	fmt.Println(c.Expiry.String() + " (" + expDiff + " days)")
 
+	proj, err := services.GetProjectData()
+	if err != nil {
+		return nil
+	}
+	if proj.Subscription.Alias == "" {
+		fmt.Println()
+		color.Yellow("You have logged in successfully and can now link this project to an Ironstar subscription. Run `iron subscription list` to see a list of available subscriptions")
+	}
+
 	return nil
 }
 
