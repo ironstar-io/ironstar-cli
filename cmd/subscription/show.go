@@ -16,15 +16,17 @@ var ShowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Show linked subscription",
 	Long:  "Show linked subscription",
-	Run: func(cmd *cobra.Command, args []string) {
-		err := subscription.Show(args)
-		if err != nil {
-			if err != api.ErrIronstarAPICall {
-				fmt.Println()
-				color.Red(err.Error())
-			}
+	Run:   show,
+}
 
-			os.Exit(1)
+func show(cmd *cobra.Command, args []string) {
+	err := subscription.Show(args)
+	if err != nil {
+		if err != api.ErrIronstarAPICall {
+			fmt.Println()
+			color.Red(err.Error())
 		}
-	},
+
+		os.Exit(1)
+	}
 }

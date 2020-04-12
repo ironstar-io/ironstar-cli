@@ -28,14 +28,22 @@ func init() {
 	rootCmd.AddCommand(LoginCmd)
 	rootCmd.AddCommand(InitCmd)
 
+	// `iron auth x`
 	rootCmd.AddCommand(auth.AuthCmd)
 	auth.AuthCmd.AddCommand(auth.ShowCmd)
 	auth.AuthCmd.AddCommand(auth.SetActiveCmd)
 
+	// `iron subscription x`
 	rootCmd.AddCommand(subscription.SubscriptionCmd)
 	subscription.SubscriptionCmd.AddCommand(subscription.ListCmd)
 	subscription.SubscriptionCmd.AddCommand(subscription.LinkCmd)
 	subscription.SubscriptionCmd.AddCommand(subscription.ShowCmd)
+
+	// `iron sub x` alias (hidden)
+	rootCmd.AddCommand(subscription.SubCmd)
+	subscription.SubCmd.AddCommand(subscription.ListCmd)
+	subscription.SubCmd.AddCommand(subscription.LinkCmd)
+	subscription.SubCmd.AddCommand(subscription.ShowCmd)
 }
 
 // Execute - Root executable
