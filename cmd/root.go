@@ -52,6 +52,7 @@ func RootCmd() *cobra.Command {
 	// rootCmd.PersistentFlags().BoolP("yes", "y", false, "Auto-accept any non-destructive confirmation prompts")
 	// rootCmd.PersistentFlags().BoolP("debug", "d", false, "Enable debug mode, command output is printed to the console")
 	rootCmd.PersistentFlags().StringVarP(&flags.Login, "login", "l", "", "Force use of a specified logins' credentials")
+	rootCmd.PersistentFlags().StringVarP(&flags.Output, "output", "o", "", "Use a certain output type. Not applicable on all commands.")
 
 	LoginCmd.PersistentFlags().StringVarP(&flags.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
 

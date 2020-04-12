@@ -34,8 +34,20 @@ type Project struct {
 
 // Subscription
 type Subscription struct {
-	HashedID        string `yaml:"subscription_id,omitempty" example:"98hreHs"`
-	Alias           string `yaml:"alias,omitempty" example:"umami-food-blog"`
-	Ref             string `yaml:"ref,omitempty" example:"au1999"`
-	ApplicationType string `yaml:"application_type,omitempty" example:"drupal"`
+	HashedID        string `json:"subscription_id,omitempty" yaml:"subscription_id,omitempty" example:"98hreHs"`
+	Alias           string `json:"alias,omitempty" yaml:"alias,omitempty" example:"umami-food-blog"`
+	Ref             string `json:"ref,omitempty" yaml:"ref,omitempty" example:"au1999"`
+	ApplicationType string `json:"application_type,omitempty" yaml:"application_type,omitempty" example:"drupal"`
+}
+
+type Role struct {
+	Name        string   `json:"name,omitempty" yaml:"name,omitempty"`
+	Permissions []string `json:"permissions,omitempty"  yaml:"permissions,omitempty"`
+}
+
+// SubscriptionAccessResponse
+type UserAccessResponse struct {
+	Role         Role         `json:"role,omitempty" yaml:"role,omitempty"`
+	Subscription Subscription `json:"subscription,omitempty" yaml:"subscription,omitempty"`
+	// Environment  Environment  `yaml:"environment,omitempty"`
 }

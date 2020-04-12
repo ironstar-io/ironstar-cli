@@ -1,21 +1,30 @@
 package subscription
 
 import (
+	"fmt"
+	"os"
+	"strings"
+
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
+	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
+	yaml "gopkg.in/yaml.v2"
 )
 
-func List(args []string, loginFlag string) error {
+func List(args []string, loginFlag, outputFlag string) error {
 	creds, err := services.ResolveUserCredentials(loginFlag)
 	if err != nil {
 		return err
 	}
 
-	color.Green("Using login [" + creds.Login + "]")
+	if outputFlag == "" {
+		color.Green("Using login [" + creds.Login + "]")
+	}
 
 	req := &api.Request{
 		RunTokenRefresh:  true,
@@ -34,10 +43,34 @@ func List(args []string, loginFlag string) error {
 		return res.HandleFailure()
 	}
 
-	err = services.OutputJSON(res.Body)
-	if err != nil {
-		return errors.Wrap(err, errs.APISubListErrorMsg)
+	if outputFlag == "json" {
+		err = services.OutputJSON(res.Body)
+		if err != nil {
+			return errors.Wrap(err, errs.APISubListErrorMsg)
+		}
+
+		return nil
 	}
+
+	var uar []types.UserAccessResponse
+	err = yaml.Unmarshal(res.Body, &uar)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println()
+	fmt.Println("Available Subscriptions:")
+
+	uarRows := make([][]string, len(uar))
+	for _, access := range uar {
+		uarRows = append(uarRows, []string{access.Subscription.HashedID, access.Subscription.Alias, access.Subscription.ApplicationType, access.Role.Name, strings.Join(access.Role.Permissions, ", ")})
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"ID", "Name", "Application Type", "Role", "Permissions"})
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	table.AppendBulk(uarRows)
+	table.Render()
 
 	return nil
 }
