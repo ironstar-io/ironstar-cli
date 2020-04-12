@@ -4,7 +4,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
@@ -26,15 +25,8 @@ func InitializeIronstarProject() error {
 	}
 
 	projConf := types.ProjectConfig{
-		Version: "1.0",
+		Version: "1",
 	}
-
-	pn, err := StdinPrompt("Project Name: ")
-	if err != nil {
-		return errs.UnexpectedError
-	}
-
-	projConf.Project.Name = pn
 
 	newMarhsalled, err := yaml.Marshal(projConf)
 	if err != nil {

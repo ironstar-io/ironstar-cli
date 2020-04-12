@@ -85,15 +85,6 @@ func LinkSubscriptionToProject(config types.ProjectConfig, sub types.Subscriptio
 		fmt.Println()
 	}
 
-	if projConf.Project.Name == "" {
-		pn, err := StdinPrompt("Project Name: ")
-		if err != nil {
-			return errors.Wrap(err, errs.APISubLinkErrorMsg)
-		}
-
-		projConf.Project.Name = pn
-	}
-
 	projConf.Version = "1.0"
 	projConf.Subscription = sub
 

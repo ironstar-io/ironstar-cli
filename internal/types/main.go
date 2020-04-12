@@ -23,13 +23,7 @@ type AuthResponseBody struct {
 
 type ProjectConfig struct {
 	Version      string       `yaml:"version,omitempty"`
-	Project      Project      `yaml:"project,omitempty"`
 	Subscription Subscription `yaml:"subscription,omitempty"`
-}
-
-type Project struct {
-	Name string `yaml:"name,omitempty"`
-	Path string `yaml:"path,omitempty"`
 }
 
 // Subscription
