@@ -1,7 +1,12 @@
 package api
 
 import (
+	"os"
+	"path/filepath"
+
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/pkg/errors"
@@ -34,4 +39,45 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 	}
 
 	return sub, nil
+}
+
+func GetSubscriptionContext(creds types.Keylink, subKey string) (types.Subscription, error) {
+	empty := types.Subscription{}
+	if subKey != "" {
+		sub, err := GetSubscription(creds, subKey)
+		if err != nil {
+			return empty, err
+		}
+
+		return sub, nil
+	}
+
+	wd, err := os.Getwd()
+	if err != nil {
+		return empty, err
+	}
+
+	confPath := filepath.Join(wd, ".ironstar", "config.yml")
+
+	exists := fs.CheckExists(confPath)
+	if !exists {
+		createNewProj := services.ConfirmationPrompt("Couldn't find a project configuration in this directory. Would you like to create one?", "y")
+		if createNewProj == true {
+			err = services.InitializeIronstarProject()
+			if err != nil {
+				return empty, err
+			}
+		} else {
+			return empty, errors.New("This command requires a project to be configured.")
+		}
+
+	}
+
+	pr := fs.ProjectRoot()
+	proj, err := services.ReadInProjectConfig(pr)
+	if err != nil {
+		return empty, errors.Wrap(err, errs.NoProjectFoundErrorMsg)
+	}
+
+	return proj.Subscription, nil
 }

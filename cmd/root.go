@@ -6,6 +6,7 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/auth"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version"
 
@@ -44,6 +45,14 @@ func init() {
 	subscription.SubCmd.AddCommand(subscription.ListCmd)
 	subscription.SubCmd.AddCommand(subscription.LinkCmd)
 	subscription.SubCmd.AddCommand(subscription.ShowCmd)
+
+	// `iron package x`
+	rootCmd.AddCommand(pkg.PackageCmd)
+	pkg.PackageCmd.AddCommand(pkg.ListCmd)
+
+	// `iron pkg x` alias (hidden)
+	rootCmd.AddCommand(pkg.PkgCmd)
+	pkg.PkgCmd.AddCommand(pkg.ListCmd)
 }
 
 // Execute - Root executable
@@ -61,6 +70,7 @@ func RootCmd() *cobra.Command {
 	// rootCmd.PersistentFlags().BoolP("debug", "d", false, "Enable debug mode, command output is printed to the console")
 	rootCmd.PersistentFlags().StringVarP(&flags.Login, "login", "l", "", "Force use of a specified logins' credentials")
 	rootCmd.PersistentFlags().StringVarP(&flags.Output, "output", "o", "", "Use a certain output type. Not applicable on all commands.")
+	rootCmd.PersistentFlags().StringVarP(&flags.Subscription, "subscription", "s", "", "Use a specified subscription. Not applicable on all commands.")
 
 	LoginCmd.PersistentFlags().StringVarP(&flags.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
 
