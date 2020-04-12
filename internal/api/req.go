@@ -4,15 +4,15 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
-	"math"
 	"fmt"
+	"io/ioutil"
+	"math"
+	"net/http"
 	"os"
 	"time"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
 )
@@ -104,14 +104,14 @@ func (r *Request) RefreshToken() {
 	// If any leg fails, return silently, user will need to relog manually
 	//
 
-	if r.RunTokenRefresh != true || r.Credentials == (types.Keylink{})|| r.Credentials.Login == "" || r.Credentials.AuthToken == "" || r.Credentials.Expiry.IsZero() {
+	if r.RunTokenRefresh != true || r.Credentials == (types.Keylink{}) || r.Credentials.Login == "" || r.Credentials.AuthToken == "" || r.Credentials.Expiry.IsZero() {
 		return
 	}
 
 	// Get the time difference in days
 	expDiff := int(math.RoundToEven(r.Credentials.Expiry.Sub(time.Now().UTC()).Hours() / 24))
-	// Only refresh if there's less than three days remaining and not already expired
-	if expDiff > 3 || expDiff < 0 {
+	// Only refresh if there's less than seven days remaining and not already expired
+	if expDiff > 7 || expDiff < 0 {
 		return
 	}
 
@@ -143,16 +143,15 @@ func (r *Request) RefreshToken() {
 	}
 
 	newCreds := types.Keylink{
-		Login: r.Credentials.Login,
+		Login:     r.Credentials.Login,
 		AuthToken: b.IDToken,
-		Expiry: b.Expiry,
+		Expiry:    b.Expiry,
 	}
 
-	
 	err = services.UpdateCredentialsFile(newCreds)
 	if err != nil {
 		return
-	} 
+	}
 
 	r.Credentials = newCreds
 
