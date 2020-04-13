@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/auth"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/deploy"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
@@ -53,6 +54,10 @@ func init() {
 	// `iron pkg x` alias (hidden)
 	rootCmd.AddCommand(pkg.PkgCmd)
 	pkg.PkgCmd.AddCommand(pkg.ListCmd)
+
+	// `iron deploy x`
+	rootCmd.AddCommand(deploy.DeployCmd)
+	deploy.DeployCmd.AddCommand(deploy.ListCmd)
 }
 
 // Execute - Root executable
