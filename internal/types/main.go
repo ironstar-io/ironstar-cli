@@ -54,3 +54,12 @@ type BuildsResponse struct {
 	RunningIn string    `json:"running_in,omitempty" yaml:"running_in,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
+
+// DeploymentResponse
+type DeploymentResponse struct {
+	HashedID  string    `json:"build_id,omitempty" yaml:"build_id,omitempty"`
+	Status    string    `json:"status,omitempty" yaml:"status,omitempty"`
+	CreatedBy string    `json:"created_by,omitempty" yaml:"created_by,omitempty"`
+	RunningIn string    `json:"running_in,omitempty" yaml:"running_in,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+}
