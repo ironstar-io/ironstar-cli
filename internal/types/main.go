@@ -57,9 +57,24 @@ type BuildsResponse struct {
 
 // DeploymentResponse
 type DeploymentResponse struct {
-	HashedID  string    `json:"build_id,omitempty" yaml:"build_id,omitempty"`
-	Status    string    `json:"status,omitempty" yaml:"status,omitempty"`
-	CreatedBy string    `json:"created_by,omitempty" yaml:"created_by,omitempty"`
-	RunningIn string    `json:"running_in,omitempty" yaml:"running_in,omitempty"`
+	HashedID       string      `json:"deployment_id,omitempty" yaml:"deployment_id,omitempty"`
+	AppStatus      string      `json:"app_status,omitempty" yaml:"app_status,omitempty"`
+	AdminSvcStatus string      `json:"admin_svc_status,omitempty" yaml:"admin_svc_status,omitempty"`
+	BuildID        string      `json:"build_token,omitempty" yaml:"build_token,omitempty"`
+	CreatedAt      time.Time   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Environment    Environment `json:"environment,omitempty" yaml:"environment,omitempty"`
+}
+
+// DeploymentActivityResponse
+type DeploymentActivityResponse struct {
+	Message   string    `json:"message,omitempty" yaml:"message,omitempty"`
+	Flag      string    `json:"flag,omitempty" yaml:"flag,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+}
+
+type Environment struct {
+	HashedID       string `json:"environment_id,omitempty" yaml:"environment_id,omitempty"`
+	Name           string `json:"name,omitempty" yaml:"name,omitempty"`
+	Trigger        string `json:"trigger,omitempty" yaml:"trigger,omitempty"`
+	UpdateStrategy string `json:"update_strategy,omitempty" yaml:"update_strategy,omitempty"`
 }

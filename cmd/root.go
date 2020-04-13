@@ -58,6 +58,7 @@ func init() {
 	// `iron deploy x`
 	rootCmd.AddCommand(deploy.DeployCmd)
 	deploy.DeployCmd.AddCommand(deploy.ListCmd)
+	deploy.DeployCmd.AddCommand(deploy.StatusCmd)
 }
 
 // Execute - Root executable

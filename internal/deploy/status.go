@@ -57,18 +57,19 @@ func Status(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
-	var bs []types.DeploymentResponse
-	err = yaml.Unmarshal(res.Body, &bs)
+	var d types.DeploymentResponse
+	err = yaml.Unmarshal(res.Body, &d)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("DEPLOYMENT ID: ")
-	fmt.Println("PACKAGE ID: ")
-	fmt.Println("ENVIRONMENT: ")
-	fmt.Println("APPLICATION STATUS: ")
-	fmt.Println("ADMIN SERVICE STATUS: ")
-	fmt.Println("CREATED: ")
+	fmt.Println()
+	fmt.Println("DEPLOYMENT ID: " + d.HashedID)
+	fmt.Println("PACKAGE ID: " + d.BuildID)
+	fmt.Println("ENVIRONMENT: " + d.Environment.Name)
+	fmt.Println("APPLICATION STATUS: " + d.AppStatus)
+	fmt.Println("ADMIN SERVICE STATUS: " + d.AdminSvcStatus)
+	fmt.Println("CREATED: " + d.CreatedAt.String())
 
 	req2 := &api.Request{
 		RunTokenRefresh:  true,
@@ -87,8 +88,8 @@ func Status(args []string, flg flags.Accumulator) error {
 		return res2.HandleFailure()
 	}
 
-	var da []types.DeploymentActivityResponse
-	err = yaml.Unmarshal(res.Body, &da)
+	var dac []types.DeploymentActivityResponse
+	err = yaml.Unmarshal(res2.Body, &dac)
 	if err != nil {
 		return err
 	}
@@ -96,13 +97,13 @@ func Status(args []string, flg flags.Accumulator) error {
 	fmt.Println()
 	fmt.Println("ACTIVITY: ")
 
-	daRows := make([][]string, len(da))
-	for _, d := range da {
-		bsRows = append(daRows, []string{b.CreatedAt.String(), b.HashedID, b.CreatedBy, b.RunningIn})
+	daRows := make([][]string, len(dac))
+	for _, da := range dac {
+		daRows = append(daRows, []string{da.CreatedAt.String(), da.Message, da.Flag})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Date", "Action"})
+	table.SetHeader([]string{"Date", "Action", "Flag"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(daRows)
 	table.Render()
