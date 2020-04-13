@@ -68,11 +68,15 @@ func RootCmd() *cobra.Command {
 	// rootCmd.PersistentFlags().BoolP("force", "", false, "Forcefully skip destructive confirmation prompts")
 	// rootCmd.PersistentFlags().BoolP("yes", "y", false, "Auto-accept any non-destructive confirmation prompts")
 	// rootCmd.PersistentFlags().BoolP("debug", "d", false, "Enable debug mode, command output is printed to the console")
-	rootCmd.PersistentFlags().StringVarP(&flags.Login, "login", "l", "", "Force use of a specified logins' credentials")
-	rootCmd.PersistentFlags().StringVarP(&flags.Output, "output", "o", "", "Use a certain output type. Not applicable on all commands.")
-	rootCmd.PersistentFlags().StringVarP(&flags.Subscription, "subscription", "s", "", "Use a specified subscription. Not applicable on all commands.")
+	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Login, "login", "l", "", "Force use of a specified logins' credentials")
+	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Output, "output", "o", "", "Use a certain output type. Not applicable on all commands.")
 
-	LoginCmd.PersistentFlags().StringVarP(&flags.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
+	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Subscription, "subscription", "s", "", "Use or filter by a specified subscription. Not applicable on all commands.")
+	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Environment, "environment", "e", "", "Use or filter by  specified environment. Not applicable on all commands.")
+	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Package, "package", "p", "", "Use or filter by  specified package. Not applicable on all commands.")
+	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Deploy, "deploy", "d", "", "Use or filter by  specified deployment. Not applicable on all commands.")
+
+	LoginCmd.PersistentFlags().StringVarP(&flags.Acc.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
 
 	return &rootCmd
 }

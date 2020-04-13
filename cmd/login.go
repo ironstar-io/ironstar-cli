@@ -18,7 +18,7 @@ var LoginCmd = &cobra.Command{
 	Short: "Authenticate for the Ironstar API",
 	Long:  "Authenticate and store credentials for use against the Ironstar API",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := auth.IronstarAPILogin(args, flags.Password)
+		err := auth.IronstarAPILogin(args, flags.Acc)
 		if err != nil {
 			if err != api.ErrIronstarAPICall {
 				fmt.Println()

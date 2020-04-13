@@ -21,7 +21,7 @@ var ListCmd = &cobra.Command{
 }
 
 func list(cmd *cobra.Command, args []string) {
-	err := pkg.List(args, flags.Login, flags.Output, flags.Subscription)
+	err := pkg.List(args, flags.Acc)
 	if err != nil {
 		if err != api.ErrIronstarAPICall {
 			fmt.Println()

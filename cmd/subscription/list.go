@@ -18,7 +18,7 @@ var ListCmd = &cobra.Command{
 	Short: "List available subscriptions",
 	Long:  "List all available subscriptions for the user",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := subscription.List(args, flags.Login, flags.Output)
+		err := subscription.List(args, flags.Acc)
 		if err != nil {
 			if err != api.ErrIronstarAPICall {
 				fmt.Println()

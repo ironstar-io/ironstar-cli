@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
@@ -15,13 +16,13 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func List(args []string, loginFlag, outputFlag, subFlag string) error {
-	creds, err := services.ResolveUserCredentials(loginFlag)
+func List(args []string, flg flags.Accumulator) error {
+	creds, err := services.ResolveUserCredentials(flg.Login)
 	if err != nil {
 		return err
 	}
 
-	sub, err := api.GetSubscriptionContext(creds, subFlag)
+	sub, err := api.GetSubscriptionContext(creds, flg.Subscription)
 	if err != nil {
 		return err
 	}
@@ -30,7 +31,7 @@ func List(args []string, loginFlag, outputFlag, subFlag string) error {
 		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
 	}
 
-	if outputFlag == "" {
+	if flg.Output == "" {
 		color.Green("Using login [" + creds.Login + "] for subscription <" + sub.Alias + ">")
 	}
 
@@ -51,7 +52,7 @@ func List(args []string, loginFlag, outputFlag, subFlag string) error {
 		return res.HandleFailure()
 	}
 
-	if outputFlag == "json" {
+	if flg.Output == "json" {
 		err = services.OutputJSON(res.Body)
 		if err != nil {
 			return errors.Wrap(err, errs.APISubListErrorMsg)

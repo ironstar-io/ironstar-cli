@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
@@ -16,13 +17,13 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func List(args []string, loginFlag, outputFlag string) error {
-	creds, err := services.ResolveUserCredentials(loginFlag)
+func List(args []string, flg flags.Accumulator) error {
+	creds, err := services.ResolveUserCredentials(flg.Login)
 	if err != nil {
 		return err
 	}
 
-	if outputFlag == "" {
+	if flg.Output == "" {
 		color.Green("Using login [" + creds.Login + "]")
 	}
 
@@ -43,7 +44,7 @@ func List(args []string, loginFlag, outputFlag string) error {
 		return res.HandleFailure()
 	}
 
-	if outputFlag == "json" {
+	if flg.Output == "json" {
 		err = services.OutputJSON(res.Body)
 		if err != nil {
 			return errors.Wrap(err, errs.APISubListErrorMsg)

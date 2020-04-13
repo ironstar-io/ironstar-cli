@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
@@ -16,13 +17,13 @@ import (
 	"github.com/pkg/errors"
 )
 
-func IronstarAPILogin(args []string, passwordFlag string) error {
+func IronstarAPILogin(args []string, flg flags.Accumulator) error {
 	email, err := services.GetCLIEmail(args)
 	if err != nil {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
 
-	password, err := services.GetCLIPassword(passwordFlag)
+	password, err := services.GetCLIPassword(flg.Password)
 	if err != nil {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}

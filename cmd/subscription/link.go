@@ -18,7 +18,7 @@ var LinkCmd = &cobra.Command{
 	Short: "Link your project to a subscription",
 	Long:  "Link your project to a subscription",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := subscription.Link(args, flags.Login)
+		err := subscription.Link(args, flags.Acc)
 		if err != nil {
 			if err != api.ErrIronstarAPICall {
 				fmt.Println()

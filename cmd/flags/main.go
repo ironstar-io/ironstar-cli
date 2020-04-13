@@ -1,9 +1,13 @@
 package flags
 
-var Login string
+type Accumulator struct {
+	Login        string
+	Password     string
+	Output       string
+	Subscription string
+	Environment  string
+	Package      string
+	Deploy       string
+}
 
-var Password string
-
-var Output string
-
-var Subscription string
+var Acc Accumulator
