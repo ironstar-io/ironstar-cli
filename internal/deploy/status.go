@@ -31,6 +31,15 @@ func Status(args []string, flg flags.Accumulator) error {
 		color.Green("Using login [" + creds.Login + "]")
 	}
 
+	err = DisplayDeploymentInfo(creds, deployID)
+	if err != nil {
+		return err
+	}
+
+	return DisplayDeploymentActivity(creds, deployID)
+}
+
+func DisplayDeploymentInfo(creds types.Keylink, deployID string) error {
 	req := &api.Request{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
@@ -70,8 +79,10 @@ func Status(args []string, flg flags.Accumulator) error {
 	fmt.Println("APPLICATION STATUS: " + d.AppStatus)
 	fmt.Println("ADMIN SERVICE STATUS: " + d.AdminSvcStatus)
 	fmt.Println("CREATED: " + d.CreatedAt.String())
+}
 
-	req2 := &api.Request{
+func DisplayDeploymentActivity(creds types.Keylink, deployID string) error {
+	req := &api.Request{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -79,17 +90,17 @@ func Status(args []string, flg flags.Accumulator) error {
 		MapStringPayload: map[string]string{},
 	}
 
-	res2, err := req2.Send()
+	res, err := req.Send()
 	if err != nil {
 		return errors.Wrap(err, errs.APISubListErrorMsg)
 	}
 
-	if res2.StatusCode != 200 {
-		return res2.HandleFailure()
+	if res.StatusCode != 200 {
+		return res.HandleFailure()
 	}
 
 	var dac []types.DeploymentActivityResponse
-	err = yaml.Unmarshal(res2.Body, &dac)
+	err = yaml.Unmarshal(res.Body, &dac)
 	if err != nil {
 		return err
 	}
