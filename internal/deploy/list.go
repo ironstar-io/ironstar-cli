@@ -32,14 +32,15 @@ func List(args []string, flg flags.Accumulator) error {
 	}
 
 	if flg.Output == "" {
-		color.Green("Using login [" + creds.Login + "] for subscription <" + sub.Alias + ">")
+		color.Green("Using login [" + creds.Login + "] for subscription " + sub.Alias + " (" + sub.HashedID + ")")
 	}
 
+	qs := services.BuildQSFilters(flg)
 	req := &api.Request{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
-		Path:             "/subscription/" + sub.HashedID + "/builds",
+		Path:             "/subscription/" + sub.HashedID + "/deployments" + qs,
 		MapStringPayload: map[string]string{},
 	}
 
@@ -61,24 +62,24 @@ func List(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
-	var bs []types.BuildsResponse
-	err = yaml.Unmarshal(res.Body, &bs)
+	var ds []types.DeploymentResponse
+	err = yaml.Unmarshal(res.Body, &ds)
 	if err != nil {
 		return err
 	}
 
 	fmt.Println()
-	fmt.Println("Available Packages:")
+	fmt.Println("Deployments:")
 
-	bsRows := make([][]string, len(bs))
-	for _, b := range bs {
-		bsRows = append(bsRows, []string{b.CreatedAt.String(), b.HashedID, b.CreatedBy, b.RunningIn})
+	dsRows := make([][]string, len(ds))
+	for _, d := range ds {
+		dsRows = append(dsRows, []string{d.CreatedAt.String(), d.HashedID, d.Environment.HashedID + " (" + d.Environment.Name + ")", d.BuildID, d.AppStatus, d.AdminSvcStatus})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Date Created", "ID", "Created By", "Running In"})
+	table.SetHeader([]string{"Date Created", "Deployment ID", "Environment", "Build", "Application Status", "Admin Service Status"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.AppendBulk(bsRows)
+	table.AppendBulk(dsRows)
 	table.Render()
 
 	return nil

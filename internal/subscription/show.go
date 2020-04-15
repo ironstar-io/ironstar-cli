@@ -35,7 +35,7 @@ func Show(args []string) error {
 	}
 
 	color.Green("Currently linked: ")
-	fmt.Println(proj.Subscription.Alias)
+	fmt.Println(proj.Subscription.Alias + " (" + proj.Subscription.HashedID + ")")
 
 	return nil
 }
