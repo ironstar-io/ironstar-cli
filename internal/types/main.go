@@ -46,17 +46,18 @@ type UserAccessResponse struct {
 	// Environment  Environment  `yaml:"environment,omitempty"`
 }
 
-// BuildsResponse
-type BuildsResponse struct {
-	HashedID  string    `json:"build_id,omitempty" yaml:"build_id,omitempty"`
-	Status    string    `json:"status,omitempty" yaml:"status,omitempty"`
-	CreatedBy string    `json:"created_by,omitempty" yaml:"created_by,omitempty"`
-	RunningIn string    `json:"running_in,omitempty" yaml:"running_in,omitempty"`
-	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+// Build
+type Build struct {
+	HashedID   string       `json:"build_id,omitempty" yaml:"build_id,omitempty"`
+	Status     string       `json:"status,omitempty" yaml:"status,omitempty"`
+	CreatedBy  string       `json:"created_by,omitempty" yaml:"created_by,omitempty"`
+	RunningIn  string       `json:"running_in,omitempty" yaml:"running_in,omitempty"`
+	CreatedAt  time.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Deployment []Deployment `json:"deployments,omitempty" yaml:"deployments,omitempty"`
 }
 
-// DeploymentResponse
-type DeploymentResponse struct {
+// Deployment
+type Deployment struct {
 	HashedID       string      `json:"deployment_id,omitempty" yaml:"deployment_id,omitempty"`
 	AppStatus      string      `json:"app_status,omitempty" yaml:"app_status,omitempty"`
 	AdminSvcStatus string      `json:"admin_svc_status,omitempty" yaml:"admin_svc_status,omitempty"`

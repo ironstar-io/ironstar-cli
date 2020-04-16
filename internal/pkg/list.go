@@ -8,6 +8,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -61,7 +62,7 @@ func List(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
-	var bs []types.BuildsResponse
+	var bs []types.Build
 	err = yaml.Unmarshal(res.Body, &bs)
 	if err != nil {
 		return err
@@ -70,9 +71,20 @@ func List(args []string, flg flags.Accumulator) error {
 	fmt.Println()
 	fmt.Println("Available Packages:")
 
+	var envRefs []string
 	bsRows := make([][]string, len(bs))
 	for _, b := range bs {
-		bsRows = append(bsRows, []string{b.CreatedAt.String(), b.HashedID, b.CreatedBy, b.RunningIn})
+		var runningIn string
+		if len(b.Deployment) > 0 {
+			for _, d := range b.Deployment {
+				if d != (types.Deployment{}) && d.Environment != (types.Environment{}) && d.AppStatus == "FINISHED" && !utils.StringSliceContains(envRefs, d.Environment.HashedID) {
+					runningIn = d.Environment.HashedID + " (" + d.Environment.Name + ")"
+					envRefs = append(envRefs, d.Environment.HashedID)
+				}
+			}
+		}
+
+		bsRows = append(bsRows, []string{b.CreatedAt.String(), b.HashedID, b.CreatedBy, runningIn})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

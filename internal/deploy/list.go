@@ -62,7 +62,7 @@ func List(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
-	var ds []types.DeploymentResponse
+	var ds []types.Deployment
 	err = yaml.Unmarshal(res.Body, &ds)
 	if err != nil {
 		return err

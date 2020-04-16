@@ -55,7 +55,7 @@ func DisplayDeploymentInfo(creds types.Keylink, deployID string) error {
 		return res.HandleFailure()
 	}
 
-	var d types.DeploymentResponse
+	var d types.Deployment
 	err = yaml.Unmarshal(res.Body, &d)
 	if err != nil {
 		return err
