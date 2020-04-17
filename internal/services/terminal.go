@@ -102,6 +102,24 @@ func GetCLIMFAPasscode() (string, error) {
 	return passcode, nil
 }
 
+// GetDeployID
+func GetDeployID(args []string, deployFlag string) (string, error) {
+	if deployFlag != "" {
+		return deployFlag, nil
+	}
+
+	if len(args) == 0 {
+		di, err := StdinPrompt("Deployment ID: ")
+		if err != nil {
+			return "", errors.New("No deployment ID argument supplied")
+		}
+
+		return di, nil
+	}
+
+	return args[0], nil
+}
+
 // ConfirmationPrompt - The 'weighting' param should be one of [ "y", "n" ].
 func ConfirmationPrompt(prompt string, weighting string) bool {
 	response, err := StdinPrompt(prompt + weightedString(weighting))

@@ -6,30 +6,12 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
 )
-
-func getDeployID(args []string, deployFlag string) (string, error) {
-	if deployFlag != "" {
-		return deployFlag, nil
-	}
-
-	if len(args) == 0 {
-		di, err := services.StdinPrompt("Deployment ID: ")
-		if err != nil {
-			return "", errors.New("No deployment ID argument supplied")
-		}
-
-		return di, nil
-	}
-
-	return args[0], nil
-}
 
 func DisplayDeploymentActivity(creds types.Keylink, deployID string) error {
 	req := &api.Request{

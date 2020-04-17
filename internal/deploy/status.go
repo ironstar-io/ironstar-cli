@@ -20,7 +20,7 @@ func Status(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	deployID, err := getDeployID(args, flg.Deploy)
+	deployID, err := services.GetDeployID(args, flg.Deploy)
 	if err != nil {
 		return err
 	}
