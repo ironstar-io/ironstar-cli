@@ -2,13 +2,11 @@ package pkg
 
 import (
 	"fmt"
-	"os"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/tarball"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -35,31 +33,14 @@ func Create(args []string, flg flags.Accumulator) error {
 		color.Green("Using login [" + creds.Login + "] for subscription <" + sub.Alias + ">")
 	}
 
-	wd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	err = tarball.NewTarGZ("./tmp/test1.tar.gz", wd, []string{".git", "tmp"})
+	tarpath, err := services.CreateProjectTar()
 	if err != nil {
 		return err
 	}
 
-	req := &api.Stream{
-		RunTokenRefresh:  true,
-		Credentials:      creds,
-		Method:           "POST",
-		FilePath:         "/Users/jcann/Downloads/temp1.tar.gz",
-		Path:             "/upload/subscription/" + sub.HashedID,
-		MapStringPayload: map[string]string{},
-	}
-
-	res, err := req.Send()
+	res, err := api.UploadPackage(creds, sub.HashedID, tarpath)
 	if err != nil {
-		return errors.Wrap(err, errs.APISubListErrorMsg)
-	}
-
-	if res.StatusCode != 200 {
-		return res.HandleFailure()
+		return err
 	}
 
 	if flg.Output == "json" {
@@ -82,7 +63,6 @@ func Create(args []string, flg flags.Accumulator) error {
 	fmt.Println()
 
 	fmt.Println("PACKAGE ID: " + ur.BuildID)
-	fmt.Println("PACKAGE NAME: " + ur.PackageName)
 
 	return nil
 }
