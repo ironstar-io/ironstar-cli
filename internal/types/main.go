@@ -79,3 +79,9 @@ type Environment struct {
 	Trigger        string `json:"trigger,omitempty" yaml:"trigger,omitempty"`
 	UpdateStrategy string `json:"update_strategy,omitempty" yaml:"update_strategy,omitempty"`
 }
+
+// UploadResponse
+type UploadResponse struct {
+	PackageName string `json:"packageName,omitempty" yaml:"packageName,omitempty"`
+	BuildID     string `json:"buildId,omitempty" yaml:"buildId,omitempty"`
+}

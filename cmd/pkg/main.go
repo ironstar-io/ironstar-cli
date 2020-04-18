@@ -9,7 +9,7 @@ var PackageCmd = &cobra.Command{
 	Use:   "package",
 	Short: "",
 	Long:  "",
-	Run:   list,
+	Run:   create,
 }
 
 // PkgCmd - `iron pkg`
@@ -18,5 +18,5 @@ var PkgCmd = &cobra.Command{
 	Use:    "pkg",
 	Short:  "",
 	Long:   "",
-	Run:    list,
+	Run:    create,
 }

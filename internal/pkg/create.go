@@ -2,17 +2,14 @@ package pkg
 
 import (
 	"fmt"
-	"os"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
-	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -36,11 +33,12 @@ func Create(args []string, flg flags.Accumulator) error {
 		color.Green("Using login [" + creds.Login + "] for subscription <" + sub.Alias + ">")
 	}
 
-	req := &api.Request{
+	req := &api.Stream{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
-		Method:           "GET",
-		Path:             "/subscription/" + sub.HashedID + "/builds",
+		Method:           "POST",
+		FilePath:         "/Users/jcann/Downloads/temp1.tar.gz",
+		Path:             "/upload/subscription/" + sub.HashedID,
 		MapStringPayload: map[string]string{},
 	}
 
@@ -62,36 +60,18 @@ func Create(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
-	var bs []types.Build
-	err = yaml.Unmarshal(res.Body, &bs)
+	var ur types.UploadResponse
+	err = yaml.Unmarshal(res.Body, &ur)
 	if err != nil {
 		return err
 	}
 
 	fmt.Println()
-	fmt.Println("Available Packages:")
+	color.Green("Package Successfully Created!")
+	fmt.Println()
 
-	var envRefs []string
-	bsRows := make([][]string, len(bs))
-	for _, b := range bs {
-		var runningIn string
-		if len(b.Deployment) > 0 {
-			for _, d := range b.Deployment {
-				if d != (types.Deployment{}) && d.Environment != (types.Environment{}) && d.AppStatus == "FINISHED" && !utils.StringSliceContains(envRefs, d.Environment.HashedID) {
-					runningIn = d.Environment.HashedID + " (" + d.Environment.Name + ")"
-					envRefs = append(envRefs, d.Environment.HashedID)
-				}
-			}
-		}
-
-		bsRows = append(bsRows, []string{b.CreatedAt.String(), b.HashedID, b.CreatedBy, runningIn})
-	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Date Created", "ID", "Created By", "Running In"})
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.AppendBulk(bsRows)
-	table.Render()
+	fmt.Println("PACKAGE ID: " + ur.BuildID)
+	fmt.Println("PACKAGE NAME: " + ur.PackageName)
 
 	return nil
 }
