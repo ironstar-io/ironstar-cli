@@ -89,7 +89,7 @@ func IronstarAPILogin(args []string, flg flags.Accumulator) error {
 	if err != nil {
 		return nil
 	}
-	if proj != (types.ProjectConfig{}) && proj.Subscription.Alias == "" {
+	if proj.Subscription != (types.Subscription{}) && proj.Subscription.Alias == "" {
 		fmt.Println()
 		color.Yellow("You have logged in successfully and can now link this project to an Ironstar subscription. Run `iron subscription list` to see a list of available subscriptions")
 	}

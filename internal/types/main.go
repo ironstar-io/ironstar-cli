@@ -22,8 +22,13 @@ type AuthResponseBody struct {
 }
 
 type ProjectConfig struct {
-	Version      string       `yaml:"version,omitempty"`
-	Subscription Subscription `yaml:"subscription,omitempty"`
+	Version      string        `yaml:"version,omitempty"`
+	Subscription Subscription  `yaml:"subscription,omitempty"`
+	Package      PackageConfig `yaml:"package,omitempty"`
+}
+
+type PackageConfig struct {
+	Exclude []string `yaml:"exclude,omitempty"`
 }
 
 // Subscription

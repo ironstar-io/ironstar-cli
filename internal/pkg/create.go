@@ -2,11 +2,13 @@ package pkg
 
 import (
 	"fmt"
+	"os"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/tarball"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -31,6 +33,15 @@ func Create(args []string, flg flags.Accumulator) error {
 
 	if flg.Output == "" {
 		color.Green("Using login [" + creds.Login + "] for subscription <" + sub.Alias + ">")
+	}
+
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	err = tarball.NewTarGZ("./tmp/test1.tar.gz", wd, []string{".git", "tmp"})
+	if err != nil {
+		return err
 	}
 
 	req := &api.Stream{

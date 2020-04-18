@@ -26,6 +26,9 @@ func InitializeIronstarProject() error {
 
 	projConf := types.ProjectConfig{
 		Version: "1",
+		Package: types.PackageConfig{
+			Exclude: []string{".git", ".ironstar"},
+		},
 	}
 
 	newMarhsalled, err := yaml.Marshal(projConf)
