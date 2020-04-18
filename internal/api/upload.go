@@ -8,7 +8,7 @@ import (
 )
 
 // UploadPackage - Create a project tarball in tmp
-func UploadPackage(creds types.Keylink, tarpath, subHash string) (*RawResponse, error) {
+func UploadPackage(creds types.Keylink, subHash, tarpath string) (*RawResponse, error) {
 	req := &Stream{
 		RunTokenRefresh:  true,
 		Credentials:      creds,

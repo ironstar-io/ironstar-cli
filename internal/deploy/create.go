@@ -44,11 +44,40 @@ func Create(args []string, flg flags.Accumulator) error {
 
 	var packageID string
 	if flg.Package == "" {
-		pi, err := services.StdinPrompt("Package ID: ")
-		if err != nil {
-			return errors.New("No package ID argument supplied")
+		createNew := services.ConfirmationPrompt("No package specified. Would you like to create one?", "y")
+		if createNew {
+			tarpath, err := services.CreateProjectTar()
+			if err != nil {
+				return err
+			}
+
+			res, err := api.UploadPackage(creds, sub.HashedID, tarpath)
+			if err != nil {
+				return err
+			}
+
+			var ur types.UploadResponse
+			err = yaml.Unmarshal(res.Body, &ur)
+			if err != nil {
+				return err
+			}
+
+			fmt.Println()
+			color.Green("Package Successfully Created!")
+			fmt.Println()
+
+			fmt.Println("PACKAGE ID: " + ur.BuildID)
+			fmt.Println()
+			color.Green("Continuing to deployment...")
+
+			packageID = ur.BuildID
+		} else {
+			pi, err := services.StdinPrompt("Package ID: ")
+			if err != nil {
+				return errors.New("No package ID argument supplied")
+			}
+			packageID = pi
 		}
-		packageID = pi
 	}
 
 	req := &api.Request{
