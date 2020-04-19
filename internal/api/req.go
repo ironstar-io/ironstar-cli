@@ -26,8 +26,7 @@ type Request struct {
 	BytePayload      []byte
 }
 
-// TODO - Change to real prod domain
-const IronstarProductionAPIDomain = "https://localhost:8080"
+const IronstarProductionAPIDomain = "https://api.ironstar.io"
 
 func GetBaseURL() string {
 	ipa := os.Getenv("IRONSTAR_API_ADDRESS")

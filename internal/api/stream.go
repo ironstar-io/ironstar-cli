@@ -24,8 +24,7 @@ type Stream struct {
 	BytePayload      []byte
 }
 
-// TODO - Change to real prod domain
-const IronstarUploadAPIDomain = "http://localhost:8000"
+const IronstarUploadAPIDomain = "https://uploads.ironstar.io"
 
 func GetBaseUploadURL() string {
 	ipa := os.Getenv("IRONSTAR_UPLOAD_API_ADDRESS")
