@@ -2,6 +2,7 @@ package deploy
 
 import (
 	"fmt"
+	"os"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
@@ -40,6 +41,8 @@ func Create(args []string, flg flags.Accumulator) error {
 			return errors.New("No environment ID argument supplied")
 		}
 		envID = ei
+	} else {
+		envID = flg.Environment
 	}
 
 	var packageID string
@@ -78,6 +81,12 @@ func Create(args []string, flg flags.Accumulator) error {
 			}
 			packageID = pi
 		}
+	} else {
+		if len(flg.Package) < 9 {
+			color.Red("The Package ID '%s' does not appear to be valid", flg.Package)
+			os.Exit(1)
+		}
+		packageID = flg.Package
 	}
 
 	req := &api.Request{
