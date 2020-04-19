@@ -33,7 +33,7 @@ func Create(args []string, flg flags.Accumulator) error {
 		color.Green("Using login [" + creds.Login + "] for subscription <" + sub.Alias + ">")
 	}
 
-	tarpath, err := services.CreateProjectTar()
+	tarpath, err := services.CreateProjectTar(flg.Exclude)
 	if err != nil {
 		return err
 	}

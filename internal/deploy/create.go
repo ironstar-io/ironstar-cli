@@ -46,7 +46,7 @@ func Create(args []string, flg flags.Accumulator) error {
 	if flg.Package == "" {
 		createNew := services.ConfirmationPrompt("No package specified. Would you like to create one?", "y")
 		if createNew {
-			tarpath, err := services.CreateProjectTar()
+			tarpath, err := services.CreateProjectTar(flg.Exclude)
 			if err != nil {
 				return err
 			}

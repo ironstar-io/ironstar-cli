@@ -1,6 +1,8 @@
 package services
 
 import (
+	"strings"
+
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/tarball"
 
@@ -8,15 +10,18 @@ import (
 )
 
 // CreateProjectTar - Create a project tarball in tmp
-func CreateProjectTar() (string, error) {
+func CreateProjectTar(exclFlag string) (string, error) {
 	pr := fs.ProjectRoot()
 	proj, err := ReadInProjectConfig(pr)
 	if err != nil {
 		return "", err
 	}
 
+	fsplit := strings.Split(exclFlag, ",")
+	excl := append(proj.Package.Exclude, fsplit...)
+
 	tarpath := "/tmp/" + uuid.NewV4().String() + ".tar.gz"
-	err = tarball.NewTarGZ(tarpath, pr, proj.Package.Exclude)
+	err = tarball.NewTarGZ(tarpath, pr, excl)
 	if err != nil {
 		return "", err
 	}
