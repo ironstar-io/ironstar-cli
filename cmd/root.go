@@ -79,7 +79,7 @@ func RootCmd() *cobra.Command {
 
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Subscription, "subscription", "s", "", "Use or filter by a specified subscription. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Environment, "environment", "e", "", "Use or filter by  specified environment. Not applicable on all commands.")
-	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Package, "package", "p", "", "Use or filter by  specified package. Not applicable on all commands.")
+	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Package, "package", "", "", "Use or filter by  specified package. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Deploy, "deploy", "d", "", "Use or filter by  specified deployment. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Exclude, "exclude", "", "", "A comma separated list of files/directories to exclude during packaging")
 
