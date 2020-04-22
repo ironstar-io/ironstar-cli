@@ -3,6 +3,7 @@ package deploy
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
@@ -62,7 +63,10 @@ func List(args []string, flg flags.Accumulator) error {
 
 	dsRows := make([][]string, len(ds))
 	for _, d := range ds {
-		dsRows = append(dsRows, []string{d.CreatedAt.String(), d.Environment.Name, d.Name, d.Build.Name, d.AppStatus, d.AdminSvcStatus})
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{d.CreatedAt.Format(time.RFC3339), d.Environment.Name, d.Name, d.Build.Name, d.AppStatus, d.AdminSvcStatus})
+		dsRows = append(row, dsRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

@@ -3,6 +3,7 @@ package pkg
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
@@ -73,7 +74,10 @@ func List(args []string, flg flags.Accumulator) error {
 			}
 		}
 
-		bsRows = append(bsRows, []string{b.CreatedAt.String(), b.Name, b.CreatedBy, runningIn})
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{b.CreatedAt.Format(time.RFC3339), b.Name, b.CreatedBy, runningIn})
+		bsRows = append(row, bsRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

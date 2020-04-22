@@ -2,6 +2,7 @@ package deploy
 
 import (
 	"fmt"
+	"time"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
@@ -66,7 +67,7 @@ func DisplayDeploymentInfo(creds types.Keylink, deployID string) error {
 	fmt.Println("PACKAGE: " + d.Build.Name)
 	fmt.Println("APPLICATION STATUS: " + d.AppStatus)
 	fmt.Println("ADMIN SERVICE STATUS: " + d.AdminSvcStatus)
-	fmt.Println("CREATED: " + d.CreatedAt.String())
+	fmt.Println("CREATED: " + d.CreatedAt.Format(time.RFC3339))
 
 	return nil
 }
