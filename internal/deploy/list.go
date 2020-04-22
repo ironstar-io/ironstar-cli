@@ -31,9 +31,7 @@ func List(args []string, flg flags.Accumulator) error {
 		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
 	}
 
-	if flg.Output == "" {
-		color.Green("Using login [" + creds.Login + "] for subscription " + sub.Alias + " (" + sub.HashedID + ")")
-	}
+	color.Green("Using login [" + creds.Login + "] for subscription " + sub.Alias + " (" + sub.HashedID + ")")
 
 	qs := services.BuildQSFilters(flg)
 	req := &api.Request{
@@ -51,15 +49,6 @@ func List(args []string, flg flags.Accumulator) error {
 
 	if res.StatusCode != 200 {
 		return res.HandleFailure()
-	}
-
-	if flg.Output == "json" {
-		err = services.OutputJSON(res.Body)
-		if err != nil {
-			return errors.Wrap(err, errs.APISubListErrorMsg)
-		}
-
-		return nil
 	}
 
 	var ds []types.Deployment

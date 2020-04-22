@@ -23,9 +23,7 @@ func List(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	if flg.Output == "" {
-		color.Green("Using login [" + creds.Login + "]")
-	}
+	color.Green("Using login [" + creds.Login + "]")
 
 	req := &api.Request{
 		RunTokenRefresh:  true,
@@ -42,15 +40,6 @@ func List(args []string, flg flags.Accumulator) error {
 
 	if res.StatusCode != 200 {
 		return res.HandleFailure()
-	}
-
-	if flg.Output == "json" {
-		err = services.OutputJSON(res.Body)
-		if err != nil {
-			return errors.Wrap(err, errs.APISubListErrorMsg)
-		}
-
-		return nil
 	}
 
 	var uar []types.UserAccessResponse

@@ -29,9 +29,7 @@ func Create(args []string, flg flags.Accumulator) error {
 		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
 	}
 
-	if flg.Output == "" {
-		color.Green("Using login [" + creds.Login + "] for subscription " + sub.Alias + " (" + sub.HashedID + ")")
-	}
+	color.Green("Using login [" + creds.Login + "] for subscription " + sub.Alias + " (" + sub.HashedID + ")")
 
 	var envID string
 	if flg.Environment == "" {
@@ -42,43 +40,9 @@ func Create(args []string, flg flags.Accumulator) error {
 		envID = ei
 	}
 
-	var packageID string
-	if flg.Package == "" {
-		createNew := services.ConfirmationPrompt("No package specified. Would you like to create one?", "y")
-		if createNew {
-			tarpath, err := services.CreateProjectTar(flg.Exclude)
-			if err != nil {
-				return err
-			}
-
-			res, err := api.UploadPackage(creds, sub.HashedID, tarpath)
-			if err != nil {
-				return err
-			}
-
-			var ur types.UploadResponse
-			err = yaml.Unmarshal(res.Body, &ur)
-			if err != nil {
-				return err
-			}
-
-			fmt.Println()
-			color.Green("Package Successfully Created!")
-			fmt.Println()
-
-			fmt.Println("PACKAGE ID: " + ur.BuildID)
-			fmt.Println("PACKAGE NAME: " + ur.BuildName)
-			fmt.Println()
-			color.Green("Continuing to deployment...")
-
-			packageID = ur.BuildID
-		} else {
-			pi, err := services.StdinPrompt("Package ID: ")
-			if err != nil {
-				return errors.New("No package ID argument supplied")
-			}
-			packageID = pi
-		}
+	packageID, err := determinePackageSelection(args, flg, creds, sub.HashedID)
+	if err != nil {
+		return err
 	}
 
 	req := &api.Request{
@@ -96,15 +60,6 @@ func Create(args []string, flg flags.Accumulator) error {
 
 	if res.StatusCode != 201 {
 		return res.HandleFailure()
-	}
-
-	if flg.Output == "json" {
-		err = services.OutputJSON(res.Body)
-		if err != nil {
-			return errors.Wrap(err, errs.APISubListErrorMsg)
-		}
-
-		return nil
 	}
 
 	var d types.Deployment
@@ -125,4 +80,48 @@ func Create(args []string, flg flags.Accumulator) error {
 	fmt.Println("CREATED: " + d.CreatedAt.String())
 
 	return nil
+}
+
+func determinePackageSelection(args []string, flg flags.Accumulator, creds types.Keylink, subHash string) (string, error) {
+	var empty string
+	if flg.Package != "" {
+		return flg.Package, nil
+	}
+
+	if len(args) != 0 {
+		return args[0], nil
+	}
+
+	createNew := services.ConfirmationPrompt("No package specified. Would you like to create one?", "y")
+	if createNew {
+		tarpath, err := services.CreateProjectTar(flg.Exclude)
+		if err != nil {
+			return empty, err
+		}
+
+		res, err := api.UploadPackage(creds, subHash, tarpath)
+		if err != nil {
+			return empty, err
+		}
+
+		var ur types.UploadResponse
+		err = yaml.Unmarshal(res.Body, &ur)
+		if err != nil {
+			return empty, err
+		}
+
+		fmt.Println("PACKAGE ID: " + ur.BuildID)
+		fmt.Println("PACKAGE NAME: " + ur.BuildName)
+		fmt.Println()
+		color.Green("Continuing to deployment...")
+
+		return ur.BuildID, nil
+	}
+
+	pi, err := services.StdinPrompt("Package ID: ")
+	if err != nil {
+		return empty, errors.New("No package idenitifer supplied")
+	}
+
+	return pi, nil
 }

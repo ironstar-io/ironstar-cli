@@ -25,9 +25,7 @@ func Status(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	if flg.Output == "" {
-		color.Green("Using login [" + creds.Login + "]")
-	}
+	color.Green("Using login [" + creds.Login + "]")
 
 	err = DisplayDeploymentInfo(creds, deployID)
 	if err != nil {

@@ -2,6 +2,7 @@ package api
 
 import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/console"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/pkg/errors"
@@ -9,6 +10,8 @@ import (
 
 // UploadPackage - Create a project tarball in tmp
 func UploadPackage(creds types.Keylink, subHash, tarpath string) (*RawResponse, error) {
+	wo := console.SpinStart("Uploading package file to Ironstar system")
+
 	req := &Stream{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
@@ -20,12 +23,16 @@ func UploadPackage(creds types.Keylink, subHash, tarpath string) (*RawResponse, 
 
 	res, err := req.Send()
 	if err != nil {
+		console.SpinPersist(wo, "⛔", "There was an error while uploading your package\n")
 		return nil, errors.Wrap(err, errs.APISubListErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
+		console.SpinPersist(wo, "⛔", "There was an error while uploading your package\n")
 		return nil, res.HandleFailure()
 	}
+
+	console.SpinPersist(wo, "💾", "Package upload completed successfully!\n")
 
 	return res, nil
 }

@@ -156,6 +156,4 @@ func (r *Request) RefreshToken() {
 
 	color.Yellow("Authentication token has been automatically refreshed")
 	fmt.Println()
-
-	return
 }
