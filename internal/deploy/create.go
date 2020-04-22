@@ -78,6 +78,8 @@ func Create(args []string, flg flags.Accumulator) error {
 	fmt.Println("APPLICATION STATUS: " + d.AppStatus)
 	fmt.Println("ADMIN SERVICE STATUS: " + d.AdminSvcStatus)
 	fmt.Println("CREATED: " + d.CreatedAt.String())
+	fmt.Println()
+	color.Green("You can now run 'iron deploy status " + d.Name + "' to check deployment status")
 
 	return nil
 }
