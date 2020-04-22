@@ -67,6 +67,7 @@ func Create(args []string, flg flags.Accumulator) error {
 			fmt.Println()
 
 			fmt.Println("PACKAGE ID: " + ur.BuildID)
+			fmt.Println("PACKAGE NAME: " + ur.BuildName)
 			fmt.Println()
 			color.Green("Continuing to deployment...")
 
@@ -115,10 +116,10 @@ func Create(args []string, flg flags.Accumulator) error {
 	fmt.Println()
 	color.Green("Completed successfully!")
 	fmt.Println()
-
-	fmt.Println("DEPLOYMENT ID: " + d.HashedID)
-	fmt.Println("PACKAGE ID: " + d.BuildID)
+	fmt.Println("DEPLOYMENT: " + d.Name)
+	fmt.Println()
 	fmt.Println("ENVIRONMENT: " + envID)
+	fmt.Println("PACKAGE ID: " + d.Build.Name)
 	fmt.Println("APPLICATION STATUS: " + d.AppStatus)
 	fmt.Println("ADMIN SERVICE STATUS: " + d.AdminSvcStatus)
 	fmt.Println("CREATED: " + d.CreatedAt.String())

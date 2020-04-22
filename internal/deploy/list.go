@@ -73,11 +73,11 @@ func List(args []string, flg flags.Accumulator) error {
 
 	dsRows := make([][]string, len(ds))
 	for _, d := range ds {
-		dsRows = append(dsRows, []string{d.CreatedAt.String(), d.HashedID, d.Environment.HashedID + " (" + d.Environment.Name + ")", d.BuildID, d.AppStatus, d.AdminSvcStatus})
+		dsRows = append(dsRows, []string{d.CreatedAt.String(), d.Environment.Name, d.Name, d.Build.Name, d.AppStatus, d.AdminSvcStatus})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Date Created", "Deployment ID", "Environment", "Build", "Application Status", "Admin Service Status"})
+	table.SetHeader([]string{"Date Created", "Environment", "Deployment", "Build", "Application Status", "Admin Service Status"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(dsRows)
 	table.Render()

@@ -52,8 +52,19 @@ type UserAccessResponse struct {
 }
 
 // Build
+type BuildFlat struct {
+	HashedID  string    `json:"build_id,omitempty" yaml:"build_id,omitempty"`
+	Name      string    `json:"name,omitempty" yaml:"name,omitempty"`
+	Status    string    `json:"status,omitempty" yaml:"status,omitempty"`
+	CreatedBy string    `json:"created_by,omitempty" yaml:"created_by,omitempty"`
+	RunningIn string    `json:"running_in,omitempty" yaml:"running_in,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+}
+
+// Build
 type Build struct {
 	HashedID   string       `json:"build_id,omitempty" yaml:"build_id,omitempty"`
+	Name       string       `json:"name,omitempty" yaml:"name,omitempty"`
 	Status     string       `json:"status,omitempty" yaml:"status,omitempty"`
 	CreatedBy  string       `json:"created_by,omitempty" yaml:"created_by,omitempty"`
 	RunningIn  string       `json:"running_in,omitempty" yaml:"running_in,omitempty"`
@@ -64,11 +75,13 @@ type Build struct {
 // Deployment
 type Deployment struct {
 	HashedID       string      `json:"deployment_id,omitempty" yaml:"deployment_id,omitempty"`
+	Name           string      `json:"name,omitempty" yaml:"name,omitempty"`
 	AppStatus      string      `json:"app_status,omitempty" yaml:"app_status,omitempty"`
 	AdminSvcStatus string      `json:"admin_svc_status,omitempty" yaml:"admin_svc_status,omitempty"`
 	BuildID        string      `json:"build_token,omitempty" yaml:"build_token,omitempty"`
 	CreatedAt      time.Time   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Environment    Environment `json:"environment,omitempty" yaml:"environment,omitempty"`
+	Build          BuildFlat   `json:"build,omitempty" yaml:"build,omitempty"`
 }
 
 // DeploymentActivityResponse
@@ -89,4 +102,5 @@ type Environment struct {
 type UploadResponse struct {
 	PackageName string `json:"packageName,omitempty" yaml:"packageName,omitempty"`
 	BuildID     string `json:"buildId,omitempty" yaml:"buildId,omitempty"`
+	BuildName   string `json:"buildName,omitempty" yaml:"buildName,omitempty"`
 }

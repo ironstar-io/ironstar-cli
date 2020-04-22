@@ -63,6 +63,7 @@ func Create(args []string, flg flags.Accumulator) error {
 	fmt.Println()
 
 	fmt.Println("PACKAGE ID: " + ur.BuildID)
+	fmt.Println("PACKAGE NAME: " + ur.BuildName)
 
 	return nil
 }

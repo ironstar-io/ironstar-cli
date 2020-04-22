@@ -84,11 +84,11 @@ func List(args []string, flg flags.Accumulator) error {
 			}
 		}
 
-		bsRows = append(bsRows, []string{b.CreatedAt.String(), b.HashedID, b.CreatedBy, runningIn})
+		bsRows = append(bsRows, []string{b.CreatedAt.String(), b.Name, b.CreatedBy, runningIn})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Date Created", "ID", "Created By", "Running In"})
+	table.SetHeader([]string{"Date Created", "Name", "Created By", "Running In"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(bsRows)
 	table.Render()

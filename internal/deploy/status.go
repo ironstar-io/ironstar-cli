@@ -62,9 +62,10 @@ func DisplayDeploymentInfo(creds types.Keylink, deployID string) error {
 	}
 
 	fmt.Println()
-	fmt.Println("DEPLOYMENT ID: " + d.HashedID)
-	fmt.Println("PACKAGE ID: " + d.BuildID)
+	fmt.Println("DEPLOYMENT: " + d.Name)
+	fmt.Println()
 	fmt.Println("ENVIRONMENT: " + d.Environment.Name)
+	fmt.Println("PACKAGE: " + d.Build.Name)
 	fmt.Println("APPLICATION STATUS: " + d.AppStatus)
 	fmt.Println("ADMIN SERVICE STATUS: " + d.AdminSvcStatus)
 	fmt.Println("CREATED: " + d.CreatedAt.String())
