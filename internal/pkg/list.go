@@ -68,7 +68,7 @@ func List(args []string, flg flags.Accumulator) error {
 		if len(b.Deployment) > 0 {
 			for _, d := range b.Deployment {
 				if d != (types.Deployment{}) && d.Environment != (types.Environment{}) && d.AppStatus == "FINISHED" && !utils.StringSliceContains(envRefs, d.Environment.HashedID) {
-					runningIn = d.Environment.HashedID + " (" + d.Environment.Name + ")"
+					runningIn = d.Environment.Name
 					envRefs = append(envRefs, d.Environment.HashedID)
 				}
 			}
