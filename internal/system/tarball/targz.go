@@ -3,6 +3,7 @@ package tarball
 import (
 	"archive/tar"
 	"compress/gzip"
+
 	// "errors"
 	"fmt"
 	"io"
@@ -55,12 +56,19 @@ func NewTarGZ(tarName string, path string, excludeFiles []string) (err error) {
 			return err
 		}
 
+		var link string
+		if finfo.Mode()&os.ModeSymlink == os.ModeSymlink {
+			if link, err = os.Readlink(file); err != nil {
+				return err
+			}
+		}
+
 		relFilePath, err := filepath.Rel(path, file)
 		if err != nil {
 			return err
 		}
 
-		// Don't include any files that should be excluded
+		// Don't include any files that are explicitly excluded by the user
 		for _, excl := range excludeFiles {
 			match, err := filepath.Match(excl, relFilePath)
 			if err != nil {
@@ -77,7 +85,7 @@ func NewTarGZ(tarName string, path string, excludeFiles []string) (err error) {
 		}
 
 		// fill in header info using func FileInfoHeader
-		hdr, err := tar.FileInfoHeader(finfo, finfo.Name())
+		hdr, err := tar.FileInfoHeader(finfo, link)
 		if err != nil {
 			return err
 		}
