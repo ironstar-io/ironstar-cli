@@ -27,7 +27,7 @@ func InitializeIronstarProject() error {
 	projConf := types.ProjectConfig{
 		Version: "1",
 		Package: types.PackageConfig{
-			Exclude: []string{".git", "private", "web/sites/default/files", "docroot/sites/default/files"},
+			Exclude: []string{".git", "private", "web/sites/default/files", "docroot/sites/default/files", "docroot/sites/default/settings.tok.php", "web/sites/default/settings.tok.php"},
 		},
 	}
 
