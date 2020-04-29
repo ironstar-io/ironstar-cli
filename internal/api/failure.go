@@ -37,16 +37,25 @@ func (err *APIError) Error() {
 var ErrIronstarAPICall = errors.New("Ironstar API call was unsuccessful!")
 
 func (res *RawResponse) HandleFailure() error {
-	f := &FailureBody{}
-	err := json.Unmarshal(res.Body, f)
-	if err != nil {
-		return err
-	}
+	var apiErr APIError
+	if res.StatusCode > 499 {
+		apiErr = APIError{
+			StatusCode:   res.StatusCode,
+			IronstarCode: "INTERNAL_SERVER_ERROR",
+			Message:      "An unexpected error occurred in the Ironstar API server.",
+		}
+	} else {
+		f := &FailureBody{}
+		err := json.Unmarshal(res.Body, f)
+		if err != nil {
+			return err
+		}
 
-	apiErr := &APIError{
-		StatusCode:   res.StatusCode,
-		IronstarCode: f.Code,
-		Message:      f.Message,
+		apiErr = APIError{
+			StatusCode:   res.StatusCode,
+			IronstarCode: f.Code,
+			Message:      f.Message,
+		}
 	}
 
 	apiErr.Error()
