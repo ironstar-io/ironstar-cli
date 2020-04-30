@@ -97,11 +97,10 @@ func MFAEnable(args []string, flg flags.Accumulator) error {
 
 	fmt.Println()
 	fmt.Println()
-	color.Green("MFA Recover Code:")
+	color.Green("MFA Recovery Code:")
 	fmt.Println(m.RecoveryCode)
 	fmt.Println()
 	color.Green("Successfully enabled MFA for this account!")
-	fmt.Println()
 
 	return nil
 }
