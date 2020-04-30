@@ -13,7 +13,6 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
-	// "github.com/fatih/color"
 	"github.com/fatih/color"
 	"github.com/pkg/errors"
 )

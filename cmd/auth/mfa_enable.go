@@ -13,7 +13,7 @@ import (
 
 // MFAEnableCmd - `tok auth mfa enable`
 var MFAEnableCmd = &cobra.Command{
-	Use:   "mfa enable",
+	Use:   "enable",
 	Short: "Enable MFA",
 	Long:  "Enable MFA for the currently logged in user",
 	Run: func(cmd *cobra.Command, args []string) {

@@ -2,10 +2,9 @@ package auth
 
 import (
 	"fmt"
-	"math"
-	"strconv"
-	"time"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 
@@ -13,33 +12,42 @@ import (
 	"github.com/pkg/errors"
 )
 
-func MFADisable(args []string) error {
-	email, err := services.GetCLIEmail(args)
+func MFADisable(args []string, flg flags.Accumulator) error {
+	creds, err := services.ResolveUserCredentials(flg.Login)
 	if err != nil {
-		return errors.Wrap(err, errs.SetCredentialsErrorMsg)
+		return err
 	}
 
-	c, err := services.UpdateActiveCredentials(email)
+	color.Yellow("Removing MFA for this account...")
+	fmt.Println()
+
+	passcode, err := services.GetCLIMFAPasscode()
 	if err != nil {
-		return errors.Wrap(err, errs.SetCredentialsErrorMsg)
+		return err
+	}
+
+	req := &api.Request{
+		RunTokenRefresh: true,
+		Credentials:     creds,
+		Method:          "POST",
+		Path:            "/auth/mfa/remove",
+		MapStringPayload: map[string]string{
+			"passcode": passcode,
+		},
+	}
+
+	res, err := req.Send()
+	if err != nil {
+		return errors.Wrap(err, errs.APISubListErrorMsg)
+	}
+
+	if res.StatusCode != 204 {
+		return res.HandleFailure()
 	}
 
 	fmt.Println()
-	color.Green("Ironstar API user now active!")
 	fmt.Println()
-	color.Green("User: ")
-	fmt.Println(email)
-
-	if c.Expiry.IsZero() {
-		// Should always return expiry, but check anyway for safety
-		return nil
-	}
-
-	fmt.Println()
-	color.Green("Expiry: ")
-
-	expDiff := strconv.Itoa(int(math.RoundToEven(c.Expiry.Sub(time.Now().UTC()).Hours() / 24)))
-	fmt.Println(c.Expiry.String() + " (" + expDiff + " days)")
+	color.Green("Successfully disabled MFA for this account")
 
 	return nil
 }
