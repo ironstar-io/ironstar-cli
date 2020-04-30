@@ -70,7 +70,7 @@ func List(args []string, flg flags.Accumulator) error {
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Date Created", "Environment", "Deployment", "Build", "Application Status", "Admin Service Status"})
+	table.SetHeader([]string{"Date Created", "Environment", "Deployment", "Package", "Application Status", "Admin Service Status"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(dsRows)
 	table.Render()

@@ -11,6 +11,10 @@ const (
 
 	APILoginErrorMsg = "Ironstar API authentication failed"
 
+	APIMFAEnrolErrorMsg = "Ironstar API MFA enrol failed"
+
+	APIMFAVerifyErrorMsg = "Ironstar API MFA verification failed"
+
 	SetCredentialsErrorMsg = "Unable to set credentials"
 
 	GetCredentialsErrorMsg = "Unable to get credentials"
