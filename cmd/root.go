@@ -34,6 +34,8 @@ func init() {
 	rootCmd.AddCommand(auth.AuthCmd)
 	auth.AuthCmd.AddCommand(auth.ShowCmd)
 	auth.AuthCmd.AddCommand(auth.SetActiveCmd)
+	auth.AuthCmd.AddCommand(auth.MFAEnableCmd)
+	auth.AuthCmd.AddCommand(auth.MFADisableCmd)
 
 	// `iron subscription x`
 	rootCmd.AddCommand(subscription.SubscriptionCmd)

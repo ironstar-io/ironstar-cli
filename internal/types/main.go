@@ -31,6 +31,14 @@ type PackageConfig struct {
 	Exclude []string `yaml:"exclude,omitempty"`
 }
 
+type MFAEnrolResponse struct {
+	QRCode       string    `json:"qr_code,omitempty"`
+	IDToken      string    `json:"id_token"`
+	Secret       string    `json:"secret"`
+	RecoveryCode string    `json:"recovery_code"`
+	Expiry       time.Time `json:"expiry"`
+}
+
 // Subscription
 type Subscription struct {
 	HashedID        string `json:"subscription_id,omitempty" yaml:"subscription_id,omitempty" example:"98hreHs"`

@@ -106,7 +106,7 @@ func mfaCredentialCheck(body []byte, email string) (*types.AuthResponseBody, err
 
 	// If this is set, user is an MFA user
 	if b.RedirectEndpoint != "" {
-		c, err := validateMFAPasscode(b)
+		c, err := validateMFAPasscode(b.IDToken)
 		if err != nil {
 			return nil, err
 		}
@@ -117,7 +117,21 @@ func mfaCredentialCheck(body []byte, email string) (*types.AuthResponseBody, err
 	return b, nil
 }
 
-func validateMFAPasscode(logResBody *types.AuthResponseBody) (*types.AuthResponseBody, error) {
+func validateMFAPasscodeWithRetries(MFAAuthToken string) (*types.AuthResponseBody, error) {
+	maxRetries := 3
+	for i := 0; i < maxRetries; i++ {
+		c, err := validateMFAPasscode(MFAAuthToken)
+		if err != nil {
+			continue
+		}
+
+		return c, nil
+	}
+
+	return nil, errors.New("Unable to verify your MFA passcode. Code: FTevOS")
+}
+
+func validateMFAPasscode(MFAAuthToken string) (*types.AuthResponseBody, error) {
 	passcode, err := services.GetCLIMFAPasscode()
 	if err != nil {
 		return nil, err
@@ -126,7 +140,7 @@ func validateMFAPasscode(logResBody *types.AuthResponseBody) (*types.AuthRespons
 	req := &api.Request{
 		RunTokenRefresh: false,
 		Credentials: types.Keylink{
-			AuthToken: logResBody.IDToken,
+			AuthToken: MFAAuthToken,
 		},
 		Method: "POST",
 		Path:   "/auth/mfa/validate",
