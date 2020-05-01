@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 
@@ -29,7 +30,7 @@ func IronstarShowCredentials(args []string) error {
 	acreds := make([][]string, len(credSet.Keychain))
 
 	for _, v := range credSet.Keychain {
-		acreds = append(acreds, []string{v.Login, v.Expiry.String()})
+		acreds = append(acreds, []string{v.Login, v.Expiry.Format(time.RFC3339)})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
