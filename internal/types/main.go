@@ -17,7 +17,8 @@ type Credentials struct {
 
 type AuthResponseBody struct {
 	IDToken          string    `json:"id_token"`
-	RedirectEndpoint string    `json:"redirect_endpoint"` // If this is set, user is MFA registered
+	RedirectEndpoint string    `json:"redirect_endpoint"`
+	MFAStatus        string    `json:"mfa_status"` // If this is set, user is MFA registered
 	Expiry           time.Time `json:"expiry"`
 }
 
