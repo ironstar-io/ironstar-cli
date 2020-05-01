@@ -28,28 +28,12 @@ func IronstarAPILogin(args []string, flg flags.Accumulator) error {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
 
-	req := &api.Request{
-		RunTokenRefresh: false,
-		Credentials:     types.Keylink{},
-		Method:          "POST",
-		Path:            "/auth/login",
-		MapStringPayload: map[string]string{
-			"email":    email,
-			"password": password,
-			"expiry":   time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
-		},
-	}
-
-	res, err := req.Send()
+	res, err := postLogin(email, password)
 	if err != nil {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
 
-	if res.StatusCode != 200 {
-		return res.HandleFailure()
-	}
-
-	c, err := mfaCredentialCheck(res.Body, email)
+	c, err := redirectChecks(res.Body, email)
 	if err != nil {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
@@ -97,21 +81,87 @@ func IronstarAPILogin(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func mfaCredentialCheck(body []byte, email string) (*types.AuthResponseBody, error) {
+func postLogin(email, password string) (*api.RawResponse, error) {
+	req := &api.Request{
+		RunTokenRefresh: false,
+		Credentials:     types.Keylink{},
+		Method:          "POST",
+		Path:            "/auth/login",
+		MapStringPayload: map[string]string{
+			"email":    email,
+			"password": password,
+			"expiry":   time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
+		},
+	}
+
+	res, err := req.Send()
+	if err != nil {
+		return nil, errors.Wrap(err, errs.APILoginErrorMsg)
+	}
+
+	if res.StatusCode != 200 {
+		return nil, res.HandleFailure()
+	}
+
+	return res, nil
+}
+
+func redirectChecks(body []byte, email string) (*types.AuthResponseBody, error) {
 	b := &types.AuthResponseBody{}
 	err := json.Unmarshal(body, b)
 	if err != nil {
 		return nil, err
 	}
 
-	// If this is set, user is an MFA user
-	if b.RedirectEndpoint != "" {
-		c, err := validateMFAPasscode(b.IDToken)
-		if err != nil {
-			return nil, err
-		}
+	switch b.RedirectEndpoint {
+	case "/auth/password-reset":
+		return resetUserPassword(email, b.IDToken)
+	case "/auth/mfa/validate":
+		return validateMFAPasscode(b.IDToken)
+	}
 
-		return c, nil
+	return b, nil
+}
+
+func resetUserPassword(email, PWResetAuthToken string) (*types.AuthResponseBody, error) {
+	color.Yellow("Your password has expired! Please provide a new password.")
+	fmt.Println()
+
+	password, err := services.GetCLIPassword("")
+	if err != nil {
+		return nil, err
+	}
+
+	req := &api.Request{
+		RunTokenRefresh: false,
+		Credentials: types.Keylink{
+			AuthToken: PWResetAuthToken,
+		},
+		Method: "POST",
+		Path:   "/auth/password-reset",
+		MapStringPayload: map[string]string{
+			"password": password,
+		},
+	}
+
+	res, err := req.Send()
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != 204 {
+		return nil, res.HandleFailure()
+	}
+
+	lres, err := postLogin(email, password)
+	if err != nil {
+		return nil, errors.Wrap(err, errs.APILoginErrorMsg)
+	}
+
+	b := &types.AuthResponseBody{}
+	err = json.Unmarshal(lres.Body, b)
+	if err != nil {
+		return nil, err
 	}
 
 	return b, nil
