@@ -203,12 +203,12 @@ func resetUserPassword(email, PWResetAuthToken, mfaStatus string) (*types.AuthRe
 		return nil, err
 	}
 
-	vres, err := postMFAValidate(b.IDToken, passcode)
-	if err != nil {
-		return nil, err
-	}
-
 	if b.MFAStatus == "ENABLED" {
+		vres, err := postMFAValidate(b.IDToken, passcode)
+		if err != nil {
+			return nil, err
+		}
+
 		v := &types.AuthResponseBody{}
 		err = json.Unmarshal(vres.Body, v)
 		if err != nil {
