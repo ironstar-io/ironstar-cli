@@ -1,8 +1,11 @@
 package version
 
 import (
+	"encoding/json"
 	"fmt"
 	"runtime"
+
+	"gitlab.com/ironstar-io/ironstar-cli/internal/services/github"
 )
 
 var (
@@ -34,4 +37,20 @@ func Get() Info {
 		Compiler:  runtime.Compiler,
 		Platform:  fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
 	}
+}
+
+// GetLatest - Hit the GH API to retrieve the latest Ironstar CLI version
+func GetLatest() (*github.ReleaseBody, error) {
+	ghr := github.ReleaseBody{}
+	body, err := github.GetLatestRelease()
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(body, &ghr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ghr, nil
 }
