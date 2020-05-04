@@ -2,66 +2,64 @@ package version
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version/goos"
 
 	"github.com/blang/semver"
+	"github.com/fatih/color"
+	"github.com/pkg/errors"
 )
 
 // Upgrade - Check if update available and auto-upgrade the user
-func Upgrade() {
-	v := Get().Version
-	cv := strings.Replace(v, "v", "", 0)
-	cs, err := semver.Parse(cv)
+func Upgrade() error {
+	// v := Get().Version
+	// cv := strings.Replace(v, "v", "", -1)
+	cs, err := semver.Parse("0.4.0")
 	if err != nil {
-		fmt.Println("Ironstar CLI was unable to correctly parse the current version: ", err.Error())
-		os.Exit(1)
+		return errors.Wrap(err, "Unable to correctly parse the current version")
 	}
 
 	ls, err := GetLatest()
 	if err != nil {
-		fmt.Println("Ironstar CLI was unable to reach GitHub to determine the latest version: ", err.Error())
-		os.Exit(1)
+		return errors.Wrap(err, "Unable to reach GitHub to determine the latest version")
 	}
 
-	lv, _ := semver.Parse(ls.TagName)
+	lv, _ := semver.Parse(strings.Replace(ls.TagName, "v", "", -1))
 	if err != nil {
-		fmt.Println("Ironstar CLI was unable to correctly parse the latest version: ", err.Error())
-		os.Exit(1)
+		return errors.Wrap(err, "Unable to correctly parse the latest version")
 	}
+	fmt.Println(cs)
 
 	// Checks if the latest version is Greater Than the current version
-	if lv.GT(cs) == true {
+	if lv.GT(cs) {
 		confirmUpgrade := services.ConfirmationPrompt("This will upgrade your Ironstar CLI version to latest ("+lv.String()+").\n\nAre you sure?", "y")
-		if confirmUpgrade == false {
+		if !confirmUpgrade {
 			fmt.Println("Exiting...")
-			return
+			return nil
 		}
 
 		ip := GetInstallPath(lv.String())
 		// Empty string if not installed, in which case, download and symlink
 		if ip == "" {
 			// Download latest release from GH
-			p, err := DownloadAndInstall(lv.String())
+			_, err := DownloadAndInstall(lv.String())
 			if err != nil {
-				fmt.Println("Ironstar CLI wasn't able to upgrade you to the latest version: ", err.Error())
-				os.Exit(1)
+				return errors.Wrap(err, "Ironstar CLI wasn't able to upgrade you to the latest version")
 			}
-
-			ip = p
 		}
 
 		// Latest version is installed, just not active. Create a Symlink to finish
 		goos.ActivateSavedVersion(lv.String())
 
 		fmt.Println()
-		fmt.Println("Successfully upgraded the Ironstar CLI to the latest version (" + lv.String() + ")")
+		color.Green("Successfully upgraded the Ironstar CLI to the latest version (" + lv.String() + ")")
 
-		return
+		return nil
 	}
 
-	fmt.Println("No updates available to the Ironstar CLI at this time. Version " + lv.String() + " is the latest available.")
+	color.Green("No updates available to the Ironstar CLI at this time. Version " + lv.String() + " is the latest available.")
+
+	return nil
 }

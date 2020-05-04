@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ShowCmd - `tok auth show`
+// ShowCmd - `iron auth show`
 var ShowCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Show available credentials",

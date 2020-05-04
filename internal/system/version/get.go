@@ -42,12 +42,12 @@ func Get() Info {
 // GetLatest - Hit the GH API to retrieve the latest Ironstar CLI version
 func GetLatest() (*github.ReleaseBody, error) {
 	ghr := github.ReleaseBody{}
-	body, err := github.GetLatestRelease()
+	res, err := github.GetLatestRelease()
 	if err != nil {
 		return nil, err
 	}
 
-	err = json.Unmarshal(body, &ghr)
+	err = json.Unmarshal(res.Body, &ghr)
 	if err != nil {
 		return nil, err
 	}

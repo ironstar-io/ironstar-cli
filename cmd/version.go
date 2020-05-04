@@ -6,18 +6,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// VersionCmd - `tok version`
+// VersionCmd - `iron version`
 var VersionCmd = &cobra.Command{
 	Use:   "version [version]",
-	Short: "Print Tokdaido version information",
-	Long:  "Print Tokdaido version information including 'Build Date', 'Compiler' and 'Platform'",
+	Short: "Print Ironstar CLI version information",
+	Long:  "Print Ironstar CLI version information including 'Build Date', 'Compiler' and 'Platform'",
 	Run: func(cmd *cobra.Command, args []string) {
 		version.Display()
-		// if len(args) == 0 || args[0] == "" {
-
-		// 	return
-		// }
-
-		// version.Select(args[0])
 	},
 }

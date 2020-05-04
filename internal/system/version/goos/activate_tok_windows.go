@@ -7,24 +7,23 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 )
 
 // ActivateSavedVersion - Copies the specified version (which may be downloaded previously) into /usr/local/bin on macOS
 func ActivateSavedVersion(version string) bool {
-	// activePath is where the currently active version of Ironstar CLI is found, such as /c/Users/Frank/bin/tok
-	activePath := filepath.Join(fs.HomeDir(), "bin", "tok")
+	// activePath is where the currently active version of Ironstar CLI is found, such as /c/Users/Frank/bin/iron
+	activePath := filepath.Join(fs.HomeDir(), "bin", "iron")
 
 	// TODO
-	// savePath is where to save the Ironstar CLI binary, such as /c/Users/Frank/AppData/Local/Ironstar/Tokaido/{version}/tok
+	// savePath is where to save the Ironstar CLI binary, such as /c/Users/Frank/AppData/Local/Ironstar/CLI/{version}/iron
 	savePath := filepath.Join(fs.HomeDir(), constants.BaseInstallPathWindows, version)
 
 	// Check if the requested version is not downloaded already
-	p := filepath.Join(savePath, "tok")
+	p := filepath.Join(savePath, "iron")
 	if fs.CheckExists(p) != true {
-		utils.DebugString("Ironstar CLI version [" + version + "] was not found at [" + p + "], downloading a new copy...")
+		fmt.Println("Ironstar CLI version [" + version + "] was not found at [" + p + "], downloading a new copy...")
 
-		_, err := DownloadTokBinary(version)
+		_, err := DownloadCLIBinary(version)
 		if err != nil {
 			fmt.Println("Unexpected error downloading that version: " + err.Error())
 			os.Exit(1)
@@ -32,17 +31,17 @@ func ActivateSavedVersion(version string) bool {
 	}
 
 	// Remove any existing global binary
-	utils.DebugString("removing any existing Ironstar CLI version at [" + activePath + "]")
+	fmt.Println("removing any existing Ironstar CLI version at [" + activePath + "]")
 	err := os.Remove(activePath)
 	if err != nil {
-		utils.DebugErrOutput(err)
+		fmt.Println(err)
 	}
 
 	// TODO
-	// Remove any existing copy of Ironstar CLI at ~/bin/tok
+	// Remove any existing copy of Ironstar CLI at ~/bin/iron
 	fs.Remove(activePath)
 
-	// Copy the specified version to ~/bin/tok
+	// Copy the specified version to ~/bin/iron
 	fs.Copy(p, activePath)
 
 	// Make sure the version is executable

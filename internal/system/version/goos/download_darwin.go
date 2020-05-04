@@ -11,9 +11,9 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 )
 
-// GetInstallPath - Check if tok version is installed or not
+// GetInstallPath - Check if Ironstar CLI version is installed or not
 func GetInstallPath(version string) string {
-	p := filepath.Join(fs.HomeDir(), constants.BaseInstallPathDarwin, version, "tok")
+	p := filepath.Join(fs.HomeDir(), constants.BaseInstallPathDarwin, version, "iron")
 	if fs.CheckExists(p) == true {
 		return p
 	}
@@ -21,10 +21,10 @@ func GetInstallPath(version string) string {
 	return ""
 }
 
-// DownloadTokBinary - Install a selected tok version and returns install path
-func DownloadTokBinary(version string) (string, error) {
+// DownloadCLIBinary - Install a selected Ironstar CLI version and returns install path
+func DownloadCLIBinary(version string) (string, error) {
 	p := filepath.Join(fs.HomeDir(), constants.BaseInstallPathDarwin, version)
-	b := filepath.Join(p, "tok")
+	b := filepath.Join(p, "iron")
 
 	err := os.MkdirAll(p, os.ModePerm)
 	if err != nil {

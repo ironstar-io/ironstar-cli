@@ -12,21 +12,21 @@ import (
 // ActivateSavedVersion - Copies the specified version (which may be downloaded previously) into /usr/local/bin on macOS
 func ActivateSavedVersion(version string) bool {
 	// Check that the version is downloaded already
-	p := filepath.Join(fs.HomeDir(), constants.BaseInstallPathDarwin, version, "tok")
+	p := filepath.Join(fs.HomeDir(), constants.BaseInstallPathDarwin, version, "iron")
 	if fs.CheckExists(p) != true {
-		fmt.Println("Ironstar CLI version [" + version + "] was not found in ~/.tok/bin, downloading a new copy...")
+		fmt.Println("Ironstar CLI version [" + version + "] was not found in ~/.ironstar/bin, downloading a new copy...")
 
-		_, err := DownloadTokBinary(version)
+		_, err := DownloadCLIBinary(version)
 		if err != nil {
 			fmt.Println("Unexpected error downloading that version: " + err.Error())
 			os.Exit(1)
 		}
 	}
 
-	// Remove any existing copy of Ironstar CLI at /usr/local/bin/tok
+	// Remove any existing copy of Ironstar CLI at /usr/local/bin/iron
 	fs.Remove(constants.ActiveBinaryPathDarwin)
 
-	// Copy the specified version to /usr/local/bin/tok
+	// Copy the specified version to /usr/local/bin/iron
 	fs.Copy(p, constants.ActiveBinaryPathDarwin)
 
 	// Make sure the version is executable

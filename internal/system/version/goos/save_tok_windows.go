@@ -7,15 +7,14 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 )
 
-// SaveTokBinary - Saves the running instance of the Ironstar CLI binary to a persistent path in the user's bin folder
-func SaveTokBinary(version string) (string, error) {
+// SaveCLIBinary - Saves the running instance of the Ironstar CLI binary to a persistent path in the user's bin folder
+func SaveCLIBinary(version string) (string, error) {
 	p := filepath.Join(fs.HomeDir(), constants.BaseInstallPathWindows, version)
-	b := filepath.Join(p, "tok")
+	b := filepath.Join(p, "iron")
 
-	utils.DebugString("Saving the running Ironstar CLI version [" + version + "] to [" + p + "]")
+	fmt.Println("Saving the running Ironstar CLI version [" + version + "] to [" + p + "]")
 
 	err := os.MkdirAll(p, os.ModePerm)
 	if err != nil {

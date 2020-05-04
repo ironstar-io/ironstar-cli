@@ -10,7 +10,7 @@ import (
 func HomeDir() string {
 	usr, err := user.Current()
 	if err != nil {
-		fmt.Printf("Tokaido encountered a fatal error and had to stop")
+		fmt.Printf("Ironstar CLI encountered a fatal error and had to stop")
 		log.Fatal(err)
 	}
 

@@ -31,7 +31,7 @@ func MFAEnable(args []string, flg flags.Accumulator) error {
 		MapStringPayload: map[string]string{},
 	}
 
-	res, err := req.Send()
+	res, err := req.NankaiSend()
 	if err != nil {
 		return errors.Wrap(err, errs.APISubListErrorMsg)
 	}

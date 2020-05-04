@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// SetActiveCmd - `tok auth set-active [email]`
+// SetActiveCmd - `iron auth set-active [email]`
 var SetActiveCmd = &cobra.Command{
 	Use:   "set-active [email]",
 	Short: "Set credential as active",

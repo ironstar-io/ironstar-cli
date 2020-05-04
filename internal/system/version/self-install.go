@@ -27,7 +27,7 @@ func SelfInstall(forceInstall bool) {
 		return
 	}
 
-	_, err := exec.LookPath("tok")
+	_, err := exec.LookPath("iron")
 	if err != nil {
 		// Ironstar CLI not in PATH, confirm install of current bin
 		confirmUpgrade := services.ConfirmationPrompt("It looks like this is your first time running Ironstar CLI.\n\nWould you like to install it now", "y")
@@ -43,7 +43,7 @@ func SelfInstall(forceInstall bool) {
 
 	// Ironstar CLI already in PATH, display help message and exit
 	// TODO
-	fmt.Println("For help with Ironstar CLI run `tok help` or take a look at our documentation at https://docs.ironstar-cli.io")
+	fmt.Println("For help with Ironstar CLI run `iron help` or take a look at our documentation at https://docs.ironstar-cli.io")
 }
 
 // installRunningBin - Install runing Ironstar CLI binary to the global install path
@@ -62,7 +62,7 @@ func installRunningBin() {
 	// Empty string if not installed, in which case, save it
 	if ip == "" {
 		fmt.Println("This Ironstar CLI version (" + bv + ") is not installed")
-		p, err := goos.SaveTokBinary(bv)
+		p, err := goos.SaveCLIBinary(bv)
 		if err != nil {
 			fmt.Println("Ironstar CLI wasn't able to install this version correctly: ", err.Error())
 			os.Exit(1)
@@ -77,5 +77,5 @@ func installRunningBin() {
 	goos.ActivateSavedVersion(bv)
 
 	fmt.Println()
-	fmt.Println("Success! Ironstar CLI version " + bv + " should now be avaliable as 'tok'")
+	fmt.Println("Success! Ironstar CLI version " + bv + " should now be avaliable as 'iron'")
 }

@@ -3,58 +3,56 @@ package version
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 
+	"github.com/pkg/errors"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services/github"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version/goos"
 )
 
-// GetInstallPath - Check if tok version is installed or not
+// GetInstallPath - Check if Ironstar CLI version is installed or not
 func GetInstallPath(version string) string {
 	return goos.GetInstallPath(version)
 }
 
-// DownloadAndInstall - Download and install a selected tok version
+// DownloadAndInstall - Download and install a selected Ironstar CLI version
 func DownloadAndInstall(version string) (string, error) {
-	releaseTag := GetReleaseTagFromVersion(version)
-	return goos.DownloadTokBinary(releaseTag)
+	releaseTag, err := GetReleaseTagFromVersion(version)
+	if err != nil {
+		return "", err
+	}
+
+	return goos.DownloadCLIBinary(releaseTag)
 }
 
 // GetReleaseTagFromVersion returns a githab-ready release tag from a Ironstar CLI version string
-func GetReleaseTagFromVersion(version string) (releaseTag string) {
+func GetReleaseTagFromVersion(version string) (string, error) {
+	var empty string
 	// Check version exists in GH
 	// Get the URL for the version
 	ghr := []github.ReleaseBody{}
-	body, err := github.GetAllReleases()
+	res, err := github.GetAllReleases()
 	if err != nil {
-		fmt.Println("Unexpected error retrieving list of available Ironstar CLI releases: " + err.Error())
-		os.Exit(1)
+		return empty, errors.Wrap(err, "Unexpected error retrieving list of available Ironstar CLI releases:")
 	}
 
-	err = json.Unmarshal(body, &ghr)
+	err = json.Unmarshal(res.Body, &ghr)
 	if err != nil {
-		fmt.Println("Unexpected error assembling list of available Ironstar CLI releases: " + err.Error())
-		os.Exit(1)
+		return empty, errors.Wrap(err, "Unexpected error assembling list of available Ironstar CLI releases")
 	}
 
 	for _, r := range ghr {
-		if r.TagName == version {
-			if r.Draft == true {
+		if r.TagName == "v"+version {
+			if r.Draft {
 				fmt.Println("\nWarning: The selected version is a draft and may not work as intended")
 			}
 
-			if r.Prerelease == true {
+			if r.Prerelease {
 				fmt.Println("\nWarning: The selected version is a prerelease and may not work as intended")
 			}
 
-			releaseTag = r.TagName
+			return r.TagName, nil
 		}
 	}
 
-	if releaseTag == "" {
-		fmt.Println("There is no release information available for version [" + version + "]")
-		os.Exit(1)
-	}
-
-	return releaseTag
+	return empty, errors.New("There is no release information available for version [" + version + "]")
 }

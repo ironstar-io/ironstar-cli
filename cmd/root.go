@@ -27,6 +27,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.AddCommand(VersionCmd)
+	rootCmd.AddCommand(UpgradeCmd)
 	rootCmd.AddCommand(LoginCmd)
 	rootCmd.AddCommand(InitCmd)
 

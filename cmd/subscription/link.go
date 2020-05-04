@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// LinkCmd - `tok subscription link [subscription]`
+// LinkCmd - `iron subscription link [subscription]`
 var LinkCmd = &cobra.Command{
 	Use:   "link [subscription]",
 	Short: "Link your project to a subscription",

@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// LoginCmd - `tok auth login`
+// LoginCmd - `iron auth login`
 var LoginCmd = &cobra.Command{
 	Use:   "login [email]",
 	Short: "Authenticate for the Ironstar API",

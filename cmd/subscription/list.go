@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ListCmd - `tok subscription list`
+// ListCmd - `iron subscription list`
 var ListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List available subscriptions",

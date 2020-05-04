@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// AuthCmd - `tok auth`
+// AuthCmd - `iron auth`
 var AuthCmd = &cobra.Command{
 	Use:   "auth",
 	Short: "",
@@ -16,7 +16,7 @@ var AuthCmd = &cobra.Command{
 	},
 }
 
-// MFACmd - `tok auth mfa`
+// MFACmd - `iron auth mfa`
 var MFACmd = &cobra.Command{
 	Use:   "mfa",
 	Short: "",

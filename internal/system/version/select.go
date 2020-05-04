@@ -5,12 +5,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/blang/semver"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version/goos"
+
+	"github.com/blang/semver"
 )
 
-const minimumTokVersion = "1.12.0"
+const minimumCLIVersion = "0.4.0"
 
 // Select - Change the users' Ironstar CLI version to their selection
 func Select(selection string) {
@@ -30,10 +31,10 @@ func Select(selection string) {
 		return
 	}
 
-	mv, _ := semver.Parse(minimumTokVersion)
+	mv, _ := semver.Parse(minimumCLIVersion)
 	// Checks if the selected version is Lesser Than the minimum version
 	if sv.LT(mv) == true {
-		fmt.Println("Selected version (" + sv.String() + ") is less than the minimum allowed version (" + minimumTokVersion + "). Exiting...")
+		fmt.Println("Selected version (" + sv.String() + ") is less than the minimum allowed version (" + minimumCLIVersion + "). Exiting...")
 		return
 	}
 

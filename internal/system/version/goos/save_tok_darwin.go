@@ -9,12 +9,11 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 )
 
-// SaveTokBinary - Saves the running instance of the Ironstar CLI binary to a persistent path in the user's tok/bin folder
-func SaveTokBinary(version string) (string, error) {
+// SaveCLIBinary - Saves the running instance of the Ironstar CLI binary to a persistent path in the user's /usr/bin folder
+func SaveCLIBinary(version string) (string, error) {
 	p := filepath.Join(fs.HomeDir(), constants.BaseInstallPathDarwin, version)
-	b := filepath.Join(p, "tok")
+	b := filepath.Join(p, "iron")
 
-	// TODO
 	fmt.Println("Saving the running Ironstar CLI version [" + version + "] to [" + b + "]")
 
 	err := os.MkdirAll(p, os.ModePerm)
