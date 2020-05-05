@@ -7,19 +7,20 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
+
+	"github.com/pkg/errors"
 )
 
 // ActivateSavedVersion - Copies the specified version (which may be downloaded previously) into /usr/local/bin on macOS
-func ActivateSavedVersion(version string) bool {
+func ActivateSavedVersion(version string) (bool, error) {
 	// Check that the version is downloaded already
 	p := filepath.Join(fs.HomeDir(), constants.BaseInstallPathDarwin, version, "iron")
-	if fs.CheckExists(p) != true {
+	if !fs.CheckExists(p) {
 		fmt.Println("Ironstar CLI version [" + version + "] was not found in ~/.ironstar/bin, downloading a new copy...")
 
 		_, err := DownloadCLIBinary(version)
 		if err != nil {
-			fmt.Println("Unexpected error downloading that version: " + err.Error())
-			os.Exit(1)
+			return false, errors.Wrap(err, "Unexpected error downloading that version")
 		}
 	}
 
@@ -32,9 +33,8 @@ func ActivateSavedVersion(version string) bool {
 	// Make sure the version is executable
 	err := os.Chmod(constants.ActiveBinaryPathDarwin, 0777)
 	if err != nil {
-		fmt.Println("Unexpected error granting execute permissions to [" + constants.ActiveBinaryPathDarwin + "]: " + err.Error())
-		os.Exit(1)
+		return false, errors.Wrap(err, "Unexpected error granting execute permissions to ["+constants.ActiveBinaryPathDarwin+"]")
 	}
 
-	return true
+	return true, nil
 }

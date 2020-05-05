@@ -14,7 +14,6 @@ func ActivateSavedVersion(version string) bool {
 	// activePath is where the currently active version of Ironstar CLI is found, such as /c/Users/Frank/bin/iron
 	activePath := filepath.Join(fs.HomeDir(), "bin", "iron")
 
-	// TODO
 	// savePath is where to save the Ironstar CLI binary, such as /c/Users/Frank/AppData/Local/Ironstar/CLI/{version}/iron
 	savePath := filepath.Join(fs.HomeDir(), constants.BaseInstallPathWindows, version)
 
@@ -25,8 +24,7 @@ func ActivateSavedVersion(version string) bool {
 
 		_, err := DownloadCLIBinary(version)
 		if err != nil {
-			fmt.Println("Unexpected error downloading that version: " + err.Error())
-			os.Exit(1)
+			return false, errors.Wrap(err, "Unexpected error downloading that version")
 		}
 	}
 
@@ -37,7 +35,6 @@ func ActivateSavedVersion(version string) bool {
 		fmt.Println(err)
 	}
 
-	// TODO
 	// Remove any existing copy of Ironstar CLI at ~/bin/iron
 	fs.Remove(activePath)
 
@@ -47,8 +44,7 @@ func ActivateSavedVersion(version string) bool {
 	// Make sure the version is executable
 	err = os.Chmod(activePath, 0777)
 	if err != nil {
-		fmt.Println("Unexpected error granting execute permissions to [" + activePath + "]: " + err.Error())
-		os.Exit(1)
+		return empty, errors.Wrap(err, "Unexpected error granting execute permissions to ["+activePath+"]")
 	}
 
 	return true
