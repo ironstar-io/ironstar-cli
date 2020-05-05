@@ -7,6 +7,8 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
+
+	"github.com/pkg/errors"
 )
 
 // ActivateSavedVersion - Copies the specified version (which may be downloaded previously) into /usr/local/bin on macOS

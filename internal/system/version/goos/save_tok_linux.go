@@ -7,6 +7,8 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
+
+	"github.com/pkg/errors"
 )
 
 // SaveCLIBinary - Saves the running instance of the Ironstar CLI binary to a persistent path in the user's /usr/bin folder
