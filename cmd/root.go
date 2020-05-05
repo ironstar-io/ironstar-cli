@@ -27,6 +27,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.AddCommand(VersionCmd)
+	rootCmd.AddCommand(UpgradeCmd)
 	rootCmd.AddCommand(LoginCmd)
 	rootCmd.AddCommand(InitCmd)
 
@@ -93,12 +94,10 @@ func RootCmd() *cobra.Command {
 }
 
 func run(cmd *cobra.Command, args []string) {
-	if viper.GetBool("version") == true {
-		fmt.Printf("v%s\n", version.Get().Version)
+	if viper.GetBool("version") {
+		fmt.Printf("%s\n", version.Get().Version)
 	}
-	fmt.Printf("Ironstar v%s\n\n", version.Get().Version)
-
-	// version.SelfInstall(false)
+	fmt.Printf("Ironstar %s\n\n", version.Get().Version)
 }
 
 func initConfig() {

@@ -24,7 +24,7 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 		MapStringPayload: map[string]string{},
 	}
 
-	res, err := req.Send()
+	res, err := req.NankaiSend()
 	if err != nil {
 		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
 	}

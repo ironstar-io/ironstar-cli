@@ -31,7 +31,7 @@ func IsProjectRoot(path string) bool {
 	}
 
 	for _, f := range files {
-		if f.Name() == constants.GitDirectory || f.Name() == constants.DockerComposeTokFile {
+		if f.Name() == constants.GitDirectory {
 			return true
 		}
 	}

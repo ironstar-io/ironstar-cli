@@ -94,7 +94,7 @@ func postLogin(email, password string) (*api.RawResponse, error) {
 		},
 	}
 
-	res, err := req.Send()
+	res, err := req.NankaiSend()
 	if err != nil {
 		return nil, errors.Wrap(err, errs.APILoginErrorMsg)
 	}
@@ -120,7 +120,7 @@ func postMFAValidate(MFAAuthToken, passcode string) (*api.RawResponse, error) {
 		},
 	}
 
-	res, err := req.Send()
+	res, err := req.NankaiSend()
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +180,7 @@ func resetUserPassword(email, PWResetAuthToken, mfaStatus string) (*types.AuthRe
 		},
 	}
 
-	res, err := req.Send()
+	res, err := req.NankaiSend()
 	if err != nil {
 		return nil, err
 	}

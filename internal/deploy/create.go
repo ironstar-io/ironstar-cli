@@ -56,7 +56,7 @@ func Create(args []string, flg flags.Accumulator) error {
 		MapStringPayload: map[string]string{"environmentName": envID},
 	}
 
-	res, err := req.Send()
+	res, err := req.NankaiSend()
 	if err != nil {
 		return errors.Wrap(err, errs.APISubListErrorMsg)
 	}

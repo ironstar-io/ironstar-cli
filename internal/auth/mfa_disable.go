@@ -36,7 +36,7 @@ func MFADisable(args []string, flg flags.Accumulator) error {
 		},
 	}
 
-	res, err := req.Send()
+	res, err := req.NankaiSend()
 	if err != nil {
 		return errors.Wrap(err, errs.APISubListErrorMsg)
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// MFAEnableCmd - `tok auth mfa enable`
+// MFAEnableCmd - `iron auth mfa enable`
 var MFAEnableCmd = &cobra.Command{
 	Use:   "enable",
 	Short: "Enable MFA",

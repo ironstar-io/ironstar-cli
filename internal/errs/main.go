@@ -19,9 +19,9 @@ const (
 
 	GetCredentialsErrorMsg = "Unable to get credentials"
 
-	NoProjectFoundErrorMsg = "This command can only be run from a Tokaido project directory"
+	NoProjectFoundErrorMsg = "This command can only be run from an Ironstar project directory"
 
-	NoSuitableCredsMsg = "There were no suitable credentials found for this project. Have you run `tok auth login`?"
+	NoSuitableCredsMsg = "There were no suitable credentials found for this project. Have you run `iron login`?"
 
 	ProjectRootNotFoundError = "Unable to find a matching project"
 

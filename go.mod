@@ -3,6 +3,7 @@ module gitlab.com/ironstar-io/ironstar-cli
 go 1.14
 
 require (
+	github.com/blang/semver v3.5.1+incompatible
 	github.com/fatih/color v1.9.0
 	github.com/gernest/wow v0.1.0
 	github.com/olekukonko/tablewriter v0.0.4

@@ -22,6 +22,7 @@ type Request struct {
 	Credentials      types.Keylink
 	Method           string
 	Path             string
+	URL              string
 	MapStringPayload map[string]string
 	BytePayload      []byte
 }
@@ -50,8 +51,8 @@ func (r *Request) BuildBytePayload() error {
 	return nil
 }
 
-// Send - Make a HTTP request to the Ironstar API
-func (r *Request) Send() (*RawResponse, error) {
+// NankaiSend - Make a HTTP request to the Ironstar API
+func (r *Request) NankaiSend() (*RawResponse, error) {
 	r.RefreshToken()
 
 	err := r.BuildBytePayload()
@@ -59,14 +60,21 @@ func (r *Request) Send() (*RawResponse, error) {
 		return nil, err
 	}
 
-	url := GetBaseURL() + r.Path
-	req, err := http.NewRequest(r.Method, url, bytes.NewBuffer(r.BytePayload))
+	r.URL = GetBaseURL() + r.Path
+
+	return r.HTTPSend()
+}
+
+func (r *Request) HTTPSend() (*RawResponse, error) {
+	req, err := http.NewRequest(r.Method, r.URL, bytes.NewBuffer(r.BytePayload))
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Add("content-type", "application/json")
-	req.Header.Add("authorization", "Bearer "+r.Credentials.AuthToken)
+	if r.Credentials.AuthToken != "" {
+		req.Header.Add("authorization", "Bearer "+r.Credentials.AuthToken)
+	}
 
 	client := &http.Client{
 		Transport: &http.Transport{
@@ -89,8 +97,10 @@ func (r *Request) Send() (*RawResponse, error) {
 	}
 
 	ir := &RawResponse{
-		StatusCode: resp.StatusCode,
 		Body:       bodyBytes,
+		StatusCode: resp.StatusCode,
+		CallMethod: r.Method,
+		CallURL:    r.URL,
 	}
 
 	defer resp.Body.Close()
@@ -103,7 +113,7 @@ func (r *Request) RefreshToken() {
 	// If any leg fails, return silently, user will need to relog manually
 	//
 
-	if r.RunTokenRefresh != true || r.Credentials == (types.Keylink{}) || r.Credentials.Login == "" || r.Credentials.AuthToken == "" || r.Credentials.Expiry.IsZero() {
+	if !r.RunTokenRefresh || r.Credentials == (types.Keylink{}) || r.Credentials.Login == "" || r.Credentials.AuthToken == "" || r.Credentials.Expiry.IsZero() {
 		return
 	}
 
@@ -126,7 +136,7 @@ func (r *Request) RefreshToken() {
 		},
 	}
 
-	res, err := newReq.Send()
+	res, err := newReq.NankaiSend()
 	if err != nil {
 		return
 	}

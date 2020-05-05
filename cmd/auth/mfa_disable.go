@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// MFADisableCmd - `tok auth mfa disable`
+// MFADisableCmd - `iron auth mfa disable`
 var MFADisableCmd = &cobra.Command{
 	Use:   "disable",
 	Short: "Disable MFA",

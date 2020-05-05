@@ -8,7 +8,7 @@ build:
 	-ldflags "\
 	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
 	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/ironstar
+	" -o ./dist/iron
 
 build-all: build-macos build-windows build-linux
 
@@ -18,7 +18,7 @@ build-windows:
 	-ldflags "\
 	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
 	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/ironstar-windows-amd64.exe
+	" -o ./dist/iron-windows-amd64.exe
 
 build-linux:
 	env GOOS=linux GOARCH=amd64 \
@@ -26,7 +26,7 @@ build-linux:
 	-ldflags "\
 	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
 	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/ironstar-linux-amd64
+	" -o ./dist/iron-linux-amd64
 
 build-macos:
 	env GOOS=darwin GOARCH=amd64 \
@@ -34,17 +34,7 @@ build-macos:
 	-ldflags "\
 	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
 	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/ironstar-macos
-
-usb-installer:
-	cd installer && make build-macos
-	cd installer && make build-windows
-	cd installer && make build-linux
-	cd installer && make build-docker-images
-	make build-macos && cp -R ./dist/ironstar-macos ./installer/dist/ironstaraido/ironstar-macos
-	make build-linux && cp -R ./dist/ironstar-linux-amd64 ./installer/dist/ironstaraido/ironstar-linux-amd64
-	make build-windows && cp -R ./dist/ironstar-windows-amd64.exe ./installer/dist/ironstaraido/ironstar-windows-amd64.exe
-	cp -R ./installer/README.md ./installer/dist/README.md
+	" -o ./dist/iron-macos
 
 test:
 	ginkgo test ./...

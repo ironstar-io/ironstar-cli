@@ -6,19 +6,19 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/auth"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
-// LoginCmd - `iron auth login`
-var LoginCmd = &cobra.Command{
-	Use:   "login [email]",
-	Short: "Authenticate for the Ironstar API",
-	Long:  "Authenticate and store credentials for use against the Ironstar API",
+// UpgradeCmd - `iron upgrade`
+var UpgradeCmd = &cobra.Command{
+	Use:   "upgrade",
+	Short: "Upgrade to the latest version of the Ironstar CLI",
+	Long:  "Upgrade to the latest version of the Ironstar CLI",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := auth.IronstarAPILogin(args, flags.Acc)
+		err := version.Upgrade(flags.Acc)
 		if err != nil {
 			if err != api.ErrIronstarAPICall {
 				fmt.Println()

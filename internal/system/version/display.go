@@ -9,7 +9,7 @@ func Display() {
 	info := Get()
 
 	fmt.Println(`
-Ironstar CLI: v` + info.Version + `
+Ironstar CLI: ` + info.Version + `
 Build Date:   ` + info.BuildDate + `
 Compiler:     ` + info.GoVersion + `
 Platform:     ` + info.Platform + `
