@@ -10,7 +10,7 @@ import (
 )
 
 // ActivateSavedVersion - Copies the specified version (which may be downloaded previously) into /usr/local/bin on macOS
-func ActivateSavedVersion(version string) bool {
+func ActivateSavedVersion(version string) error {
 	// activePath is where the currently active version of Ironstar CLI is found, such as /c/Users/Frank/bin/iron
 	activePath := filepath.Join(fs.HomeDir(), "bin", "iron")
 
@@ -24,7 +24,7 @@ func ActivateSavedVersion(version string) bool {
 
 		_, err := DownloadCLIBinary(version)
 		if err != nil {
-			return false, errors.Wrap(err, "Unexpected error downloading that version")
+			return errors.Wrap(err, "Unexpected error downloading that version")
 		}
 	}
 
@@ -44,8 +44,8 @@ func ActivateSavedVersion(version string) bool {
 	// Make sure the version is executable
 	err = os.Chmod(activePath, 0777)
 	if err != nil {
-		return empty, errors.Wrap(err, "Unexpected error granting execute permissions to ["+activePath+"]")
+		return errors.Wrap(err, "Unexpected error granting execute permissions to ["+activePath+"]")
 	}
 
-	return true
+	return nil
 }

@@ -43,7 +43,6 @@ func SelfInstall(forceInstall bool, flg flags.Accumulator) {
 	}
 
 	// Ironstar CLI already in PATH, display help message and exit
-	// TODO
 	fmt.Println("For help with Ironstar CLI run `iron help` or take a look at our documentation at https://docs.ironstar-cli.io")
 }
 

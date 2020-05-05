@@ -41,7 +41,7 @@ func GetReleaseTagFromVersion(version string) (string, error) {
 	}
 
 	for _, r := range ghr {
-		if r.TagName == "v"+version {
+		if r.TagName == version {
 			if r.Draft {
 				fmt.Println("\nWarning: The selected version is a draft and may not work as intended")
 			}

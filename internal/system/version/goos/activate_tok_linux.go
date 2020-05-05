@@ -10,7 +10,7 @@ import (
 )
 
 // ActivateSavedVersion - Copies the specified version (which may be downloaded previously) into /usr/local/bin on macOS
-func ActivateSavedVersion(version string) (bool, error) {
+func ActivateSavedVersion(version string) error {
 	// Check that the version is downloaded already
 	p := filepath.Join(fs.HomeDir(), constants.BaseInstallPathLinux, version, "iron")
 	if !fs.CheckExists(p) {
@@ -18,7 +18,7 @@ func ActivateSavedVersion(version string) (bool, error) {
 
 		_, err := DownloadCLIBinary(version)
 		if err != nil {
-			return false, errors.Wrap(err, "Unexpected error downloading that version")
+			return errors.Wrap(err, "Unexpected error downloading that version")
 		}
 	}
 
@@ -31,8 +31,8 @@ func ActivateSavedVersion(version string) (bool, error) {
 	// Make sure the version is executable
 	err := os.Chmod(constants.ActiveBinaryPathDarwin, 0777)
 	if err != nil {
-		return false, errors.Wrap(err, "Unexpected error granting execute permissions to ["+constants.ActiveBinaryPathDarwin+"]: "+err.Error())
+		return errors.Wrap(err, "Unexpected error granting execute permissions to ["+constants.ActiveBinaryPathDarwin+"]: "+err.Error())
 	}
 
-	return true
+	return nil
 }
