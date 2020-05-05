@@ -1,6 +1,7 @@
 package flags
 
 type Accumulator struct {
+	AutoAccept   bool
 	Login        string
 	Password     string
 	Output       string

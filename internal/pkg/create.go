@@ -19,7 +19,7 @@ func Create(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	sub, err := api.GetSubscriptionContext(creds, flg.Subscription)
+	sub, err := api.GetSubscriptionContext(creds, flg)
 	if err != nil {
 		return err
 	}

@@ -21,7 +21,7 @@ func Create(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	sub, err := api.GetSubscriptionContext(creds, flg.Subscription)
+	sub, err := api.GetSubscriptionContext(creds, flg)
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func determinePackageSelection(args []string, flg flags.Accumulator, creds types
 		return args[0], nil
 	}
 
-	createNew := services.ConfirmationPrompt("No package specified. Would you like to create one?", "y")
+	createNew := services.ConfirmationPrompt("No package specified. Would you like to create one?", "y", flg.AutoAccept)
 	if createNew {
 		tarpath, err := services.CreateProjectTar(flg.Exclude)
 		if err != nil {

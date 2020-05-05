@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/subscription"
 
@@ -20,7 +21,7 @@ var ShowCmd = &cobra.Command{
 }
 
 func show(cmd *cobra.Command, args []string) {
-	err := subscription.Show(args)
+	err := subscription.Show(args, flags.Acc)
 	if err != nil {
 		if err != api.ErrIronstarAPICall {
 			fmt.Println()

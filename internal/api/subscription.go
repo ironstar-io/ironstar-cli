@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
@@ -41,10 +42,10 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 	return sub, nil
 }
 
-func GetSubscriptionContext(creds types.Keylink, subKey string) (types.Subscription, error) {
+func GetSubscriptionContext(creds types.Keylink, flg flags.Accumulator) (types.Subscription, error) {
 	empty := types.Subscription{}
-	if subKey != "" {
-		sub, err := GetSubscription(creds, subKey)
+	if flg.Subscription != "" {
+		sub, err := GetSubscription(creds, flg.Subscription)
 		if err != nil {
 			return empty, err
 		}
@@ -61,7 +62,7 @@ func GetSubscriptionContext(creds types.Keylink, subKey string) (types.Subscript
 
 	exists := fs.CheckExists(confPath)
 	if !exists {
-		createNewProj := services.ConfirmationPrompt("Couldn't find a project configuration in this directory. Would you like to create one?", "y")
+		createNewProj := services.ConfirmationPrompt("Couldn't find a project configuration in this directory. Would you like to create one?", "y", flg.AutoAccept)
 		if createNewProj == true {
 			err = services.InitializeIronstarProject()
 			if err != nil {
