@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version/goos"
 
@@ -13,7 +14,7 @@ import (
 )
 
 // Upgrade - Check if update available and auto-upgrade the user
-func Upgrade() error {
+func Upgrade(flg flags.Accumulator) error {
 	// v := Get().Version
 	// cv := strings.Replace(v, "v", "", -1)
 	cs, err := semver.Parse("0.4.0")
@@ -34,7 +35,7 @@ func Upgrade() error {
 
 	// Checks if the latest version is Greater Than the current version
 	if lv.GT(cs) {
-		confirmUpgrade := services.ConfirmationPrompt("This will upgrade your Ironstar CLI version to latest ("+lv.String()+").\n\nAre you sure?", "y")
+		confirmUpgrade := services.ConfirmationPrompt("This will upgrade your Ironstar CLI version to latest ("+lv.String()+").\n\nAre you sure?", "y", flg.AutoAccept)
 		if !confirmUpgrade {
 			fmt.Println("Exiting...")
 			return nil

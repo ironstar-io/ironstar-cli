@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version/goos"
 
@@ -14,7 +15,7 @@ import (
 const minimumCLIVersion = "0.4.0"
 
 // Select - Change the users' Ironstar CLI version to their selection
-func Select(selection string) {
+func Select(selection string, flg flags.Accumulator) {
 	v := Get().Version
 	cv := strings.Replace(v, "v", "", 0)
 	cs, _ := semver.Parse(cv)
@@ -38,7 +39,7 @@ func Select(selection string) {
 		return
 	}
 
-	confirmChange := services.ConfirmationPrompt("This will change your Ironstar CLI version to "+sv.String()+".\n\nAre you sure?", "y")
+	confirmChange := services.ConfirmationPrompt("This will change your Ironstar CLI version to "+sv.String()+".\n\nAre you sure?", "y", flg.AutoAccept)
 	if confirmChange == false {
 		fmt.Println("Exiting...")
 		return

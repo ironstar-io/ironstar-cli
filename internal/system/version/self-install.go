@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version/goos"
 
@@ -13,10 +14,10 @@ import (
 )
 
 // SelfInstall - Check state then install runing Ironstar CLI binary to PATH
-func SelfInstall(forceInstall bool) {
+func SelfInstall(forceInstall bool, flg flags.Accumulator) {
 	if forceInstall == true {
 		// Ironstar CLI not in PATH, confirm install of current bin
-		confirmUpgrade := services.ConfirmationPrompt("This command will install Ironstar CLI "+Get().Version+". Would you like to continue?", "y")
+		confirmUpgrade := services.ConfirmationPrompt("This command will install Ironstar CLI "+Get().Version+". Would you like to continue?", "y", flg.AutoAccept)
 		if confirmUpgrade == false {
 			fmt.Println("Exiting...")
 			return
@@ -30,7 +31,7 @@ func SelfInstall(forceInstall bool) {
 	_, err := exec.LookPath("iron")
 	if err != nil {
 		// Ironstar CLI not in PATH, confirm install of current bin
-		confirmUpgrade := services.ConfirmationPrompt("It looks like this is your first time running Ironstar CLI.\n\nWould you like to install it now", "y")
+		confirmUpgrade := services.ConfirmationPrompt("It looks like this is your first time running Ironstar CLI.\n\nWould you like to install it now", "y", flg.AutoAccept)
 		if confirmUpgrade == false {
 			fmt.Println("Exiting...")
 			return
