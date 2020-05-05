@@ -9,7 +9,7 @@ import (
 )
 
 func Link(args []string, flg flags.Accumulator) error {
-	proj, err := services.GetProjectData()
+	proj, err := services.GetProjectData(flg.AutoAccept)
 	if err != nil {
 		return err
 	}

@@ -121,7 +121,12 @@ func GetDeployID(args []string, deployFlag string) (string, error) {
 }
 
 // ConfirmationPrompt - The 'weighting' param should be one of [ "y", "n" ].
-func ConfirmationPrompt(prompt string, weighting string) bool {
+func ConfirmationPrompt(prompt, weighting string, autoAccept bool) bool {
+	// Should be set by flag --yes (-y), allowing these prompts to be skipped
+	if autoAccept {
+		return true
+	}
+
 	response, err := StdinPrompt(prompt + weightedString(weighting))
 	if err != nil {
 		return false

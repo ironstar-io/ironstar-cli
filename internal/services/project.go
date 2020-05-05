@@ -14,7 +14,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-func GetProjectData() (types.ProjectConfig, error) {
+func GetProjectData(autoAccept bool) (types.ProjectConfig, error) {
 	empty := types.ProjectConfig{}
 	wd, err := os.Getwd()
 	if err != nil {
@@ -25,7 +25,7 @@ func GetProjectData() (types.ProjectConfig, error) {
 
 	exists := fs.CheckExists(confPath)
 	if !exists {
-		createNewProj := ConfirmationPrompt("Couldn't find a project configuration in this directory. Would you like to create one?", "y")
+		createNewProj := ConfirmationPrompt("Couldn't find a project configuration in this directory. Would you like to create one?", "y", autoAccept)
 		if createNewProj == true {
 			err = InitializeIronstarProject()
 			if err != nil {

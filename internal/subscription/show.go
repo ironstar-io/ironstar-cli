@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 
@@ -12,7 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func Show(args []string) error {
+func Show(args []string, flg flags.Accumulator) error {
 	wd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -25,7 +26,7 @@ func Show(args []string) error {
 		return errors.New("No Ironstar configuration found in this directory. Have you run `iron init`")
 	}
 
-	proj, err := services.GetProjectData()
+	proj, err := services.GetProjectData(flg.AutoAccept)
 	if err != nil {
 		return err
 	}
