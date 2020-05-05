@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-const minimumCLIVersion = "0.4.1"
+const minimumCLIVersion = "0.6.0"
 
 // Select - Change the users' Ironstar CLI version to their selection
 func Select(selection string, flg flags.Accumulator) error {
