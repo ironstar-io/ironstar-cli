@@ -18,7 +18,7 @@ build-windows:
 	-ldflags "\
 	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
 	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/iron-windows-amd64.exe
+	" -o ./dist/iron-windows.exe
 
 build-linux:
 	env GOOS=linux GOARCH=amd64 \
@@ -26,7 +26,7 @@ build-linux:
 	-ldflags "\
 	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
 	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/iron-linux-amd64
+	" -o ./dist/iron-linux
 
 build-macos:
 	env GOOS=darwin GOARCH=amd64 \
