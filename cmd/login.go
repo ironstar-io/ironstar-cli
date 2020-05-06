@@ -14,7 +14,7 @@ import (
 
 // LoginCmd - `iron auth login`
 var LoginCmd = &cobra.Command{
-	Use:   "login",
+	Use:   "login [email]",
 	Short: "Authenticate for the Ironstar API",
 	Long:  "Authenticate and store credentials for use against the Ironstar API",
 	Run: func(cmd *cobra.Command, args []string) {
