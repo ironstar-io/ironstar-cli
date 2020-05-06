@@ -12,13 +12,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// LoginCmd - `iron auth login`
-var LoginCmd = &cobra.Command{
-	Use:   "login",
-	Short: "Authenticate for the Ironstar API",
-	Long:  "Authenticate and store credentials for use against the Ironstar API",
+// LogoutCmd - `iron auth logout`
+var LogoutCmd = &cobra.Command{
+	Use:   "logout [email]",
+	Short: "Logout from your Ironstar API session",
+	Long:  "Logout from your Ironstar API session. This destroys the session token in the Ironstar system",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := auth.IronstarAPILogin(args, flags.Acc)
+		err := auth.Logout(args, flags.Acc)
 		if err != nil {
 			if err != api.ErrIronstarAPICall {
 				fmt.Println()
