@@ -11,6 +11,8 @@ const (
 
 	APILoginErrorMsg = "Ironstar API authentication failed"
 
+	APILogoutErrorMsg = "Ironstar API logout failed"
+
 	APIMFAEnrolErrorMsg = "Ironstar API MFA enrol failed"
 
 	APIMFAVerifyErrorMsg = "Ironstar API MFA verification failed"

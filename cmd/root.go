@@ -29,6 +29,7 @@ func init() {
 	rootCmd.AddCommand(VersionCmd)
 	rootCmd.AddCommand(UpgradeCmd)
 	rootCmd.AddCommand(LoginCmd)
+	rootCmd.AddCommand(LogoutCmd)
 	rootCmd.AddCommand(InitCmd)
 
 	// `iron auth x`
