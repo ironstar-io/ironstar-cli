@@ -74,6 +74,7 @@ type BuildFlat struct {
 type Build struct {
 	HashedID   string       `json:"build_id,omitempty" yaml:"build_id,omitempty"`
 	Name       string       `json:"name,omitempty" yaml:"name,omitempty"`
+	Ref        string       `json:"ref,omitempty" yaml:"ref,omitempty"`
 	Status     string       `json:"status,omitempty" yaml:"status,omitempty"`
 	CreatedBy  string       `json:"created_by,omitempty" yaml:"created_by,omitempty"`
 	RunningIn  string       `json:"running_in,omitempty" yaml:"running_in,omitempty"`

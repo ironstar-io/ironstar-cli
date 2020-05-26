@@ -10,6 +10,7 @@ type Accumulator struct {
 	Package      string
 	Deploy       string
 	Exclude      string
+	Ref          string
 }
 
 var Acc Accumulator
