@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -22,6 +23,7 @@ type Stream struct {
 	FilePath         string
 	MapStringPayload map[string]string
 	BytePayload      []byte
+	Ref              string
 }
 
 const IronstarUploadAPIDomain = "https://uploads.ironstar.io"
@@ -44,12 +46,21 @@ func (s *Stream) Send() (*RawResponse, error) {
 	defer file.Close()
 
 	body := &bytes.Buffer{}
+
 	writer := multipart.NewWriter(body)
 	part, err := writer.CreateFormFile("package", filepath.Base(s.FilePath))
 	if err != nil {
 		return nil, err
 	}
 	_, err = io.Copy(part, file)
+	if err != nil {
+		return nil, err
+	}
+	ref, err := writer.CreateFormField("ref")
+	if err != nil {
+		return nil, err
+	}
+	_, err = ref.Write([]byte(s.Ref))
 	if err != nil {
 		return nil, err
 	}
@@ -96,4 +107,17 @@ func (s *Stream) Send() (*RawResponse, error) {
 	defer resp.Body.Close()
 
 	return ir, nil
+}
+
+func (s *Stream) BuildBytePayload() error {
+	if s.MapStringPayload != nil {
+		b, err := json.Marshal(s.MapStringPayload)
+		if err != nil {
+			return err
+		}
+
+		s.BytePayload = b
+	}
+
+	return nil
 }

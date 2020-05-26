@@ -104,7 +104,7 @@ func determinePackageSelection(args []string, flg flags.Accumulator, creds types
 			return empty, err
 		}
 
-		res, err := api.UploadPackage(creds, subHash, tarpath)
+		res, err := api.UploadPackage(creds, subHash, tarpath, flg.Ref)
 		if err != nil {
 			return empty, err
 		}

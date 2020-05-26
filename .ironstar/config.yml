@@ -1,0 +1,14 @@
+version: "1.0"
+subscription:
+  subscription_id: E4kz7Qq9VP
+  alias: technocrat
+  ref: au10015
+  application_type: drupal
+package:
+  exclude:
+  - .git
+  - private
+  - web/sites/default/files
+  - docroot/sites/default/files
+  - docroot/sites/default/settings.tok.php
+  - web/sites/default/settings.tok.php

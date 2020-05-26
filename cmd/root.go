@@ -55,10 +55,12 @@ func init() {
 	// `iron package x`
 	rootCmd.AddCommand(pkg.PackageCmd)
 	pkg.PackageCmd.AddCommand(pkg.ListCmd)
+	pkg.PackageCmd.AddCommand(pkg.UpdateRefCmd)
 
 	// `iron pkg x` alias (hidden)
 	rootCmd.AddCommand(pkg.PkgCmd)
 	pkg.PkgCmd.AddCommand(pkg.ListCmd)
+	pkg.PkgCmd.AddCommand(pkg.UpdateRefCmd)
 
 	// `iron deploy x`
 	rootCmd.AddCommand(deploy.DeployCmd)
@@ -90,6 +92,11 @@ func RootCmd() *cobra.Command {
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Exclude, "exclude", "", "", "A comma separated list of files/directories to exclude during packaging")
 
 	LoginCmd.PersistentFlags().StringVarP(&flags.Acc.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
+
+	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
+	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
+	pkg.UpdateRefCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
+	deploy.DeployCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
 
 	return &rootCmd
 }

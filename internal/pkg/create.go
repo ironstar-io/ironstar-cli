@@ -35,7 +35,7 @@ func Create(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	res, err := api.UploadPackage(creds, sub.HashedID, tarpath)
+	res, err := api.UploadPackage(creds, sub.HashedID, tarpath, flg.Ref)
 	if err != nil {
 		return err
 	}

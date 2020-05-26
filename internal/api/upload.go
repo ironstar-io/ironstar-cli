@@ -10,7 +10,7 @@ import (
 )
 
 // UploadPackage - Create a project tarball in tmp
-func UploadPackage(creds types.Keylink, subHash, tarpath string) (*RawResponse, error) {
+func UploadPackage(creds types.Keylink, subHash, tarpath, ref string) (*RawResponse, error) {
 	wo := console.SpinStart("Uploading package file to Ironstar system")
 
 	req := &Stream{
@@ -20,6 +20,7 @@ func UploadPackage(creds types.Keylink, subHash, tarpath string) (*RawResponse, 
 		FilePath:         tarpath,
 		Path:             "/upload/subscription/" + subHash,
 		MapStringPayload: map[string]string{},
+		Ref:              ref,
 	}
 
 	res, err := req.Send()
