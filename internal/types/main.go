@@ -103,6 +103,7 @@ type DeploymentActivityResponse struct {
 
 type Environment struct {
 	HashedID       string `json:"environment_id,omitempty" yaml:"environment_id,omitempty"`
+	Class          string `json:"class,omitempty" yaml:"class,omitempty"`
 	Name           string `json:"name,omitempty" yaml:"name,omitempty"`
 	Trigger        string `json:"trigger,omitempty" yaml:"trigger,omitempty"`
 	UpdateStrategy string `json:"update_strategy,omitempty" yaml:"update_strategy,omitempty"`

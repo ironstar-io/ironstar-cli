@@ -43,6 +43,11 @@ func Create(args []string, flg flags.Accumulator) error {
 		envID = flg.Environment
 	}
 
+	err = checkOperatingEnvironment(flg, creds, sub.HashedID, envID)
+	if err != nil {
+		return err
+	}
+
 	packageID, err := determinePackageSelection(args, flg, creds, sub.HashedID)
 	if err != nil {
 		return err
@@ -83,6 +88,46 @@ func Create(args []string, flg flags.Accumulator) error {
 	fmt.Println("CREATED: " + d.CreatedAt.Format(time.RFC3339))
 	fmt.Println()
 	color.Green("You can now run 'iron deploy status " + d.Name + "' to check deployment status")
+
+	return nil
+}
+
+func checkOperatingEnvironment(flg flags.Accumulator, creds types.Keylink, subID, envID string) error {
+	req := &api.Request{
+		RunTokenRefresh: true,
+		Credentials:     creds,
+		Method:          "GET",
+		Path:            "/subscription/" + subID + "/environment/" + envID,
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return errors.Wrap(err, errs.APISubListErrorMsg)
+	}
+
+	if res.StatusCode != 200 {
+		return res.HandleFailure()
+	}
+
+	var env types.Environment
+	err = yaml.Unmarshal(res.Body, &env)
+	if err != nil {
+		return err
+	}
+
+	if env.Class == "cw" {
+		deployToProd := services.ConfirmationPrompt("Environment '"+env.Name+"' is a production grade environment. Are you sure you would like to continue?", "n", flg.ApproveProdDeploy)
+		if deployToProd {
+			if !flg.ApproveProdDeploy {
+				fmt.Println("")
+				color.Yellow("This confirmation prompt can be skipped with the flag '--approve-prod-deploy'")
+				fmt.Println("")
+			}
+			return nil
+		}
+
+		return errors.New("Deployment rejected by user")
+	}
 
 	return nil
 }
