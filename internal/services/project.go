@@ -80,13 +80,48 @@ func LinkSubscriptionToProject(config types.ProjectConfig, sub types.Subscriptio
 		return errors.Wrap(err, errs.APISubLinkErrorMsg)
 	}
 
-	if projConf.Subscription.Alias != "" {
-		color.Yellow("This project has been previously linked to [" + projConf.Subscription.Alias + "]. The link will be replaced with the new subscription.")
+	if projConf.Subscription != (types.Subscription{}) && projConf.Subscription.Alias != "" && projConf.Subscription.Alias != sub.Alias {
+		color.Yellow("This project was previously linked to subscription [" + projConf.Subscription.Alias + "]. The link will be replaced with the subscription [" + sub.Alias + "].")
 		fmt.Println()
+	}
+
+	// Clear environment when switching subscriptions
+	if sub.Alias != projConf.Subscription.Alias {
+		projConf.Environment = types.Environment{}
 	}
 
 	projConf.Version = "1.0"
 	projConf.Subscription = sub
+
+	newMarhsalled, err := yaml.Marshal(projConf)
+	if err != nil {
+		return err
+	}
+
+	py := filepath.Join(wd, ".ironstar", "config.yml")
+	fs.Replace(py, newMarhsalled)
+
+	return nil
+}
+
+func LinkEnvironmentToProject(config types.ProjectConfig, env types.Environment) error {
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	projConf, err := ReadInProjectConfig(wd)
+	if err != nil {
+		return errors.Wrap(err, errs.APISubLinkErrorMsg)
+	}
+
+	if projConf.Environment != (types.Environment{}) && projConf.Environment.Name != "" && projConf.Environment.Name != env.Name {
+		color.Yellow("This project was previously linked to environment [" + projConf.Environment.Name + "]. The link will be replaced with the environment [" + env.Name + "].")
+		fmt.Println()
+	}
+
+	projConf.Version = "1.0"
+	projConf.Environment = env
 
 	newMarhsalled, err := yaml.Marshal(projConf)
 	if err != nil {

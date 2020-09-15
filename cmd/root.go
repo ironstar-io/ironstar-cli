@@ -6,6 +6,7 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/auth"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/deploy"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/environment"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
@@ -51,6 +52,18 @@ func init() {
 	subscription.SubCmd.AddCommand(subscription.ListCmd)
 	subscription.SubCmd.AddCommand(subscription.LinkCmd)
 	subscription.SubCmd.AddCommand(subscription.ShowCmd)
+
+	// `iron environment x`
+	rootCmd.AddCommand(environment.EnvironmentCmd)
+	environment.EnvironmentCmd.AddCommand(environment.ListCmd)
+	environment.EnvironmentCmd.AddCommand(environment.LinkCmd)
+	environment.EnvironmentCmd.AddCommand(environment.ShowCmd)
+
+	// `iron env x` alias (hidden)
+	rootCmd.AddCommand(environment.EnvCmd)
+	environment.EnvCmd.AddCommand(environment.ListCmd)
+	environment.EnvCmd.AddCommand(environment.LinkCmd)
+	environment.EnvCmd.AddCommand(environment.ShowCmd)
 
 	// `iron package x`
 	rootCmd.AddCommand(pkg.PackageCmd)

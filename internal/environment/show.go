@@ -1,4 +1,4 @@
-package subscription
+package environment
 
 import (
 	"fmt"
@@ -33,16 +33,27 @@ func Show(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	if proj.Subscription == (types.Subscription{}) {
-		return errors.New(errs.NoSubscriptionLinkErrorMsg)
+	if proj.Environment == (types.Environment{}) {
+		return errors.New(errs.NoEnvironmentLinkErrorMsg)
 	}
 
-	if proj.Subscription.Alias == "" {
-		return errors.New(errs.NoSubscriptionLinkErrorMsg)
+	if proj.Environment.Name == "" {
+		return errors.New(errs.NoEnvironmentLinkErrorMsg)
 	}
 
-	color.Green("Currently linked: ")
-	fmt.Println(proj.Subscription.Alias + " (" + proj.Subscription.HashedID + ")")
+	class := "Non-Production"
+	if proj.Environment.Class == "cw" {
+		class = "Production"
+	}
+
+	color.Green("Currently linked environment for subscription '" + proj.Subscription.Alias + "':")
+
+	fmt.Println()
+	fmt.Println(proj.Environment.Name + " (" + class + ")")
+	if proj.Environment.Class == "cw" {
+		fmt.Println()
+		color.Yellow("Caution! Your current context is a production environment!")
+	}
 
 	return nil
 }

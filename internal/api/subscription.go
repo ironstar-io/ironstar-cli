@@ -42,6 +42,34 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 	return sub, nil
 }
 
+func GetUserSubscriptions(creds types.Keylink) ([]types.UserAccessResponse, error) {
+	empty := []types.UserAccessResponse{}
+	req := &Request{
+		RunTokenRefresh:  true,
+		Credentials:      creds,
+		Method:           "GET",
+		Path:             "/user/subscriptions",
+		MapStringPayload: map[string]string{},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return empty, errors.Wrap(err, errs.APISubListErrorMsg)
+	}
+
+	if res.StatusCode != 200 {
+		return empty, res.HandleFailure()
+	}
+
+	var uar []types.UserAccessResponse
+	err = yaml.Unmarshal(res.Body, &uar)
+	if err != nil {
+		return empty, err
+	}
+
+	return uar, nil
+}
+
 func GetSubscriptionContext(creds types.Keylink, flg flags.Accumulator) (types.Subscription, error) {
 	empty := types.Subscription{}
 	if flg.Subscription != "" {

@@ -1,4 +1,4 @@
-package subscription
+package environment
 
 import (
 	"fmt"
@@ -6,19 +6,19 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/subscription"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/environment"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
-// LinkCmd - `iron subscription link [subscription]`
+// LinkCmd - `iron environment link [environment]`
 var LinkCmd = &cobra.Command{
-	Use:   "link [subscription]",
-	Short: "Link your project to a subscription",
-	Long:  "Link your project to a subscription",
+	Use:   "link [environment]",
+	Short: "Link your project to a environment",
+	Long:  "Link your project to a environment",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := subscription.Link(args, flags.Acc)
+		err := environment.Link(args, flags.Acc)
 		if err != nil {
 			if err != api.ErrIronstarAPICall {
 				fmt.Println()

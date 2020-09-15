@@ -33,6 +33,12 @@ const (
 
 	APIGetSubscriptionErrorMsg = "Failed to get subscription"
 
+	APIGetEnvironmentErrorMsg = "Failed to get environment"
+
+	NoSubscriptionLinkErrorMsg = "No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`"
+
+	NoEnvironmentLinkErrorMsg = "No Ironstar environment has been linked to this project. Have you run `iron environment link [environment-name]`"
+
 	UnexpectedErrorMsg = "An unexpected error occurred"
 )
 
