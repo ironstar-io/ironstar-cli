@@ -25,7 +25,6 @@ type AuthResponseBody struct {
 type ProjectConfig struct {
 	Version      string        `yaml:"version,omitempty"`
 	Subscription Subscription  `yaml:"subscription,omitempty"`
-	Environment  Environment   `yaml:"environment,omitempty"`
 	Package      PackageConfig `yaml:"package,omitempty"`
 }
 

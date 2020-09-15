@@ -17,15 +17,17 @@ var ListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List available environments for a subscription",
 	Long:  "List available environments for a subscription",
-	Run: func(cmd *cobra.Command, args []string) {
-		err := environment.List(args, flags.Acc)
-		if err != nil {
-			if err != api.ErrIronstarAPICall {
-				fmt.Println()
-				color.Red(err.Error())
-			}
+	Run:   list,
+}
 
-			os.Exit(1)
+func list(cmd *cobra.Command, args []string) {
+	err := environment.List(args, flags.Acc)
+	if err != nil {
+		if err != api.ErrIronstarAPICall {
+			fmt.Println()
+			color.Red(err.Error())
 		}
-	},
+
+		os.Exit(1)
+	}
 }

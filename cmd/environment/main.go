@@ -9,7 +9,7 @@ var EnvironmentCmd = &cobra.Command{
 	Use:   "environment",
 	Short: "",
 	Long:  "",
-	Run:   show,
+	Run:   list,
 }
 
 // EnvCmd - `iron env`
@@ -18,5 +18,5 @@ var EnvCmd = &cobra.Command{
 	Use:    "env",
 	Short:  "",
 	Long:   "",
-	Run:    show,
+	Run:    list,
 }

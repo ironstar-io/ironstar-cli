@@ -56,14 +56,10 @@ func init() {
 	// `iron environment x`
 	rootCmd.AddCommand(environment.EnvironmentCmd)
 	environment.EnvironmentCmd.AddCommand(environment.ListCmd)
-	environment.EnvironmentCmd.AddCommand(environment.LinkCmd)
-	environment.EnvironmentCmd.AddCommand(environment.ShowCmd)
 
 	// `iron env x` alias (hidden)
 	rootCmd.AddCommand(environment.EnvCmd)
 	environment.EnvCmd.AddCommand(environment.ListCmd)
-	environment.EnvCmd.AddCommand(environment.LinkCmd)
-	environment.EnvCmd.AddCommand(environment.ShowCmd)
 
 	// `iron package x`
 	rootCmd.AddCommand(pkg.PackageCmd)
