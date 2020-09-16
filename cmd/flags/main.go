@@ -8,9 +8,13 @@ type Accumulator struct {
 	Output            string
 	Subscription      string
 	Environment       string
+	Name              string
+	Retention         string
+	Component         []string
 	Package           string
 	Deploy            string
 	Exclude           string
+	Type              string
 	Ref               string
 }
 
