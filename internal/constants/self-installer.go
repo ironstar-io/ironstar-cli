@@ -25,6 +25,9 @@ const (
 	// ActiveBinaryPathDarwin is the location of of the 'iron' command which is a symlink to the active Ironstar CLI version
 	ActiveBinaryPathDarwin = "/usr/local/bin/iron"
 
-	// ActiveBinaryPathLinux is the location of of the 'iron' command which is a symlink to the active Ironstar CLI version
-	ActiveBinaryPathLinux = "/usr/local/bin/iron"
+	// RestorePermissionAllowed is used to set the restore permission to ALLOWED for an environment
+	RestorePermissionAllowed = "ALLOWED"
+
+	// RestorePermissionNotAllowed is used to set the restore permission to NOT_ALLOWED for an environment
+	RestorePermissionNotAllowed = "NOT_ALLOWED"
 )

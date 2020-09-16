@@ -1,6 +1,7 @@
 package api
 
 import (
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
@@ -64,43 +65,39 @@ func GetSubscriptionEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAl
 	return env, nil
 }
 
-// func GetSubscriptionContext(creds types.Keylink, flg flags.Accumulator) (types.Subscription, error) {
-// 	empty := types.Subscription{}
-// 	if flg.Subscription != "" {
-// 		sub, err := GetSubscription(creds, flg.Subscription)
-// 		if err != nil {
-// 			return empty, err
-// 		}
+func PatchEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAlias, restorePermission string) error {
+	req := &Request{
+		RunTokenRefresh: true,
+		Credentials:     creds,
+		Method:          "PATCH",
+		Path:            "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias,
+		MapStringPayload: map[string]string{
+			"restore_permission": restorePermission,
+		},
+	}
 
-// 		return sub, nil
-// 	}
+	res, err := req.NankaiSend()
+	if err != nil {
+		return errors.Wrap(err, errs.APIUpdateEnvironmentErrorMsg)
+	}
 
-// 	wd, err := os.Getwd()
-// 	if err != nil {
-// 		return empty, err
-// 	}
+	if res.StatusCode != 204 {
+		return res.HandleFailure()
+	}
 
-// 	confPath := filepath.Join(wd, ".ironstar", "config.yml")
+	return nil
+}
 
-// 	exists := fs.CheckExists(confPath)
-// 	if !exists {
-// 		createNewProj := services.ConfirmationPrompt("Couldn't find a project configuration in this directory. Would you like to create one?", "y", flg.AutoAccept)
-// 		if createNewProj == true {
-// 			err = services.InitializeIronstarProject()
-// 			if err != nil {
-// 				return empty, err
-// 			}
-// 		} else {
-// 			return empty, errors.New("This command requires a project to be configured.")
-// 		}
+func GetEnvironmentContext(creds types.Keylink, flg flags.Accumulator, subHashOrAlias string) (types.Environment, error) {
+	empty := types.Environment{}
+	if flg.Environment != "" {
+		env, err := GetSubscriptionEnvironment(creds, subHashOrAlias, flg.Environment)
+		if err != nil {
+			return empty, err
+		}
 
-// 	}
+		return env, nil
+	}
 
-// 	pr := fs.ProjectRoot()
-// 	proj, err := services.ReadInProjectConfig(pr)
-// 	if err != nil {
-// 		return empty, errors.Wrap(err, errs.NoProjectFoundErrorMsg)
-// 	}
-
-// 	return proj.Subscription, nil
-// }
+	return empty, errors.New(errs.NoEnvironmentFlagSupplied)
+}

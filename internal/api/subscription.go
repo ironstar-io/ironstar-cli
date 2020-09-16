@@ -110,3 +110,28 @@ func GetSubscriptionContext(creds types.Keylink, flg flags.Accumulator) (types.S
 
 	return proj.Subscription, nil
 }
+
+func GetSubscriptionEnvironmentContext(creds types.Keylink, flg flags.Accumulator) (types.SubscriptionEnvironment, error) {
+	empty := types.SubscriptionEnvironment{}
+
+	sub, err := GetSubscriptionContext(creds, flg)
+	if err != nil {
+		return empty, err
+	}
+	if sub == (types.Subscription{}) {
+		return empty, errors.New("No subscription was able to found")
+	}
+
+	env, err := GetEnvironmentContext(creds, flg, sub.HashedID)
+	if err != nil {
+		return empty, err
+	}
+	if env == (types.Environment{}) {
+		return empty, errors.New("No environment was able to found")
+	}
+
+	return types.SubscriptionEnvironment{
+		Subscription: sub,
+		Environment:  env,
+	}, nil
+}

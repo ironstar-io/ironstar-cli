@@ -44,11 +44,11 @@ func List(args []string, flg flags.Accumulator) error {
 		if env.Class == "cw" {
 			class = "Production"
 		}
-		envRows = append(envRows, []string{env.Name, env.DNSName, class})
+		envRows = append(envRows, []string{env.Name, env.DNSName, class, env.RestorePermission})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "DNS Name", "Class"})
+	table.SetHeader([]string{"Name", "DNS Name", "Class", "Restore Permission"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(envRows)
 	table.Render()

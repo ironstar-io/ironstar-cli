@@ -48,6 +48,11 @@ type Subscription struct {
 	ApplicationType string `json:"application_type,omitempty" yaml:"application_type,omitempty" example:"drupal"`
 }
 
+type SubscriptionEnvironment struct {
+	Subscription
+	Environment
+}
+
 type Role struct {
 	Name        string   `json:"name,omitempty" yaml:"name,omitempty"`
 	Permissions []string `json:"permissions,omitempty"  yaml:"permissions,omitempty"`
@@ -102,12 +107,13 @@ type DeploymentActivityResponse struct {
 }
 
 type Environment struct {
-	HashedID       string `json:"environment_id,omitempty" yaml:"environment_id,omitempty"`
-	Class          string `json:"class,omitempty" yaml:"class,omitempty"`
-	DNSName        string `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
-	Name           string `json:"name,omitempty" yaml:"name,omitempty"`
-	Trigger        string `json:"trigger,omitempty" yaml:"trigger,omitempty"`
-	UpdateStrategy string `json:"update_strategy,omitempty" yaml:"update_strategy,omitempty"`
+	HashedID          string `json:"environment_id,omitempty" yaml:"environment_id,omitempty"`
+	Class             string `json:"class,omitempty" yaml:"class,omitempty"`
+	DNSName           string `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
+	Name              string `json:"name,omitempty" yaml:"name,omitempty"`
+	Trigger           string `json:"trigger,omitempty" yaml:"trigger,omitempty"`
+	UpdateStrategy    string `json:"update_strategy,omitempty" yaml:"update_strategy,omitempty"`
+	RestorePermission string `json:"restore_permission,omitempty" yaml:"restore_permission,omitempty"`
 }
 
 // UploadResponse

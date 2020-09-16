@@ -56,10 +56,14 @@ func init() {
 	// `iron environment x`
 	rootCmd.AddCommand(environment.EnvironmentCmd)
 	environment.EnvironmentCmd.AddCommand(environment.ListCmd)
+	environment.EnvironmentCmd.AddCommand(environment.DisableRestoreCmd)
+	environment.EnvironmentCmd.AddCommand(environment.EnableRestoreCmd)
 
 	// `iron env x` alias (hidden)
 	rootCmd.AddCommand(environment.EnvCmd)
 	environment.EnvCmd.AddCommand(environment.ListCmd)
+	environment.EnvCmd.AddCommand(environment.DisableRestoreCmd)
+	environment.EnvCmd.AddCommand(environment.EnableRestoreCmd)
 
 	// `iron package x`
 	rootCmd.AddCommand(pkg.PackageCmd)
@@ -96,6 +100,7 @@ func RootCmd() *cobra.Command {
 
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Subscription, "subscription", "s", "", "Use or filter by a specified subscription. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Environment, "environment", "e", "", "Use or filter by  specified environment. Not applicable on all commands.")
+	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Environment, "env", "", "", "Use or filter by  specified environment. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Package, "package", "", "", "Use or filter by  specified package. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Deploy, "deploy", "d", "", "Use or filter by  specified deployment. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Exclude, "exclude", "", "", "A comma separated list of files/directories to exclude during packaging")
