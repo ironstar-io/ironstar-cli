@@ -21,7 +21,7 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + hashOrAlias,
-		MapStringPayload: map[string]string{},
+		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()
@@ -49,7 +49,7 @@ func GetUserSubscriptions(creds types.Keylink) ([]types.UserAccessResponse, erro
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/user/subscriptions",
-		MapStringPayload: map[string]string{},
+		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()

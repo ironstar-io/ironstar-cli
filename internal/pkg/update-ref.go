@@ -44,7 +44,7 @@ func UpdateRef(args []string, flg flags.Accumulator) error {
 		Credentials:     creds,
 		Method:          "PUT",
 		Path:            "/build/" + pi,
-		MapStringPayload: map[string]string{
+		MapStringPayload: map[string]interface{}{
 			"ref": ref,
 		},
 	}

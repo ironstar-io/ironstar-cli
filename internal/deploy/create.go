@@ -58,7 +58,7 @@ func Create(args []string, flg flags.Accumulator) error {
 		Credentials:      creds,
 		Method:           "POST",
 		Path:             "/build/" + packageID + "/deploy",
-		MapStringPayload: map[string]string{"environmentName": envID},
+		MapStringPayload: map[string]interface{}{"environmentName": envID},
 	}
 
 	res, err := req.NankaiSend()

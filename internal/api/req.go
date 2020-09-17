@@ -23,7 +23,7 @@ type Request struct {
 	Method           string
 	Path             string
 	URL              string
-	MapStringPayload map[string]string
+	MapStringPayload map[string]interface{}
 	BytePayload      []byte
 }
 
@@ -131,7 +131,7 @@ func (r *Request) RefreshToken() {
 		},
 		Method: "POST",
 		Path:   "/auth/token/refresh",
-		MapStringPayload: map[string]string{
+		MapStringPayload: map[string]interface{}{
 			"expiry": time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
 		},
 	}

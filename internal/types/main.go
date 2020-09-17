@@ -116,6 +116,14 @@ type Environment struct {
 	RestorePermission string `json:"restore_permission,omitempty" yaml:"restore_permission,omitempty"`
 }
 
+type BackupRequest struct {
+	Name       string    `json:"name,omitempty" yaml:"name,omitempty"`
+	Kind       string    `json:"kind,omitempty" yaml:"kind,omitempty"`
+	ETA        int       `json:"eta,omitempty" yaml:"eta,omitempty"`
+	Components []string  `json:"components,omitempty" yaml:"components,omitempty"`
+	CreatedAt  time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+}
+
 // UploadResponse
 type UploadResponse struct {
 	PackageName string `json:"packageName,omitempty" yaml:"packageName,omitempty"`

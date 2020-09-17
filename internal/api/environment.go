@@ -16,7 +16,7 @@ func GetSubscriptionEnvironments(creds types.Keylink, hashOrAlias string) ([]typ
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + hashOrAlias + "/environments",
-		MapStringPayload: map[string]string{},
+		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()
@@ -44,7 +44,7 @@ func GetSubscriptionEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAl
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias,
-		MapStringPayload: map[string]string{},
+		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()
@@ -71,7 +71,7 @@ func PatchEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAlias, resto
 		Credentials:     creds,
 		Method:          "PATCH",
 		Path:            "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias,
-		MapStringPayload: map[string]string{
+		MapStringPayload: map[string]interface{}{
 			"restore_permission": restorePermission,
 		},
 	}
