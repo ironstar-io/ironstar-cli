@@ -10,8 +10,8 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
+	"encoding/json"
 	"github.com/pkg/errors"
-	yaml "gopkg.in/yaml.v2"
 )
 
 func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscription, error) {
@@ -34,7 +34,7 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 	}
 
 	var sub types.Subscription
-	err = yaml.Unmarshal(res.Body, &sub)
+	err = json.Unmarshal(res.Body, &sub)
 	if err != nil {
 		return empty, err
 	}
@@ -62,7 +62,7 @@ func GetUserSubscriptions(creds types.Keylink) ([]types.UserAccessResponse, erro
 	}
 
 	var uar []types.UserAccessResponse
-	err = yaml.Unmarshal(res.Body, &uar)
+	err = json.Unmarshal(res.Body, &uar)
 	if err != nil {
 		return empty, err
 	}

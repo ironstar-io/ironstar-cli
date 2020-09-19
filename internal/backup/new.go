@@ -60,7 +60,7 @@ func New(args []string, flg flags.Accumulator) error {
 	}
 
 	fmt.Println()
-	fmt.Println("You can check the status at any time by running `iron backup info " + br.Name + "`")
+	fmt.Println("You can check the status at any time by running `iron backup info " + br.Name + " --env=" + seCtx.Environment.Name + "`")
 	fmt.Println()
 
 	color.Green("Successfully commenced backup of the environment '" + seCtx.Environment.Name + "'")

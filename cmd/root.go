@@ -69,6 +69,7 @@ func init() {
 	// `iron backup x`
 	rootCmd.AddCommand(backup.BackupCmd)
 	backup.BackupCmd.AddCommand(backup.NewCmd)
+	backup.BackupCmd.AddCommand(backup.InfoCmd)
 
 	// `iron package x`
 	rootCmd.AddCommand(pkg.PackageCmd)

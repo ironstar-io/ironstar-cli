@@ -124,6 +124,39 @@ type BackupRequest struct {
 	CreatedAt  time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
 
+type BackupIterationFlat struct {
+	Iteration   string                     `json:"iteration,omitempty" yaml:"iteration,omitempty"`
+	ClientName  string                     `json:"client_name,omitempty" yaml:"client_name,omitempty"`
+	Reservation []string                   `json:"reservation,omitempty" yaml:"reservation,omitempty"`
+	Components  []BackupIterationComponent `json:"components,omitempty" yaml:"components,omitempty"`
+	Status      string                     `json:"status,omitempty" yaml:"status,omitempty"`
+	Protection  string                     `json:"protection,omitempty" yaml:"protection,omitempty"`
+	ETA         int                        `json:"eta,omitempty" yaml:"eta,omitempty"`
+	CreatedAt   time.Time                  `json:"created_at" yaml:"created_at"`
+	CompletedAt time.Time                  `json:"completed_at" yaml:"completed_at"`
+}
+
+type BackupIteration struct {
+	BackupIterationFlat
+	Environment   Environment   `json:"environment" yaml:"environment"`
+	BackupRequest BackupRequest `json:"backup_request" yaml:"backup_request"`
+}
+
+type Backup struct {
+	BackupIteration BackupIterationFlat `json:"backup_iteration" yaml:"backup_iteration"`
+	BackupRequest   BackupRequest       `json:"backup_request" yaml:"backup_request"`
+}
+
+// BackupIterationResponse ...
+type BackupIterationComponent struct {
+	Name           string `json:"name,omitempty" yaml:"name,omitempty"`
+	BackupSize     int    `json:"backup_size,omitempty" yaml:"backup_size,omitempty"`
+	BackupDuration int    `json:"backup_duration,omitempty" yaml:"backup_duration,omitempty"`
+	ArchiveKey     string `json:"archive_key,omitempty" yaml:"archive_key,omitempty"`
+	IndexKey       string `json:"index_key,omitempty" yaml:"index_key,omitempty"`
+	Result         string `json:"result,omitempty" yaml:"result,omitempty"`
+}
+
 // UploadResponse
 type UploadResponse struct {
 	PackageName string `json:"packageName,omitempty" yaml:"packageName,omitempty"`

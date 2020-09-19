@@ -5,8 +5,8 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
+	"encoding/json"
 	"github.com/pkg/errors"
-	yaml "gopkg.in/yaml.v2"
 )
 
 func GetSubscriptionEnvironments(creds types.Keylink, hashOrAlias string) ([]types.Environment, error) {
@@ -29,7 +29,7 @@ func GetSubscriptionEnvironments(creds types.Keylink, hashOrAlias string) ([]typ
 	}
 
 	var envs []types.Environment
-	err = yaml.Unmarshal(res.Body, &envs)
+	err = json.Unmarshal(res.Body, &envs)
 	if err != nil {
 		return empty, err
 	}
@@ -57,7 +57,7 @@ func GetSubscriptionEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAl
 	}
 
 	var env types.Environment
-	err = yaml.Unmarshal(res.Body, &env)
+	err = json.Unmarshal(res.Body, &env)
 	if err != nil {
 		return empty, err
 	}
