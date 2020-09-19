@@ -31,7 +31,7 @@ func New(args []string, flg flags.Accumulator) error {
 	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
 
 	name := flg.Name
-	components := CalculatePostBackupComponents(flg.Component)
+	components := CalculatePostBackupRestoreComponents(flg.Component)
 	kind := CalculateBackupRequestKind(flg.Type)
 
 	br, err := api.PostBackupRequest(creds, types.PostBackupRequestParams{
@@ -54,7 +54,7 @@ func New(args []string, flg flags.Accumulator) error {
 	}
 
 	if br.ETA != 0 {
-		fETA := CalucateFriendlyETA(br.ETA)
+		fETA := CalculateFriendlyETA(br.ETA)
 		fmt.Println()
 		fmt.Println("This backup will take approximately " + fETA + "(based on previous similar backups) to complete")
 	}
@@ -68,7 +68,7 @@ func New(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func CalculatePostBackupComponents(ogComponents []string) []string {
+func CalculatePostBackupRestoreComponents(ogComponents []string) []string {
 	if len(ogComponents) == 0 {
 		return []string{"all"}
 	}
@@ -84,7 +84,7 @@ func CalculateBackupRequestKind(ogKind string) string {
 	return "manual"
 }
 
-func CalucateFriendlyETA(eta int) string {
+func CalculateFriendlyETA(eta int) string {
 	if eta <= 60 {
 		return strconv.Itoa(eta) + " seconds "
 	}

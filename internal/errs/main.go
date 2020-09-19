@@ -33,6 +33,8 @@ const (
 
 	APIGetSubscriptionErrorMsg = "Failed to get subscription"
 
+	APIPostRestoreErrorMsg = "Failed to create restore"
+
 	APIGetEnvironmentErrorMsg = "Failed to get environment"
 
 	APIUpdateEnvironmentErrorMsg = "Failed to update environment"

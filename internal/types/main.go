@@ -158,6 +158,23 @@ type BackupIterationComponent struct {
 	Result         string `json:"result,omitempty" yaml:"result,omitempty"`
 }
 
+type RestoreRequest struct {
+	Name        string                 `json:"name,omitempty" yaml:"name,omitempty"`
+	ETA         int                    `json:"eta,omitempty" yaml:"eta,omitempty"`
+	Status      string                 `json:"status,omitempty" yaml:"status,omitempty"`
+	Components  []string               `json:"components,omitempty" yaml:"components,omitempty"`
+	Results     []RestoreRequestResult `json:"results,omitempty" yaml:"results,omitempty"`
+	CreatedAt   time.Time              `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CompletedAt time.Time              `json:"completed_at,omitempty" yaml:"completed_at,omitempty"`
+}
+
+// RestoreRequestResponse ...
+type RestoreRequestResult struct {
+	Name      string    `json:"name,omitempty" yaml:"name,omitempty"`
+	Result    string    `json:"result,omitempty" yaml:"result,omitempty"`
+	CreatedAt time.Time `json:"created_at" yaml:"created_at"`
+}
+
 // UploadResponse
 type UploadResponse struct {
 	PackageName string `json:"packageName,omitempty" yaml:"packageName,omitempty"`

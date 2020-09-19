@@ -12,6 +12,8 @@ type Accumulator struct {
 	Retention         string
 	Component         []string
 	Package           string
+	Strategy          string
+	Backup            string
 	Deploy            string
 	Exclude           string
 	Type              string
