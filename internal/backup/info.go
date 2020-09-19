@@ -13,6 +13,8 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
+	"github.com/ironstar-io/cron"
+
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
@@ -153,7 +155,25 @@ func DisplayIndividualBackupInfo(creds types.Keylink, env types.Environment, sub
 	}
 
 	fmt.Println()
-	fmt.Println("Type: " + b.BackupRequest.Kind)
+	fmt.Println("Type:       " + b.BackupRequest.Kind)
+	fmt.Println("Name:       " + b.BackupRequest.Name)
+	fmt.Println("Components: " + strings.Join(b.BackupRequest.Components, ", "))
+	fmt.Println("Created:    " + b.BackupRequest.CreatedAt.Format(time.RFC3339))
+
+	fmt.Println()
+	if b.BackupRequest.Kind == "scheduled" {
+		fmt.Println("Schedule:           " + b.BackupRequest.Schedule)
+
+		specParser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
+		sched, _ := specParser.Parse(b.BackupRequest.Schedule)
+
+		now := time.Now()
+		next := sched.Next(now)
+
+		fmt.Println("Next Scheduled Run: " + next.Format(time.RFC3339))
+	} else {
+		fmt.Println("A backup run has been registered, and will commence in the Ironstar system shortly")
+	}
 
 	return nil
 }

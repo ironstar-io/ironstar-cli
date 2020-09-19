@@ -6,6 +6,7 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/fatih/color v1.9.0
 	github.com/gernest/wow v0.1.0
+	github.com/ironstar-io/cron v0.0.0-20200911073046-f389219e1823
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/pkg/errors v0.9.1
 	github.com/satori/go.uuid v1.2.0
