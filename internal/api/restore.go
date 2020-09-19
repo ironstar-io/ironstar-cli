@@ -42,13 +42,13 @@ func PostRestoreRequest(creds types.Keylink, payload types.PostRestoreRequestPar
 	return rr, nil
 }
 
-func GetSubscriptionRestoreIterations(creds types.Keylink, subAliasOrHashedID string) ([]types.BackupIteration, error) {
-	empty := []types.BackupIteration{}
+func GetSubscriptionRestoreIterations(creds types.Keylink, subAliasOrHashedID string) ([]types.RestoreRequest, error) {
+	empty := []types.RestoreRequest{}
 	req := &Request{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
-		Path:             "/subscription/" + subAliasOrHashedID + "/backups",
+		Path:             "/subscription/" + subAliasOrHashedID + "/restores",
 		MapStringPayload: map[string]interface{}{},
 	}
 
@@ -61,22 +61,22 @@ func GetSubscriptionRestoreIterations(creds types.Keylink, subAliasOrHashedID st
 		return empty, res.HandleFailure()
 	}
 
-	var bis []types.BackupIteration
-	err = json.Unmarshal(res.Body, &bis)
+	var ris []types.RestoreRequest
+	err = json.Unmarshal(res.Body, &ris)
 	if err != nil {
 		return empty, err
 	}
 
-	return bis, nil
+	return ris, nil
 }
 
-func GetEnvironmentRestoreIterations(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string) ([]types.BackupIteration, error) {
-	empty := []types.BackupIteration{}
+func GetEnvironmentRestoreIterations(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string) ([]types.RestoreRequest, error) {
+	empty := []types.RestoreRequest{}
 	req := &Request{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
-		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backup-iterations",
+		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/restore-requests",
 		MapStringPayload: map[string]interface{}{},
 	}
 
@@ -89,22 +89,22 @@ func GetEnvironmentRestoreIterations(creds types.Keylink, subAliasOrHashedID, en
 		return empty, res.HandleFailure()
 	}
 
-	var bis []types.BackupIteration
-	err = json.Unmarshal(res.Body, &bis)
+	var ris []types.RestoreRequest
+	err = json.Unmarshal(res.Body, &ris)
 	if err != nil {
 		return empty, err
 	}
 
-	return bis, nil
+	return ris, nil
 }
 
-func GetEnvironmentRestore(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, backupName string) (types.Backup, error) {
-	empty := types.Backup{}
+func GetEnvironmentRestore(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, restoreName string) (types.RestoreRequest, error) {
+	empty := types.RestoreRequest{}
 	req := &Request{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
-		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backups/" + backupName,
+		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/restore-requests/" + restoreName,
 		MapStringPayload: map[string]interface{}{},
 	}
 
@@ -117,11 +117,11 @@ func GetEnvironmentRestore(creds types.Keylink, subAliasOrHashedID, envNameOrHas
 		return empty, res.HandleFailure()
 	}
 
-	var b types.Backup
-	err = json.Unmarshal(res.Body, &b)
+	var r types.RestoreRequest
+	err = json.Unmarshal(res.Body, &r)
 	if err != nil {
 		return empty, err
 	}
 
-	return b, nil
+	return r, nil
 }

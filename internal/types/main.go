@@ -99,6 +99,14 @@ type Deployment struct {
 	Build          BuildFlat   `json:"build,omitempty" yaml:"build,omitempty"`
 }
 
+// UserMinimal
+type UserMinimal struct {
+	FirstName   string `json:"first_name,omitempty" yaml:"first_name,omitempty"`
+	LastName    string `json:"last_name,omitempty" yaml:"last_name,omitempty"`
+	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
+	Email       string `json:"email,omitempty" yaml:"email,omitempty"`
+}
+
 // DeploymentActivityResponse
 type DeploymentActivityResponse struct {
 	Message   string    `json:"message,omitempty" yaml:"message,omitempty"`
@@ -158,7 +166,7 @@ type BackupIterationComponent struct {
 	Result         string `json:"result,omitempty" yaml:"result,omitempty"`
 }
 
-type RestoreRequest struct {
+type RestoreRequestFlat struct {
 	Name        string                 `json:"name,omitempty" yaml:"name,omitempty"`
 	ETA         int                    `json:"eta,omitempty" yaml:"eta,omitempty"`
 	Status      string                 `json:"status,omitempty" yaml:"status,omitempty"`
@@ -166,6 +174,13 @@ type RestoreRequest struct {
 	Results     []RestoreRequestResult `json:"results,omitempty" yaml:"results,omitempty"`
 	CreatedAt   time.Time              `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	CompletedAt time.Time              `json:"completed_at,omitempty" yaml:"completed_at,omitempty"`
+}
+
+type RestoreRequest struct {
+	RestoreRequestFlat
+	Initiator       UserMinimal         `json:"initiator" yaml:"initiator"`
+	Environment     Environment         `json:"environment" yaml:"environment"`
+	BackupIteration BackupIterationFlat `json:"backup_iteration" yaml:"backup_iteration"`
 }
 
 // RestoreRequestResponse ...
