@@ -1,4 +1,4 @@
-package restore
+package sync
 
 import (
 	"fmt"
@@ -6,22 +6,22 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/restore"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/sync"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
-// NewCmd - `iron restore new`
+// NewCmd - `iron sync new`
 var NewCmd = &cobra.Command{
 	Use:   "new",
-	Short: "Create new restore",
-	Long:  "Restore a backup to an environment",
+	Short: "Create new environment sync",
+	Long:  "Sync a source environment to a destination environment",
 	Run:   new,
 }
 
 func new(cmd *cobra.Command, args []string) {
-	err := restore.New(args, flags.Acc)
+	err := sync.New(args, flags.Acc)
 	if err != nil {
 		if err != api.ErrIronstarAPICall {
 			fmt.Println()

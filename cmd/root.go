@@ -12,6 +12,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/restore"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/sync"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version"
 
 	"github.com/spf13/cobra"
@@ -76,6 +77,11 @@ func init() {
 	rootCmd.AddCommand(restore.RestoreCmd)
 	restore.RestoreCmd.AddCommand(restore.NewCmd)
 	restore.RestoreCmd.AddCommand(restore.InfoCmd)
+
+	// `iron sync x`
+	rootCmd.AddCommand(sync.SyncCmd)
+	sync.SyncCmd.AddCommand(sync.NewCmd)
+	sync.SyncCmd.AddCommand(sync.InfoCmd)
 
 	// `iron package x`
 	rootCmd.AddCommand(pkg.PackageCmd)
