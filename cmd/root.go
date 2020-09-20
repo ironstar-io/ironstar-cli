@@ -136,6 +136,15 @@ func RootCmd() *cobra.Command {
 	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "The source backup identifier to restore from")
 	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "The source backup identifier to restore from")
 
+	sync.SyncCmd.PersistentFlags().StringVarP(&flags.Acc.SrcEnvironment, "src-env", "", "", "Identifies the source environment to copy from")
+	sync.NewCmd.PersistentFlags().StringVarP(&flags.Acc.SrcEnvironment, "src-env", "", "", "Identifies the source environment to copy from")
+	sync.SyncCmd.PersistentFlags().StringVarP(&flags.Acc.DestEnvironment, "dest-env", "", "", "Identifies the source environment to copy to")
+	sync.NewCmd.PersistentFlags().StringVarP(&flags.Acc.DestEnvironment, "dest-env", "", "", "Identifies the source environment to copy to")
+	sync.SyncCmd.PersistentFlags().BoolVarP(&flags.Acc.UseLatestBackup, "use-latest-backup", "", false, "Use this flag to instruct this operation to use the latest full scheduled backup from the --source-env as the source, this will prevent a new backup from being taken and will significantly improve the sync time.")
+	sync.NewCmd.PersistentFlags().BoolVarP(&flags.Acc.UseLatestBackup, "use-latest-backup", "", false, "Use this flag to instruct this operation to use the latest full scheduled backup from the --source-env as the source, this will prevent a new backup from being taken and will significantly improve the sync time.")
+	sync.SyncCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for the restore section of the sync")
+	sync.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for the restore section of the sync")
+
 	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
 	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
 	pkg.UpdateRefCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")

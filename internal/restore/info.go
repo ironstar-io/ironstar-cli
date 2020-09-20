@@ -161,7 +161,7 @@ func DisplayComponentInfo(components []types.RestoreRequestResult) {
 }
 
 func CalcRestoreTimeTaken(status string, createdAt, completedAt time.Time) string {
-	if status != constants.BACKUP_COMPLETE || completedAt.IsZero() {
+	if status != constants.RESTORE_COMPLETE || completedAt.IsZero() {
 		return time.Since(createdAt).Round(time.Second).String()
 	}
 

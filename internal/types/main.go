@@ -196,3 +196,21 @@ type UploadResponse struct {
 	BuildID     string `json:"buildId,omitempty" yaml:"buildId,omitempty"`
 	BuildName   string `json:"buildName,omitempty" yaml:"buildName,omitempty"`
 }
+
+type SyncRequestFlat struct {
+	Name            string    `json:"name,omitempty" yaml:"name,omitempty"`
+	ETA             int       `json:"eta,omitempty" yaml:"eta,omitempty"`
+	Status          string    `json:"status,omitempty" yaml:"status,omitempty"`
+	RestoreStrategy string    `json:"results,omitempty" yaml:"results,omitempty"`
+	CreatedAt       time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CompletedAt     time.Time `json:"completed_at,omitempty" yaml:"completed_at,omitempty"`
+}
+
+type SyncRequest struct {
+	RestoreRequestFlat
+	Initiator       UserMinimal        `json:"initiator" yaml:"initiator"`
+	SrcEnvironment  Environment        `json:"src_environment" yaml:"src_environment"`
+	DestEnvironment Environment        `json:"dest_environment" yaml:"dest_environment"`
+	RestoreRequest  RestoreRequestFlat `json:"restore_request" yaml:"restore_request"`
+	BackupRequest   BackupRequest      `json:"backup_request" yaml:"backup_request"`
+}

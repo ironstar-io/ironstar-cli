@@ -18,6 +18,9 @@ type Accumulator struct {
 	Exclude           string
 	Type              string
 	Ref               string
+	SrcEnvironment    string
+	DestEnvironment   string
+	UseLatestBackup   bool
 }
 
 var Acc Accumulator

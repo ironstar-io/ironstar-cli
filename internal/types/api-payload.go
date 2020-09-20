@@ -16,3 +16,11 @@ type PostRestoreRequestParams struct {
 	Backup         string
 	Components     []string
 }
+
+type PostSyncRequestParams struct {
+	SubscriptionID  string
+	RestoreStrategy string
+	SrcEnvironment  string
+	DestEnvironment string
+	Components      []string
+}

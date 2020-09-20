@@ -34,112 +34,64 @@ func Info(args []string, flg flags.Accumulator) error {
 
 	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
 
-	if flg.Environment != "" {
-		env, err := api.GetEnvironmentContext(creds, flg, sub.HashedID)
+	if len(args) > 0 {
+		err = DisplayIndividualSyncInfo(creds, sub, args[0])
 		if err != nil {
 			return err
 		}
 
-		if len(args) > 0 {
-			err = DisplayIndividualRestoreInfo(creds, env, sub, args[0])
-			if err != nil {
-				return err
-			}
-		} else {
-			err = DisplayEnvironmentRestoreInfo(creds, env, sub)
-			if err != nil {
-				return err
-			}
-		}
-
 		return nil
 	}
 
-	if len(args) > 0 {
-		fmt.Println()
-		fmt.Println("If you're looking for information on a specific restore, please specify the environment using the flag `--env=[env-name]`. Exiting...")
-
-		return nil
-	}
-
-	ris, err := api.GetSubscriptionRestoreIterations(creds, sub.HashedID)
+	srs, err := api.GetSubscriptionSyncRequests(creds, sub.HashedID)
 	if err != nil {
 		return err
 	}
 
 	fmt.Println()
-	fmt.Println("Recent restores for subscription [" + sub.Alias + "]:")
+	fmt.Println("Recent syncs for subscription [" + sub.Alias + "]:")
 	fmt.Println()
 
-	risRows := make([][]string, len(ris))
-	for _, ri := range ris {
-		tt := CalcRestoreTimeTaken(ri.Status, ri.CreatedAt, ri.CompletedAt)
-		components := CalcRestoreResultNames(ri.Results)
-		sbu := CalcBackupIterationName(ri.BackupIteration.ClientName, ri.BackupIteration.Iteration)
+	srsRows := make([][]string, len(srs))
+	for _, sr := range srs {
+		tt := CalcRestoreTimeTaken(sr.Status, sr.CreatedAt, sr.CompletedAt)
+		components := strings.Join(sr.BackupRequest.Components, ", ")
 
-		risRows = append(risRows, []string{ri.Name, ri.Environment.Name, sbu, ri.Initiator.DisplayName, ri.CreatedAt.Format(time.RFC3339), tt, ri.Status, components})
+		srsRows = append(srsRows, []string{sr.Name, sr.SrcEnvironment.Name, sr.DestEnvironment.Name, sr.Initiator.DisplayName, sr.CreatedAt.Format(time.RFC3339), tt, sr.Status, components})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "Dest Environment", "Source Backup", "Initiator", "Start Time", "Time Taken", "Status", "Components"})
+	table.SetHeader([]string{"Name", "Src Environment", "Dest Environment", "Initiator", "Start Time", "Time Taken", "Status", "Components"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.AppendBulk(risRows)
+	table.AppendBulk(srsRows)
 	table.Render()
 
 	return nil
 }
 
-func DisplayEnvironmentRestoreInfo(creds types.Keylink, env types.Environment, sub types.Subscription) error {
-	ris, err := api.GetEnvironmentRestoreIterations(creds, sub.HashedID, env.HashedID)
+func DisplayIndividualSyncInfo(creds types.Keylink, sub types.Subscription, syncName string) error {
+	sr, err := api.GetSubscriptionSync(creds, sub.HashedID, syncName)
 	if err != nil {
 		return err
 	}
 
 	fmt.Println()
-	fmt.Println("Recent restores for destination environment [" + env.Name + "]:")
-	fmt.Println()
-
-	risRows := make([][]string, len(ris))
-	for _, ri := range ris {
-		tt := CalcRestoreTimeTaken(ri.Status, ri.CreatedAt, ri.CompletedAt)
-		components := CalcRestoreResultNames(ri.Results)
-		sbu := CalcBackupIterationName(ri.BackupIteration.ClientName, ri.BackupIteration.Iteration)
-
-		risRows = append(risRows, []string{ri.Name, sbu, ri.Initiator.DisplayName, ri.CreatedAt.Format(time.RFC3339), tt, ri.Status, components})
-	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "Source Backup", "Initiator", "Start Time", "Time Taken", "Status", "Components"})
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.AppendBulk(risRows)
-	table.Render()
-
-	return nil
-}
-
-func DisplayIndividualRestoreInfo(creds types.Keylink, env types.Environment, sub types.Subscription, restoreName string) error {
-	rr, err := api.GetEnvironmentRestore(creds, sub.HashedID, env.HashedID, restoreName)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println()
-	fmt.Println("Name:          " + rr.Name)
-	fmt.Println("Status:        " + rr.Status)
-	fmt.Println("Initiator:     " + rr.Initiator.DisplayName)
-	fmt.Println("Source Backup: " + CalcBackupIterationName(rr.BackupIteration.ClientName, rr.BackupIteration.Iteration))
-	fmt.Println("Started:       " + rr.CreatedAt.Format(time.RFC3339))
-	if !rr.CompletedAt.IsZero() {
-		fmt.Println("Completed:     " + rr.CompletedAt.Format(time.RFC3339))
-		fmt.Println("Duration:      " + CalcRestoreTimeTaken(rr.Status, rr.CreatedAt, rr.CompletedAt))
+	fmt.Println("Name:          " + sr.Name)
+	fmt.Println("Status:        " + sr.Status)
+	fmt.Println("Initiator:     " + sr.Initiator.DisplayName)
+	// fmt.Println("Source Backup: " + CalcBackupIterationName(rr.BackupIteration.ClientName, rr.BackupIteration.Iteration))
+	fmt.Println("Started:       " + sr.CreatedAt.Format(time.RFC3339))
+	if !sr.CompletedAt.IsZero() {
+		fmt.Println("Completed:     " + sr.CompletedAt.Format(time.RFC3339))
+		fmt.Println("Duration:      " + CalcRestoreTimeTaken(sr.Status, sr.CreatedAt, sr.CompletedAt))
 	}
 
 	fmt.Println()
 	fmt.Println("Reservation:")
-	fmt.Println(strings.Join(rr.Components, ", "))
+	fmt.Println(strings.Join(sr.Components, ", "))
 
-	if len(rr.Results) > 0 {
-		DisplayComponentInfo(rr.Results)
+	if len(sr.Results) > 0 {
+		DisplayComponentInfo(sr.Results)
 	}
 
 	return nil
@@ -166,15 +118,6 @@ func CalcRestoreTimeTaken(status string, createdAt, completedAt time.Time) strin
 	}
 
 	return completedAt.Sub(createdAt).Round(time.Second).String()
-}
-
-func CalcRestoreResultNames(components []types.RestoreRequestResult) string {
-	var compNames []string
-	for _, comp := range components {
-		compNames = append(compNames, comp.Name)
-	}
-
-	return strings.Join(compNames, ", ")
 }
 
 func CalcBackupIterationName(clientName, iterationName string) string {

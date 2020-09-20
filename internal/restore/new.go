@@ -32,10 +32,9 @@ func New(args []string, flg flags.Accumulator) error {
 		return errors.New("A source backup must be specified with the --backup=[backup-name] flag")
 	}
 
-	components := CalculatePostBackupRestoreComponents(flg.Component)
-
+	components := CalculateRestoreComponents(flg.Component)
 	if len(components) == 0 {
-		return errors.New("A backup must be specified with the --backup=[backup-name] flag")
+		return errors.New("At least one component must be specified with the --component=[component-name] flag")
 	}
 
 	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
@@ -78,12 +77,12 @@ func New(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func CalculatePostBackupRestoreComponents(ogComponents []string) []string {
+func CalculateRestoreComponents(ogComponents []string) []string {
 	if len(ogComponents) == 0 {
 		return []string{"all"}
 	}
 
-	return ogComponents
+	return utils.RemoveStringFromSlice(ogComponents, "logs")
 }
 
 func CalculateRestoreStrat(strategy string) string {

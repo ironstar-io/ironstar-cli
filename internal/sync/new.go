@@ -19,71 +19,78 @@ func New(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	seCtx, err := api.GetSubscriptionEnvironmentContext(creds, flg)
+	sub, err := api.GetSubscriptionContext(creds, flg)
 	if err != nil {
 		return err
 	}
 
-	if seCtx.Subscription.Alias == "" {
+	if sub.Alias == "" {
 		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
 	}
 
-	if flg.Backup == "" {
-		return errors.New("A source backup must be specified with the --backup=[backup-name] flag")
-	}
-
-	components := CalculatePostBackupRestoreComponents(flg.Component)
-
+	// Check supplied components
+	components := CalculateSyncRestoreComponents(flg.Component)
 	if len(components) == 0 {
-		return errors.New("A backup must be specified with the --backup=[backup-name] flag")
+		return errors.New("At least one component must be specified with the --component=[component-name] flag")
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+	// Check and pull source/destination environments
+	if flg.SrcEnvironment == "" {
+		return errors.New("The source environment for the sync must be specified with the --src-env=[environment-name] flag")
+	}
+	srcEnv, err := api.GetSubscriptionEnvironment(creds, sub.HashedID, flg.SrcEnvironment)
+	if err != nil {
+		return err
+	}
+	if flg.DestEnvironment == "" {
+		return errors.New("The destination environment for the sync must be specified with the --dest-env=[environment-name] flag")
+	}
+	destEnv, err := api.GetSubscriptionEnvironment(creds, sub.HashedID, flg.DestEnvironment)
+	if err != nil {
+		return err
+	}
 
-	name := flg.Name
+	if flg.SrcEnvironment == flg.DestEnvironment {
+		return errors.New("Cannot sync between the same environment.")
+	}
+
+	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
+
 	strategy := CalculateRestoreStrat(flg.Strategy)
 
-	rr, err := api.PostRestoreRequest(creds, types.PostRestoreRequestParams{
-		SubscriptionID: seCtx.Subscription.HashedID,
-		EnvironmentID:  seCtx.Environment.HashedID,
-		Name:           name,
-		Strategy:       strategy,
-		Backup:         flg.Backup,
-		Components:     components,
+	sr, err := api.PostSyncRequest(creds, types.PostSyncRequestParams{
+		SubscriptionID:  sub.HashedID,
+		SrcEnvironment:  srcEnv.HashedID,
+		DestEnvironment: destEnv.HashedID,
+		RestoreStrategy: strategy,
+		Components:      components,
 	})
 	if err != nil {
 		return err
 	}
 
 	fmt.Println()
-	fmt.Println("Creating a restore to environment [" + seCtx.Environment.Name + "] from backup [" + flg.Backup + "] named [" + rr.Name + "]")
+	fmt.Println("Creating a sync from environment [" + srcEnv.Name + "] to environment [" + destEnv.Name + "] named [" + sr.Name + "]")
 	fmt.Println()
-	fmt.Println("The following components will be restored:")
-	for _, comp := range rr.Components {
-		fmt.Println("- " + comp)
-	}
 
-	if rr.ETA != 0 {
-		fETA := utils.CalculateFriendlyETA(rr.ETA)
+	if sr.ETA != 0 {
+		fETA := utils.CalculateFriendlyETA(sr.ETA)
 		fmt.Println()
-		fmt.Println("This restore will take approximately " + fETA + " to complete")
+		fmt.Println("This sync will take approximately " + fETA + "to complete")
 	}
 
 	fmt.Println()
-	fmt.Println("You can check the status at any time by running `iron restore info " + rr.Name + " --env=" + seCtx.Environment.Name + "`")
-	fmt.Println()
-
-	color.Green("Successfully commenced restore")
+	fmt.Println("You can check the status at any time by running `iron sync info " + sr.Name + "`")
 
 	return nil
 }
 
-func CalculatePostBackupRestoreComponents(ogComponents []string) []string {
+func CalculateSyncRestoreComponents(ogComponents []string) []string {
 	if len(ogComponents) == 0 {
 		return []string{"all"}
 	}
 
-	return ogComponents
+	return utils.RemoveStringFromSlice(ogComponents, "logs")
 }
 
 func CalculateRestoreStrat(strategy string) string {
