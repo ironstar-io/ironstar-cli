@@ -41,6 +41,10 @@ const (
 
 	APIPostRestoreErrorMsg = "Failed to create restore"
 
+	APIGetSyncErrorMsg = "Failed to get sync"
+
+	APIPostSyncErrorMsg = "Failed to create sync"
+
 	APIGetEnvironmentErrorMsg = "Failed to get environment"
 
 	APIUpdateEnvironmentErrorMsg = "Failed to update environment"
