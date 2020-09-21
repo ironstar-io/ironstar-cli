@@ -109,9 +109,7 @@ func DisplayEnvironmentRestoreInfo(creds types.Keylink, env types.Environment, s
 		sbu := CalcBackupIterationName(ri.BackupIteration.ClientName, ri.BackupIteration.Iteration)
 
 		// Prepend rows, we want dates ordered oldest to newest
-		row := make([][]string, 1)
-		row = append(row, []string{ri.Name, sbu, ri.Initiator.DisplayName, ri.CreatedAt.Format(time.RFC3339), tt, ri.Status, components})
-		risRows = append(row, risRows...)
+		risRows = append(risRows, []string{ri.Name, sbu, ri.Initiator.DisplayName, ri.CreatedAt.Format(time.RFC3339), tt, ri.Status, components})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
