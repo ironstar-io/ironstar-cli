@@ -4,12 +4,6 @@ subscription:
   alias: technocrat
   ref: au10015
   application_type: drupal
-environment:
-  environment_id: mJ5Zyoq8wN
-  class: np
-  dns_name: craftsperson-6163
-  name: dev
-  update_strategy: RollingUpdate
 package:
   exclude:
   - .git
