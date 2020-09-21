@@ -29,7 +29,7 @@ func New(args []string, flg flags.Accumulator) error {
 	}
 
 	// Check supplied components
-	components := CalculateSyncRestoreComponents(flg.Component)
+	components := utils.CalculateRestoreComponents(flg.Component)
 	if len(components) == 0 {
 		return errors.New("At least one component must be specified with the --component=[component-name] flag")
 	}
@@ -56,7 +56,16 @@ func New(args []string, flg flags.Accumulator) error {
 
 	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
 
-	strategy := CalculateRestoreStrat(flg.Strategy)
+	strategy := utils.CalculateRestoreStrat(flg.Strategy)
+
+	if flg.UseLatestBackup == true {
+		err = RestoreFromLatestBackup(creds, flg, sub, srcEnv, destEnv, components, strategy)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
 
 	sr, err := api.PostSyncRequest(creds, types.PostSyncRequestParams{
 		SubscriptionID:  sub.HashedID,
@@ -76,7 +85,7 @@ func New(args []string, flg flags.Accumulator) error {
 	if sr.ETA != 0 {
 		fETA := utils.CalculateFriendlyETA(sr.ETA)
 		fmt.Println()
-		fmt.Println("This sync will take approximately " + fETA + "to complete")
+		fmt.Println("This sync will take approximately " + fETA + " to complete")
 	}
 
 	fmt.Println()
@@ -85,18 +94,50 @@ func New(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func CalculateSyncRestoreComponents(ogComponents []string) []string {
-	if len(ogComponents) == 0 {
-		return []string{"all"}
+func RestoreFromLatestBackup(creds types.Keylink, flg flags.Accumulator, sub types.Subscription, srcEnv, destEnv types.Environment, components []string, strategy string) error {
+	bi, err := api.GetLatestEnvironmentBackupIteration(creds, sub.HashedID, destEnv.HashedID)
+	if err != nil {
+		return errors.Wrap(err, "Unable to find the latest backup from the source environment when running with the `--use-latest-backup` flag. Please run without this flag to perform a full sync. Exiting...")
 	}
 
-	return utils.RemoveStringFromSlice(ogComponents, "logs")
-}
-
-func CalculateRestoreStrat(strategy string) string {
-	if strategy == "" {
-		return "merge"
+	rr, err := api.PostRestoreRequest(creds, types.PostRestoreRequestParams{
+		SubscriptionID: sub.HashedID,
+		EnvironmentID:  destEnv.HashedID,
+		Name:           flg.Name,
+		Strategy:       strategy,
+		Backup:         bi.Iteration,
+		Components:     components,
+	})
+	if err != nil {
+		return err
 	}
 
-	return strategy
+	backupName := bi.Iteration
+	if bi.ClientName != "" {
+		backupName = bi.ClientName
+	}
+
+	fmt.Println()
+	fmt.Println("Creating a restore to environment [" + destEnv.Name + "] from backup run [" + backupName + "] named [" + rr.Name + "]")
+	fmt.Println()
+	fmt.Println("The backup portion of the sync was skipped due to the `--use-latest-backup` flag being set")
+	fmt.Println()
+	fmt.Println("The following components will be restored:")
+	for _, comp := range rr.Components {
+		fmt.Println("- " + comp)
+	}
+
+	if rr.ETA != 0 {
+		fETA := utils.CalculateFriendlyETA(rr.ETA)
+		fmt.Println()
+		fmt.Println("This restore will take approximately " + fETA + " to complete")
+	}
+
+	fmt.Println()
+	fmt.Println("You can check the status at any time by running `iron restore info " + rr.Name + " --env=" + destEnv.Name + "`")
+	fmt.Println()
+
+	color.Green("Successfully commenced restore")
+
+	return nil
 }

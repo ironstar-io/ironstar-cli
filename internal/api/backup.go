@@ -1,10 +1,12 @@
 package api
 
 import (
+	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"encoding/json"
+
 	"github.com/pkg/errors"
 )
 
@@ -96,7 +98,35 @@ func GetEnvironmentBackupIterations(creds types.Keylink, subAliasOrHashedID, env
 	return bis, nil
 }
 
-func GetEnvironmentBackup(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, backupName string) (types.Backup, error) {
+func GetLatestEnvironmentBackupIteration(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string) (types.BackupIteration, error) {
+	empty := types.BackupIteration{}
+	req := &Request{
+		RunTokenRefresh:  true,
+		Credentials:      creds,
+		Method:           "GET",
+		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backup-iterations?latest=true",
+		MapStringPayload: map[string]interface{}{},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+	}
+
+	if res.StatusCode != 200 {
+		return empty, res.HandleFailure()
+	}
+
+	var bi types.BackupIteration
+	err = json.Unmarshal(res.Body, &bi)
+	if err != nil {
+		return empty, err
+	}
+
+	return bi, nil
+}
+
+func GetEnvironmentBackup(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, backupName, errorOutput string) (types.Backup, error) {
 	empty := types.Backup{}
 	req := &Request{
 		RunTokenRefresh:  true,
@@ -112,6 +142,9 @@ func GetEnvironmentBackup(creds types.Keylink, subAliasOrHashedID, envNameOrHash
 	}
 
 	if res.StatusCode != 200 {
+		if errorOutput == constants.SKIP_ERRORS {
+			return empty, nil
+		}
 		return empty, res.HandleFailure()
 	}
 

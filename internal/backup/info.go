@@ -3,7 +3,6 @@ package backup
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/ironstar-io/cron"
@@ -76,9 +76,9 @@ func Info(args []string, flg flags.Accumulator) error {
 
 	bisRows := make([][]string, len(bis))
 	for _, bi := range bis {
-		tt := CalcBackupTimeTaken(bi.Status, bi.CreatedAt, bi.CompletedAt)
-		size := CalcBackupSize(bi.Components)
-		components := CalcBackupComponentNames(bi.Components)
+		tt := utils.CalcBackupTimeTaken(bi.Status, bi.CreatedAt, bi.CompletedAt)
+		size := utils.CalcBackupSize(bi.Components)
+		components := utils.CalcBackupComponentNames(bi.Components)
 		bisRows = append(bisRows, []string{bi.BackupRequest.Kind, bi.Iteration, bi.Environment.Name, bi.CreatedAt.Format(time.RFC3339), tt, bi.Status, size, components})
 	}
 
@@ -103,9 +103,9 @@ func DisplayEnvironmentBackupInfo(creds types.Keylink, env types.Environment, su
 
 	bisRows := make([][]string, len(bis))
 	for _, bi := range bis {
-		tt := CalcBackupTimeTaken(bi.Status, bi.CreatedAt, bi.CompletedAt)
-		size := CalcBackupSize(bi.Components)
-		components := CalcBackupComponentNames(bi.Components)
+		tt := utils.CalcBackupTimeTaken(bi.Status, bi.CreatedAt, bi.CompletedAt)
+		size := utils.CalcBackupSize(bi.Components)
+		components := utils.CalcBackupComponentNames(bi.Components)
 		bisRows = append(bisRows, []string{bi.BackupRequest.Kind, bi.Iteration, bi.CreatedAt.Format(time.RFC3339), tt, bi.Status, size, components})
 	}
 
@@ -119,13 +119,13 @@ func DisplayEnvironmentBackupInfo(creds types.Keylink, env types.Environment, su
 }
 
 func DisplayIndividualBackupInfo(creds types.Keylink, env types.Environment, sub types.Subscription, backupName string) error {
-	b, err := api.GetEnvironmentBackup(creds, sub.HashedID, env.HashedID, backupName)
+	b, err := api.GetEnvironmentBackup(creds, sub.HashedID, env.HashedID, backupName, constants.DISPLAY_ERRORS)
 	if err != nil {
 		return err
 	}
 
 	if b.BackupIteration.Iteration != "" {
-		size := CalcBackupSize(b.BackupIteration.Components)
+		size := utils.CalcBackupSize(b.BackupIteration.Components)
 
 		fmt.Println()
 		fmt.Println("Type:       " + b.BackupRequest.Kind)
@@ -139,7 +139,7 @@ func DisplayIndividualBackupInfo(creds types.Keylink, env types.Environment, sub
 		fmt.Println("Started:    " + b.BackupIteration.CreatedAt.Format(time.RFC3339))
 		if !b.BackupIteration.CompletedAt.IsZero() {
 			fmt.Println("Completed:  " + b.BackupIteration.CompletedAt.Format(time.RFC3339))
-			fmt.Println("Duration:   " + CalcBackupTimeTaken(b.BackupIteration.Status, b.BackupIteration.CreatedAt, b.BackupIteration.CompletedAt))
+			fmt.Println("Duration:   " + utils.CalcBackupTimeTaken(b.BackupIteration.Status, b.BackupIteration.CreatedAt, b.BackupIteration.CompletedAt))
 		}
 		fmt.Println("Size:       " + size)
 
@@ -148,7 +148,7 @@ func DisplayIndividualBackupInfo(creds types.Keylink, env types.Environment, sub
 		fmt.Println(strings.Join(b.BackupIteration.Reservation, ", "))
 
 		if len(b.BackupIteration.Components) > 0 {
-			DisplayComponentInfo(b.BackupIteration.Components)
+			utils.DisplayBackupComponentInfo(b.BackupIteration.Components)
 		}
 
 		return nil
@@ -176,46 +176,4 @@ func DisplayIndividualBackupInfo(creds types.Keylink, env types.Environment, sub
 	}
 
 	return nil
-}
-
-func DisplayComponentInfo(components []types.BackupIterationComponent) {
-	fmt.Println()
-
-	compRows := make([][]string, len(components))
-	for _, comp := range components {
-		dur := (time.Duration(int64(comp.BackupDuration)) * time.Second).Round(time.Second).String()
-		compRows = append(compRows, []string{comp.Name, strconv.Itoa(comp.BackupSize) + " MiB", dur, comp.ArchiveKey, comp.Result})
-	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Component", "Size", "Duration", "Filename", "Result"})
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.AppendBulk(compRows)
-	table.Render()
-}
-
-func CalcBackupTimeTaken(status string, createdAt, completedAt time.Time) string {
-	if status != constants.BACKUP_COMPLETE || completedAt.IsZero() {
-		return time.Since(createdAt).Round(time.Second).String()
-	}
-
-	return completedAt.Sub(createdAt).Round(time.Second).String()
-}
-
-func CalcBackupSize(components []types.BackupIterationComponent) string {
-	var size int
-	for _, comp := range components {
-		size = size + comp.BackupSize
-	}
-
-	return strconv.Itoa(size) + " MiB"
-}
-
-func CalcBackupComponentNames(components []types.BackupIterationComponent) string {
-	var compNames []string
-	for _, comp := range components {
-		compNames = append(compNames, comp.Name)
-	}
-
-	return strings.Join(compNames, ", ")
 }

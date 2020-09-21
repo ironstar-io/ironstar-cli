@@ -10,6 +10,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -55,13 +56,12 @@ func Info(args []string, flg flags.Accumulator) error {
 	srsRows := make([][]string, len(srs))
 	for _, sr := range srs {
 		tt := CalcRestoreTimeTaken(sr.Status, sr.CreatedAt, sr.CompletedAt)
-		components := strings.Join(sr.BackupRequest.Components, ", ")
 
-		srsRows = append(srsRows, []string{sr.Name, sr.SrcEnvironment.Name, sr.DestEnvironment.Name, sr.Initiator.DisplayName, sr.CreatedAt.Format(time.RFC3339), tt, sr.Status, components})
+		srsRows = append(srsRows, []string{sr.Name, sr.SrcEnvironment.Name, sr.DestEnvironment.Name, sr.Initiator.DisplayName, sr.CreatedAt.Format(time.RFC3339), tt, sr.Status})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "Src Environment", "Dest Environment", "Initiator", "Start Time", "Time Taken", "Status", "Components"})
+	table.SetHeader([]string{"Name", "Src Environment", "Dest Environment", "Initiator", "Start Time", "Time Taken", "Status"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(srsRows)
 	table.Render()
@@ -79,7 +79,6 @@ func DisplayIndividualSyncInfo(creds types.Keylink, sub types.Subscription, sync
 	fmt.Println("Name:          " + sr.Name)
 	fmt.Println("Status:        " + sr.Status)
 	fmt.Println("Initiator:     " + sr.Initiator.DisplayName)
-	// fmt.Println("Source Backup: " + CalcBackupIterationName(rr.BackupIteration.ClientName, rr.BackupIteration.Iteration))
 	fmt.Println("Started:       " + sr.CreatedAt.Format(time.RFC3339))
 	if !sr.CompletedAt.IsZero() {
 		fmt.Println("Completed:     " + sr.CompletedAt.Format(time.RFC3339))
@@ -87,29 +86,61 @@ func DisplayIndividualSyncInfo(creds types.Keylink, sub types.Subscription, sync
 	}
 
 	fmt.Println()
-	fmt.Println("Reservation:")
-	fmt.Println(strings.Join(sr.Components, ", "))
+	fmt.Println("Source Environment:      " + sr.SrcEnvironment.Name)
+	fmt.Println("Destination Environment: " + sr.DestEnvironment.Name)
+	fmt.Println()
 
-	if len(sr.Results) > 0 {
-		DisplayComponentInfo(sr.Results)
+	fmt.Println("Reservation:")
+	fmt.Println(strings.Join(sr.BackupRequest.Components, ", "))
+
+	b, _ := api.GetEnvironmentBackup(creds, sub.HashedID, sr.SrcEnvironment.HashedID, sr.Name, constants.SKIP_ERRORS)
+
+	if b.BackupIteration.Iteration != "" {
+		size := utils.CalcBackupSize(b.BackupIteration.Components)
+
+		fmt.Println()
+		fmt.Println("------------")
+		fmt.Println("BACKUP PHASE")
+		fmt.Println("------------")
+		fmt.Println("Identifier: " + b.BackupIteration.Iteration)
+		fmt.Println("Status:     " + b.BackupIteration.Status)
+		fmt.Println("Started:    " + b.BackupIteration.CreatedAt.Format(time.RFC3339))
+		if !b.BackupIteration.CompletedAt.IsZero() {
+			fmt.Println("Completed:  " + b.BackupIteration.CompletedAt.Format(time.RFC3339))
+			fmt.Println("Duration:   " + utils.CalcBackupTimeTaken(b.BackupIteration.Status, b.BackupIteration.CreatedAt, b.BackupIteration.CompletedAt))
+		}
+		fmt.Println("Size:       " + size)
+
+		if len(b.BackupIteration.Components) > 0 {
+			utils.DisplayBackupComponentInfo(b.BackupIteration.Components)
+		}
+	}
+
+	if sr.RestoreRequest.Name != "" {
+		fmt.Println()
+		fmt.Println("------------")
+		fmt.Println("RESTORE PHASE")
+		fmt.Println("------------")
+		fmt.Println("Name:          " + sr.RestoreRequest.Name)
+		fmt.Println("Status:        " + sr.RestoreRequest.Status)
+		fmt.Println("Started:       " + sr.RestoreRequest.CreatedAt.Format(time.RFC3339))
+		if !sr.RestoreRequest.CompletedAt.IsZero() {
+			fmt.Println("Completed:     " + sr.RestoreRequest.CompletedAt.Format(time.RFC3339))
+			fmt.Println("Duration:      " + CalcRestoreTimeTaken(sr.RestoreRequest.Status, sr.RestoreRequest.CreatedAt, sr.RestoreRequest.CompletedAt))
+		}
+
+		if len(sr.RestoreRequest.Results) > 0 {
+			utils.DisplayRestoreComponentInfo(sr.RestoreRequest.Results)
+		}
+
+		if sr.RestoreRequest.Status == constants.RESTORE_COMPLETE {
+			fmt.Println()
+			color.Green("SYNC COMPLETE!")
+
+		}
 	}
 
 	return nil
-}
-
-func DisplayComponentInfo(components []types.RestoreRequestResult) {
-	fmt.Println()
-
-	compRows := make([][]string, len(components))
-	for _, comp := range components {
-		compRows = append(compRows, []string{comp.Name, comp.Result, comp.CreatedAt.Format(time.RFC3339)})
-	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Component", "Result", "Time"})
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.AppendBulk(compRows)
-	table.Render()
 }
 
 func CalcRestoreTimeTaken(status string, createdAt, completedAt time.Time) string {

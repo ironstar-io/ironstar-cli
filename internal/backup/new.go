@@ -56,7 +56,7 @@ func New(args []string, flg flags.Accumulator) error {
 	if br.ETA != 0 {
 		fETA := CalculateFriendlyETA(br.ETA)
 		fmt.Println()
-		fmt.Println("This backup will take approximately " + fETA + "(based on previous similar backups) to complete")
+		fmt.Println("This backup will take approximately " + fETA + " (based on previous similar backups) to complete")
 	}
 
 	fmt.Println()
