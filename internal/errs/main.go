@@ -33,6 +33,26 @@ const (
 
 	APIGetSubscriptionErrorMsg = "Failed to get subscription"
 
+	APIGetBackupErrorMsg = "Failed to get backup"
+
+	APIPostBackupErrorMsg = "Failed to create backup"
+
+	APIGetRestoreErrorMsg = "Failed to get backup"
+
+	APIPostRestoreErrorMsg = "Failed to create restore"
+
+	APIGetSyncErrorMsg = "Failed to get sync"
+
+	APIPostSyncErrorMsg = "Failed to create sync"
+
+	APIGetEnvironmentErrorMsg = "Failed to get environment"
+
+	APIUpdateEnvironmentErrorMsg = "Failed to update environment"
+
+	NoSubscriptionLinkErrorMsg = "No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`"
+
+	NoEnvironmentFlagSupplied = "An environment flag must be supplied for this command with `--env=[env-name]`"
+
 	UnexpectedErrorMsg = "An unexpected error occurred"
 )
 

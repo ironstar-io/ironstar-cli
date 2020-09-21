@@ -5,10 +5,14 @@ import (
 	"os"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/auth"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/backup"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/deploy"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/environment"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/restore"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/sync"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version"
 
 	"github.com/spf13/cobra"
@@ -52,6 +56,33 @@ func init() {
 	subscription.SubCmd.AddCommand(subscription.LinkCmd)
 	subscription.SubCmd.AddCommand(subscription.ShowCmd)
 
+	// `iron environment x`
+	rootCmd.AddCommand(environment.EnvironmentCmd)
+	environment.EnvironmentCmd.AddCommand(environment.ListCmd)
+	environment.EnvironmentCmd.AddCommand(environment.DisableRestoreCmd)
+	environment.EnvironmentCmd.AddCommand(environment.EnableRestoreCmd)
+
+	// `iron env x` alias (hidden)
+	rootCmd.AddCommand(environment.EnvCmd)
+	environment.EnvCmd.AddCommand(environment.ListCmd)
+	environment.EnvCmd.AddCommand(environment.DisableRestoreCmd)
+	environment.EnvCmd.AddCommand(environment.EnableRestoreCmd)
+
+	// `iron backup x`
+	rootCmd.AddCommand(backup.BackupCmd)
+	backup.BackupCmd.AddCommand(backup.NewCmd)
+	backup.BackupCmd.AddCommand(backup.InfoCmd)
+
+	// `iron restore x`
+	rootCmd.AddCommand(restore.RestoreCmd)
+	restore.RestoreCmd.AddCommand(restore.NewCmd)
+	restore.RestoreCmd.AddCommand(restore.InfoCmd)
+
+	// `iron sync x`
+	rootCmd.AddCommand(sync.SyncCmd)
+	sync.SyncCmd.AddCommand(sync.NewCmd)
+	sync.SyncCmd.AddCommand(sync.InfoCmd)
+
 	// `iron package x`
 	rootCmd.AddCommand(pkg.PackageCmd)
 	pkg.PackageCmd.AddCommand(pkg.ListCmd)
@@ -87,11 +118,31 @@ func RootCmd() *cobra.Command {
 
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Subscription, "subscription", "s", "", "Use or filter by a specified subscription. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Environment, "environment", "e", "", "Use or filter by  specified environment. Not applicable on all commands.")
+	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Environment, "env", "", "", "Use or filter by  specified environment. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Package, "package", "", "", "Use or filter by  specified package. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Deploy, "deploy", "d", "", "Use or filter by  specified deployment. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Exclude, "exclude", "", "", "A comma separated list of files/directories to exclude during packaging")
+	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Name, "name", "n", "", "Supply a name, not applicable for all command")
+	rootCmd.PersistentFlags().StringArrayVarP(&flags.Acc.Component, "component", "c", []string{}, "Supply an array of components to backup/restore/sync")
 
 	LoginCmd.PersistentFlags().StringVarP(&flags.Acc.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
+
+	backup.BackupCmd.PersistentFlags().StringVarP(&flags.Acc.Retention, "retention", "r", "", "Provide the retention period for a backup")
+	backup.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Retention, "retention", "r", "", "Provide the retention period for a backup")
+
+	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
+	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
+	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "The source backup identifier to restore from")
+	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "The source backup identifier to restore from")
+
+	sync.SyncCmd.PersistentFlags().StringVarP(&flags.Acc.SrcEnvironment, "src", "", "", "Identifies the source environment to copy from")
+	sync.NewCmd.PersistentFlags().StringVarP(&flags.Acc.SrcEnvironment, "src", "", "", "Identifies the source environment to copy from")
+	sync.SyncCmd.PersistentFlags().StringVarP(&flags.Acc.DestEnvironment, "dest", "", "", "Identifies the source environment to copy to")
+	sync.NewCmd.PersistentFlags().StringVarP(&flags.Acc.DestEnvironment, "dest", "", "", "Identifies the source environment to copy to")
+	sync.SyncCmd.PersistentFlags().BoolVarP(&flags.Acc.UseLatestBackup, "use-latest-backup", "", false, "Use this flag to instruct this operation to use the latest full scheduled backup from the --source-env as the source, this will prevent a new backup from being taken and will significantly improve the sync time.")
+	sync.NewCmd.PersistentFlags().BoolVarP(&flags.Acc.UseLatestBackup, "use-latest-backup", "", false, "Use this flag to instruct this operation to use the latest full scheduled backup from the --source-env as the source, this will prevent a new backup from being taken and will significantly improve the sync time.")
+	sync.SyncCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for the restore section of the sync")
+	sync.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for the restore section of the sync")
 
 	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
 	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")

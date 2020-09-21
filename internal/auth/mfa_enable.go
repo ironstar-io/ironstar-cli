@@ -28,7 +28,7 @@ func MFAEnable(args []string, flg flags.Accumulator) error {
 		Credentials:      creds,
 		Method:           "POST",
 		Path:             "/auth/mfa/enrol",
-		MapStringPayload: map[string]string{},
+		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()

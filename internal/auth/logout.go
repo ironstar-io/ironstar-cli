@@ -62,7 +62,7 @@ func postLogout(creds types.Keylink) (*api.RawResponse, error) {
 		Credentials:      creds,
 		Method:           "POST",
 		Path:             "/auth/logout",
-		MapStringPayload: map[string]string{},
+		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()

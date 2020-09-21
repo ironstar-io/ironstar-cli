@@ -7,14 +7,10 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
-	"github.com/pkg/errors"
-	yaml "gopkg.in/yaml.v2"
 )
 
 func List(args []string, flg flags.Accumulator) error {
@@ -25,25 +21,7 @@ func List(args []string, flg flags.Accumulator) error {
 
 	color.Green("Using login [" + creds.Login + "]")
 
-	req := &api.Request{
-		RunTokenRefresh:  true,
-		Credentials:      creds,
-		Method:           "GET",
-		Path:             "/user/subscriptions",
-		MapStringPayload: map[string]string{},
-	}
-
-	res, err := req.NankaiSend()
-	if err != nil {
-		return errors.Wrap(err, errs.APISubListErrorMsg)
-	}
-
-	if res.StatusCode != 200 {
-		return res.HandleFailure()
-	}
-
-	var uar []types.UserAccessResponse
-	err = yaml.Unmarshal(res.Body, &uar)
+	uar, err := api.GetUserSubscriptions(creds)
 	if err != nil {
 		return err
 	}
@@ -53,7 +31,9 @@ func List(args []string, flg flags.Accumulator) error {
 
 	uarRows := make([][]string, len(uar))
 	for _, access := range uar {
-		uarRows = append(uarRows, []string{access.Subscription.HashedID, access.Subscription.Alias, access.Subscription.ApplicationType, access.Role.Name, strings.Join(access.Role.Permissions, ", ")})
+		row := make([][]string, 1)
+		row = append(row, []string{access.Subscription.HashedID, access.Subscription.Alias, access.Subscription.ApplicationType, access.Role.Name, strings.Join(access.Role.Permissions, ", ")})
+		uarRows = append(row, uarRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

@@ -10,8 +10,8 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
+	"encoding/json"
 	"github.com/pkg/errors"
-	yaml "gopkg.in/yaml.v2"
 )
 
 func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscription, error) {
@@ -21,7 +21,7 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + hashOrAlias,
-		MapStringPayload: map[string]string{},
+		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()
@@ -34,12 +34,40 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 	}
 
 	var sub types.Subscription
-	err = yaml.Unmarshal(res.Body, &sub)
+	err = json.Unmarshal(res.Body, &sub)
 	if err != nil {
 		return empty, err
 	}
 
 	return sub, nil
+}
+
+func GetUserSubscriptions(creds types.Keylink) ([]types.UserAccessResponse, error) {
+	empty := []types.UserAccessResponse{}
+	req := &Request{
+		RunTokenRefresh:  true,
+		Credentials:      creds,
+		Method:           "GET",
+		Path:             "/user/subscriptions",
+		MapStringPayload: map[string]interface{}{},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return empty, errors.Wrap(err, errs.APISubListErrorMsg)
+	}
+
+	if res.StatusCode != 200 {
+		return empty, res.HandleFailure()
+	}
+
+	var uar []types.UserAccessResponse
+	err = json.Unmarshal(res.Body, &uar)
+	if err != nil {
+		return empty, err
+	}
+
+	return uar, nil
 }
 
 func GetSubscriptionContext(creds types.Keylink, flg flags.Accumulator) (types.Subscription, error) {
@@ -81,4 +109,29 @@ func GetSubscriptionContext(creds types.Keylink, flg flags.Accumulator) (types.S
 	}
 
 	return proj.Subscription, nil
+}
+
+func GetSubscriptionEnvironmentContext(creds types.Keylink, flg flags.Accumulator) (types.SubscriptionEnvironment, error) {
+	empty := types.SubscriptionEnvironment{}
+
+	sub, err := GetSubscriptionContext(creds, flg)
+	if err != nil {
+		return empty, err
+	}
+	if sub == (types.Subscription{}) {
+		return empty, errors.New("No subscription was able to found")
+	}
+
+	env, err := GetEnvironmentContext(creds, flg, sub.HashedID)
+	if err != nil {
+		return empty, err
+	}
+	if env == (types.Environment{}) {
+		return empty, errors.New("No environment was able to found")
+	}
+
+	return types.SubscriptionEnvironment{
+		Subscription: sub,
+		Environment:  env,
+	}, nil
 }

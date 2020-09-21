@@ -21,7 +21,7 @@ type Stream struct {
 	Method           string
 	Path             string
 	FilePath         string
-	MapStringPayload map[string]string
+	MapStringPayload map[string]interface{}
 	BytePayload      []byte
 	Ref              string
 }

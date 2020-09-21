@@ -19,7 +19,7 @@ func UploadPackage(creds types.Keylink, subHash, tarpath, ref string) (*RawRespo
 		Method:           "POST",
 		FilePath:         tarpath,
 		Path:             "/upload/subscription/" + subHash,
-		MapStringPayload: map[string]string{},
+		MapStringPayload: map[string]interface{}{},
 		Ref:              ref,
 	}
 

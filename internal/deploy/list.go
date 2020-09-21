@@ -32,7 +32,7 @@ func List(args []string, flg flags.Accumulator) error {
 		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription " + sub.Alias + " (" + sub.HashedID + ")")
+	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
 
 	qs := services.BuildQSFilters(flg)
 	req := &api.Request{
@@ -40,7 +40,7 @@ func List(args []string, flg flags.Accumulator) error {
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + sub.HashedID + "/deployments" + qs,
-		MapStringPayload: map[string]string{},
+		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()

@@ -30,7 +30,10 @@ func IronstarShowCredentials(args []string) error {
 	acreds := make([][]string, len(credSet.Keychain))
 
 	for _, v := range credSet.Keychain {
-		acreds = append(acreds, []string{v.Login, v.Expiry.Format(time.RFC3339)})
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{v.Login, v.Expiry.Format(time.RFC3339)})
+		acreds = append(row, acreds...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

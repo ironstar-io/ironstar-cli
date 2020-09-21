@@ -80,8 +80,8 @@ func LinkSubscriptionToProject(config types.ProjectConfig, sub types.Subscriptio
 		return errors.Wrap(err, errs.APISubLinkErrorMsg)
 	}
 
-	if projConf.Subscription.Alias != "" {
-		color.Yellow("This project has been previously linked to [" + projConf.Subscription.Alias + "]. The link will be replaced with the new subscription.")
+	if projConf.Subscription != (types.Subscription{}) && projConf.Subscription.Alias != "" && projConf.Subscription.Alias != sub.Alias {
+		color.Yellow("This project was previously linked to subscription [" + projConf.Subscription.Alias + "]. The link will be replaced with the subscription [" + sub.Alias + "].")
 		fmt.Println()
 	}
 

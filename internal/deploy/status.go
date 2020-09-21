@@ -42,7 +42,7 @@ func DisplayDeploymentInfo(creds types.Keylink, deployID string) error {
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/deployment/" + deployID,
-		MapStringPayload: map[string]string{},
+		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()

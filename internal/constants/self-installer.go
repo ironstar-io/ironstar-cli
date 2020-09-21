@@ -24,7 +24,4 @@ const (
 
 	// ActiveBinaryPathDarwin is the location of of the 'iron' command which is a symlink to the active Ironstar CLI version
 	ActiveBinaryPathDarwin = "/usr/local/bin/iron"
-
-	// ActiveBinaryPathLinux is the location of of the 'iron' command which is a symlink to the active Ironstar CLI version
-	ActiveBinaryPathLinux = "/usr/local/bin/iron"
 )

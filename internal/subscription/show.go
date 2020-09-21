@@ -6,8 +6,10 @@ import (
 	"path/filepath"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
 	"github.com/pkg/errors"
@@ -31,8 +33,12 @@ func Show(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
+	if proj.Subscription == (types.Subscription{}) {
+		return errors.New(errs.NoSubscriptionLinkErrorMsg)
+	}
+
 	if proj.Subscription.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errors.New(errs.NoSubscriptionLinkErrorMsg)
 	}
 
 	color.Green("Currently linked: ")

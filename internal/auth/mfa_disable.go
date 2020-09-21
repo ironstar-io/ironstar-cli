@@ -31,7 +31,7 @@ func MFADisable(args []string, flg flags.Accumulator) error {
 		Credentials:     creds,
 		Method:          "POST",
 		Path:            "/auth/mfa/remove",
-		MapStringPayload: map[string]string{
+		MapStringPayload: map[string]interface{}{
 			"passcode": passcode,
 		},
 	}

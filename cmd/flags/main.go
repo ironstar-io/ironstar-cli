@@ -8,10 +8,19 @@ type Accumulator struct {
 	Output            string
 	Subscription      string
 	Environment       string
+	Name              string
+	Retention         string
+	Component         []string
 	Package           string
+	Strategy          string
+	Backup            string
 	Deploy            string
 	Exclude           string
+	Type              string
 	Ref               string
+	SrcEnvironment    string
+	DestEnvironment   string
+	UseLatestBackup   bool
 }
 
 var Acc Accumulator

@@ -87,7 +87,7 @@ func postLogin(email, password string) (*api.RawResponse, error) {
 		Credentials:     types.Keylink{},
 		Method:          "POST",
 		Path:            "/auth/login",
-		MapStringPayload: map[string]string{
+		MapStringPayload: map[string]interface{}{
 			"email":    email,
 			"password": password,
 			"expiry":   time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
@@ -114,7 +114,7 @@ func postMFAValidate(MFAAuthToken, passcode string) (*api.RawResponse, error) {
 		},
 		Method: "POST",
 		Path:   "/auth/mfa/validate",
-		MapStringPayload: map[string]string{
+		MapStringPayload: map[string]interface{}{
 			"passcode": passcode,
 			"expiry":   time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
 		},
@@ -174,7 +174,7 @@ func resetUserPassword(email, PWResetAuthToken, mfaStatus string) (*types.AuthRe
 		},
 		Method: "POST",
 		Path:   "/auth/password-reset",
-		MapStringPayload: map[string]string{
+		MapStringPayload: map[string]interface{}{
 			"password": password,
 			"passcode": passcode,
 		},

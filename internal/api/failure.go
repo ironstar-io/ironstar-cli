@@ -48,6 +48,10 @@ func (res *RawResponse) HandleFailure() error {
 		f := &FailureBody{}
 		err := json.Unmarshal(res.Body, f)
 		if err != nil {
+			fmt.Println()
+			fmt.Println("An unexpected error occurred")
+			fmt.Println()
+			fmt.Println(string(res.Body))
 			return err
 		}
 
