@@ -26,7 +26,7 @@ func PostSyncRequest(creds types.Keylink, payload types.PostSyncRequestParams) (
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIPostRestoreErrorMsg)
+		return empty, errors.Wrap(err, errs.APIPostSyncErrorMsg)
 	}
 
 	if res.StatusCode != 201 {
@@ -54,7 +54,7 @@ func GetSubscriptionSync(creds types.Keylink, subAliasOrHashedID, syncName strin
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetSyncErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
@@ -82,7 +82,7 @@ func GetSubscriptionSyncRequests(creds types.Keylink, subAliasOrHashedID string)
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetSyncErrorMsg)
 	}
 
 	if res.StatusCode != 200 {

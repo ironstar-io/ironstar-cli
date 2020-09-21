@@ -21,7 +21,7 @@ func GetSubscriptionEnvironments(creds types.Keylink, hashOrAlias string) ([]typ
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetEnvironmentErrorMsg)
 	}
 
 	if res.StatusCode != 200 {

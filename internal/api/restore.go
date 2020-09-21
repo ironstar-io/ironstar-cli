@@ -54,7 +54,7 @@ func GetSubscriptionRestoreIterations(creds types.Keylink, subAliasOrHashedID st
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetRestoreErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
@@ -82,7 +82,7 @@ func GetEnvironmentRestoreIterations(creds types.Keylink, subAliasOrHashedID, en
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetRestoreErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
@@ -110,7 +110,7 @@ func GetEnvironmentRestore(creds types.Keylink, subAliasOrHashedID, envNameOrHas
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetRestoreErrorMsg)
 	}
 
 	if res.StatusCode != 200 {

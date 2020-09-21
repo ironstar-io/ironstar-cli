@@ -26,7 +26,7 @@ func PostBackupRequest(creds types.Keylink, payload types.PostBackupRequestParam
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIPostBackupErrorMsg)
 	}
 
 	if res.StatusCode != 201 {
@@ -54,7 +54,7 @@ func GetSubscriptionBackupIterations(creds types.Keylink, subAliasOrHashedID str
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetBackupErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
@@ -82,7 +82,7 @@ func GetEnvironmentBackupIterations(creds types.Keylink, subAliasOrHashedID, env
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetBackupErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
@@ -110,7 +110,7 @@ func GetLatestEnvironmentBackupIteration(creds types.Keylink, subAliasOrHashedID
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetBackupErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
@@ -138,7 +138,7 @@ func GetEnvironmentBackup(creds types.Keylink, subAliasOrHashedID, envNameOrHash
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetSubscriptionErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetBackupErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
