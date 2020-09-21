@@ -17,7 +17,10 @@ func DisplayRestoreComponentInfo(components []types.RestoreRequestResult) {
 
 	compRows := make([][]string, len(components))
 	for _, comp := range components {
-		compRows = append(compRows, []string{comp.Name, comp.Result, comp.CreatedAt.Format(time.RFC3339)})
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{comp.Name, comp.Result, comp.CreatedAt.Format(time.RFC3339)})
+		compRows = append(row, compRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -33,7 +36,11 @@ func DisplayBackupComponentInfo(components []types.BackupIterationComponent) {
 	compRows := make([][]string, len(components))
 	for _, comp := range components {
 		dur := (time.Duration(int64(comp.BackupDuration)) * time.Second).Round(time.Second).String()
-		compRows = append(compRows, []string{comp.Name, strconv.Itoa(comp.BackupSize) + " MiB", dur, comp.Result})
+
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{comp.Name, strconv.Itoa(comp.BackupSize) + " MiB", dur, comp.Result})
+		compRows = append(row, compRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

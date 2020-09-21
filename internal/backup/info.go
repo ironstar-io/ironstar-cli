@@ -79,7 +79,11 @@ func Info(args []string, flg flags.Accumulator) error {
 		tt := utils.CalcBackupTimeTaken(bi.Status, bi.CreatedAt, bi.CompletedAt)
 		size := utils.CalcBackupSize(bi.Components)
 		components := utils.CalcBackupComponentNames(bi.Components)
-		bisRows = append(bisRows, []string{bi.BackupRequest.Kind, bi.Iteration, bi.Environment.Name, bi.CreatedAt.Format(time.RFC3339), tt, bi.Status, size, components})
+
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{bi.BackupRequest.Kind, bi.Iteration, bi.Environment.Name, bi.CreatedAt.Format(time.RFC3339), tt, bi.Status, size, components})
+		bisRows = append(row, bisRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -106,7 +110,11 @@ func DisplayEnvironmentBackupInfo(creds types.Keylink, env types.Environment, su
 		tt := utils.CalcBackupTimeTaken(bi.Status, bi.CreatedAt, bi.CompletedAt)
 		size := utils.CalcBackupSize(bi.Components)
 		components := utils.CalcBackupComponentNames(bi.Components)
-		bisRows = append(bisRows, []string{bi.BackupRequest.Kind, bi.Iteration, bi.CreatedAt.Format(time.RFC3339), tt, bi.Status, size, components})
+
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{bi.BackupRequest.Kind, bi.Iteration, bi.CreatedAt.Format(time.RFC3339), tt, bi.Status, size, components})
+		bisRows = append(row, bisRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

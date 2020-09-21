@@ -31,7 +31,9 @@ func List(args []string, flg flags.Accumulator) error {
 
 	uarRows := make([][]string, len(uar))
 	for _, access := range uar {
-		uarRows = append(uarRows, []string{access.Subscription.HashedID, access.Subscription.Alias, access.Subscription.ApplicationType, access.Role.Name, strings.Join(access.Role.Permissions, ", ")})
+		row := make([][]string, 1)
+		row = append(row, []string{access.Subscription.HashedID, access.Subscription.Alias, access.Subscription.ApplicationType, access.Role.Name, strings.Join(access.Role.Permissions, ", ")})
+		uarRows = append(row, uarRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

@@ -57,7 +57,10 @@ func Info(args []string, flg flags.Accumulator) error {
 	for _, sr := range srs {
 		tt := CalcRestoreTimeTaken(sr.Status, sr.CreatedAt, sr.CompletedAt)
 
-		srsRows = append(srsRows, []string{sr.Name, sr.SrcEnvironment.Name, sr.DestEnvironment.Name, sr.Initiator.DisplayName, sr.CreatedAt.Format(time.RFC3339), tt, sr.Status})
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{sr.Name, sr.SrcEnvironment.Name, sr.DestEnvironment.Name, sr.Initiator.DisplayName, sr.CreatedAt.Format(time.RFC3339), tt, sr.Status})
+		srsRows = append(row, srsRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

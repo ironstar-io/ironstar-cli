@@ -77,7 +77,10 @@ func Info(args []string, flg flags.Accumulator) error {
 		components := CalcRestoreResultNames(ri.Results)
 		sbu := CalcBackupIterationName(ri.BackupIteration.ClientName, ri.BackupIteration.Iteration)
 
-		risRows = append(risRows, []string{ri.Name, ri.Environment.Name, sbu, ri.Initiator.DisplayName, ri.CreatedAt.Format(time.RFC3339), tt, ri.Status, components})
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{ri.Name, ri.Environment.Name, sbu, ri.Initiator.DisplayName, ri.CreatedAt.Format(time.RFC3339), tt, ri.Status, components})
+		risRows = append(row, risRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -105,7 +108,10 @@ func DisplayEnvironmentRestoreInfo(creds types.Keylink, env types.Environment, s
 		components := CalcRestoreResultNames(ri.Results)
 		sbu := CalcBackupIterationName(ri.BackupIteration.ClientName, ri.BackupIteration.Iteration)
 
-		risRows = append(risRows, []string{ri.Name, sbu, ri.Initiator.DisplayName, ri.CreatedAt.Format(time.RFC3339), tt, ri.Status, components})
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{ri.Name, sbu, ri.Initiator.DisplayName, ri.CreatedAt.Format(time.RFC3339), tt, ri.Status, components})
+		risRows = append(row, risRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -150,7 +156,10 @@ func DisplayComponentInfo(components []types.RestoreRequestResult) {
 
 	compRows := make([][]string, len(components))
 	for _, comp := range components {
-		compRows = append(compRows, []string{comp.Name, comp.Result, comp.CreatedAt.Format(time.RFC3339)})
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{comp.Name, comp.Result, comp.CreatedAt.Format(time.RFC3339)})
+		compRows = append(row, compRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

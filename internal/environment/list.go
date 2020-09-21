@@ -44,7 +44,11 @@ func List(args []string, flg flags.Accumulator) error {
 		if env.Class == "cw" {
 			class = "Production"
 		}
-		envRows = append(envRows, []string{env.Name, env.DNSName, class, env.RestorePermission})
+
+		// Prepend rows, we want dates ordered oldest to newest
+		row := make([][]string, 1)
+		row = append(row, []string{env.Name, env.DNSName, class, env.RestorePermission})
+		envRows = append(row, envRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
