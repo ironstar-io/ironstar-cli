@@ -33,11 +33,11 @@ func DisplayBackupComponentInfo(components []types.BackupIterationComponent) {
 	compRows := make([][]string, len(components))
 	for _, comp := range components {
 		dur := (time.Duration(int64(comp.BackupDuration)) * time.Second).Round(time.Second).String()
-		compRows = append(compRows, []string{comp.Name, strconv.Itoa(comp.BackupSize) + " MiB", dur, comp.ArchiveKey, comp.Result})
+		compRows = append(compRows, []string{comp.Name, strconv.Itoa(comp.BackupSize) + " MiB", dur, comp.Result})
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Component", "Size", "Duration", "Filename", "Result"})
+	table.SetHeader([]string{"Component", "Size", "Duration", "Result"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(compRows)
 	table.Render()
