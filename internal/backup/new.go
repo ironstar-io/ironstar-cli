@@ -32,13 +32,12 @@ func New(args []string, flg flags.Accumulator) error {
 
 	name := flg.Name
 	components := CalculatePostBackupRestoreComponents(flg.Component)
-	kind := CalculateBackupRequestKind(flg.Type)
 
 	br, err := api.PostBackupRequest(creds, types.PostBackupRequestParams{
 		SubscriptionID: seCtx.Subscription.HashedID,
 		EnvironmentID:  seCtx.Environment.HashedID,
 		Name:           name,
-		Kind:           kind,
+		Kind:           "manual",
 		Components:     components,
 	})
 	if err != nil {
@@ -74,14 +73,6 @@ func CalculatePostBackupRestoreComponents(ogComponents []string) []string {
 	}
 
 	return ogComponents
-}
-
-func CalculateBackupRequestKind(ogKind string) string {
-	if ogKind == "scheduled" {
-		return "scheduled"
-	}
-
-	return "manual"
 }
 
 func CalculateFriendlyETA(eta int) string {

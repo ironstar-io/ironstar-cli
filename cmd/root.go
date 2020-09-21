@@ -123,7 +123,6 @@ func RootCmd() *cobra.Command {
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Deploy, "deploy", "d", "", "Use or filter by  specified deployment. Not applicable on all commands.")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Exclude, "exclude", "", "", "A comma separated list of files/directories to exclude during packaging")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Name, "name", "n", "", "Supply a name, not applicable for all command")
-	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Type, "type", "t", "", "Supply a type, not applicable for all command")
 	rootCmd.PersistentFlags().StringArrayVarP(&flags.Acc.Component, "component", "c", []string{}, "Supply an array of components to backup/restore/sync")
 
 	LoginCmd.PersistentFlags().StringVarP(&flags.Acc.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
