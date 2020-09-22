@@ -84,6 +84,14 @@ func CalculateRestoreComponents(ogComponents []string) []string {
 	return RemoveStringFromSlice(ogComponents, "logs")
 }
 
+func CalculateBackupComponents(ogComponents []string) []string {
+	if len(ogComponents) == 0 {
+		return []string{"all"}
+	}
+
+	return ogComponents
+}
+
 func CalculateRestoreStrat(strategy string) string {
 	if strategy == "" {
 		return "merge"

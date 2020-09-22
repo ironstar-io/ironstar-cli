@@ -139,7 +139,6 @@ func DisplayIndividualSyncInfo(creds types.Keylink, sub types.Subscription, sync
 		if sr.RestoreRequest.Status == constants.RESTORE_COMPLETE {
 			fmt.Println()
 			color.Green("SYNC COMPLETE!")
-
 		}
 	}
 

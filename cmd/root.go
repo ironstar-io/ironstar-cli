@@ -72,16 +72,20 @@ func init() {
 	rootCmd.AddCommand(backup.BackupCmd)
 	backup.BackupCmd.AddCommand(backup.NewCmd)
 	backup.BackupCmd.AddCommand(backup.InfoCmd)
+	backup.BackupCmd.AddCommand(backup.ListCmd)
+	backup.BackupCmd.AddCommand(backup.DeleteCmd)
 
 	// `iron restore x`
 	rootCmd.AddCommand(restore.RestoreCmd)
 	restore.RestoreCmd.AddCommand(restore.NewCmd)
 	restore.RestoreCmd.AddCommand(restore.InfoCmd)
+	restore.RestoreCmd.AddCommand(restore.ListCmd)
 
 	// `iron sync x`
 	rootCmd.AddCommand(sync.SyncCmd)
 	sync.SyncCmd.AddCommand(sync.NewCmd)
 	sync.SyncCmd.AddCommand(sync.InfoCmd)
+	sync.SyncCmd.AddCommand(sync.ListCmd)
 
 	// `iron package x`
 	rootCmd.AddCommand(pkg.PackageCmd)

@@ -159,6 +159,11 @@ func DisplayIndividualBackupInfo(creds types.Keylink, env types.Environment, sub
 			utils.DisplayBackupComponentInfo(b.BackupIteration.Components)
 		}
 
+		if b.BackupIteration.Status == constants.BACKUP_COMPLETE {
+			fmt.Println()
+			color.Green("BACKUP COMPLETE!")
+		}
+
 		return nil
 	}
 

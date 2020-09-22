@@ -146,6 +146,11 @@ func DisplayIndividualRestoreInfo(creds types.Keylink, env types.Environment, su
 		DisplayComponentInfo(rr.Results)
 	}
 
+	if rr.Status == constants.RESTORE_COMPLETE {
+		fmt.Println()
+		color.Green("RESTORE COMPLETE!")
+	}
+
 	return nil
 }
 

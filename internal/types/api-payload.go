@@ -8,6 +8,12 @@ type PostBackupRequestParams struct {
 	Components     []string
 }
 
+type DeleteBackupIterationParams struct {
+	SubscriptionID string
+	EnvironmentID  string
+	Name           string
+}
+
 type PostRestoreRequestParams struct {
 	SubscriptionID string
 	EnvironmentID  string

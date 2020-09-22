@@ -42,6 +42,27 @@ func PostBackupRequest(creds types.Keylink, payload types.PostBackupRequestParam
 	return br, nil
 }
 
+func DeleteBackupIteration(creds types.Keylink, payload types.DeleteBackupIterationParams) error {
+	req := &Request{
+		RunTokenRefresh:  true,
+		Credentials:      creds,
+		Method:           "DELETE",
+		Path:             "/subscription/" + payload.SubscriptionID + "/environment/" + payload.EnvironmentID + "/backup-iterations/" + payload.Name,
+		MapStringPayload: map[string]interface{}{},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return errors.Wrap(err, errs.APIPostBackupErrorMsg)
+	}
+
+	if res.StatusCode != 204 {
+		return res.HandleFailure()
+	}
+
+	return nil
+}
+
 func GetSubscriptionBackupIterations(creds types.Keylink, subAliasOrHashedID string) ([]types.BackupIteration, error) {
 	empty := []types.BackupIteration{}
 	req := &Request{
