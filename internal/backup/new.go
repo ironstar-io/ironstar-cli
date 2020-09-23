@@ -38,6 +38,7 @@ func New(args []string, flg flags.Accumulator) error {
 		EnvironmentID:  seCtx.Environment.HashedID,
 		Name:           name,
 		Kind:           "manual",
+		LockTables:     flg.LockTables,
 		Components:     components,
 	})
 	if err != nil {

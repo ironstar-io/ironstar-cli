@@ -131,8 +131,8 @@ func RootCmd() *cobra.Command {
 
 	LoginCmd.PersistentFlags().StringVarP(&flags.Acc.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
 
-	backup.BackupCmd.PersistentFlags().StringVarP(&flags.Acc.Retention, "retention", "r", "", "Provide the retention period for a backup")
-	backup.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Retention, "retention", "r", "", "Provide the retention period for a backup")
+	backup.BackupCmd.PersistentFlags().BoolVarP(&flags.Acc.LockTables, "lock-tables", "", false, "Pass the `--lock-tables` flag to mysqldump")
+	backup.NewCmd.PersistentFlags().BoolVarP(&flags.Acc.LockTables, "lock-tables", "", false, "Pass the `--lock-tables` flag to mysqldump")
 
 	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
 	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")

@@ -9,7 +9,7 @@ type Accumulator struct {
 	Subscription      string
 	Environment       string
 	Name              string
-	Retention         string
+	LockTables        bool
 	Component         []string
 	Package           string
 	Strategy          string

@@ -18,9 +18,10 @@ func PostBackupRequest(creds types.Keylink, payload types.PostBackupRequestParam
 		Method:          "POST",
 		Path:            "/subscription/" + payload.SubscriptionID + "/environment/" + payload.EnvironmentID + "/backup-request",
 		MapStringPayload: map[string]interface{}{
-			"name":       payload.Name,
-			"kind":       payload.Kind,
-			"components": payload.Components,
+			"name":        payload.Name,
+			"kind":        payload.Kind,
+			"components":  payload.Components,
+			"lock_tables": payload.LockTables,
 		},
 	}
 

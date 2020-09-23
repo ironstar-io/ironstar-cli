@@ -5,6 +5,7 @@ type PostBackupRequestParams struct {
 	EnvironmentID  string
 	Name           string
 	Kind           string
+	LockTables     bool
 	Components     []string
 }
 
