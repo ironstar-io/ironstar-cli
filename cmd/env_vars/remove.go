@@ -12,16 +12,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ListCmd - `iron env-vars list`
-var ListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List available environment variables",
-	Long:  "List available environment variables for an Ironstar environment",
-	Run:   list,
+// RemoveCmd - `iron env-vars remove`
+var RemoveCmd = &cobra.Command{
+	Use:   "remove",
+	Short: "Remove an environment variable",
+	Long:  "Remove an environment variable from an Ironstar environment",
+	Run:   remove,
 }
 
-func list(cmd *cobra.Command, args []string) {
-	err := env_vars.List(args, flags.Acc)
+func remove(cmd *cobra.Command, args []string) {
+	err := env_vars.Remove(args, flags.Acc)
 	if err != nil {
 		if err != api.ErrIronstarAPICall {
 			fmt.Println()

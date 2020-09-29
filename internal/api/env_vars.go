@@ -20,7 +20,7 @@ func GetEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias s
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return empty, errors.Wrap(err, errs.APIGetEnvironmentErrorMsg)
+		return empty, errors.Wrap(err, errs.APIGetEnvironmentVariablesErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
@@ -34,4 +34,74 @@ func GetEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias s
 	}
 
 	return env_vars, nil
+}
+
+func PostEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias, key, value, varType string) error {
+	req := &Request{
+		RunTokenRefresh: true,
+		Credentials:     creds,
+		Method:          "POST",
+		Path:            "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/env-var",
+		MapStringPayload: map[string]interface{}{
+			"key":      key,
+			"value":    value,
+			"var_type": varType,
+		},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return errors.Wrap(err, errs.APIPostEnvironmentVariableErrorMsg)
+	}
+
+	if res.StatusCode != 201 {
+		return res.HandleFailure()
+	}
+
+	return nil
+}
+
+func PatchEnvironmentEnvVar(creds types.Keylink, subHashOrAlias, envHashOrAlias, key, value, varType string) error {
+	req := &Request{
+		RunTokenRefresh: true,
+		Credentials:     creds,
+		Method:          "PATCH",
+		Path:            "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/env-var/" + key,
+		MapStringPayload: map[string]interface{}{
+			"value":    value,
+			"var_type": varType,
+		},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return errors.Wrap(err, errs.APIPostEnvironmentVariableErrorMsg)
+	}
+
+	if res.StatusCode != 204 {
+		return res.HandleFailure()
+	}
+
+	return nil
+}
+
+func DeleteEnvironmentEnvVar(creds types.Keylink, subHashOrAlias, envHashOrAlias, key string) error {
+	req := &Request{
+		RunTokenRefresh:  true,
+		Credentials:      creds,
+		Method:           "DELETE",
+		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/env-var/" + key,
+		MapStringPayload: map[string]interface{}{},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return errors.Wrap(err, errs.APIPostEnvironmentVariableErrorMsg)
+	}
+
+	if res.StatusCode != 204 {
+		return res.HandleFailure()
+	}
+
+	return nil
 }

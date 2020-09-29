@@ -47,6 +47,12 @@ const (
 
 	APIGetEnvironmentErrorMsg = "Failed to get environment"
 
+	APIGetEnvironmentVariablesErrorMsg = "Failed to get environment variables"
+
+	APIPostEnvironmentVariableErrorMsg = "Failed to add new environment variable"
+
+	APIDeleteEnvironmentVariableErrorMsg = "Failed to delete environment variable"
+
 	APIUpdateEnvironmentErrorMsg = "Failed to update environment"
 
 	NoSubscriptionLinkErrorMsg = "No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`"

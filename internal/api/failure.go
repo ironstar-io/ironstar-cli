@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/fatih/color"
 )
@@ -13,15 +14,17 @@ func (err *APIError) Error() {
 
 	switch err.StatusCode {
 	case 400:
-		color.Red("Ironstar API call failed! (Bad Request)")
+		color.Red("Ironstar API call failed! (400: Bad Request)")
 	case 401:
-		color.Red("Ironstar API call failed! (Unauthorized)")
+		color.Red("Ironstar API call failed! (401: Unauthorized)")
 	case 403:
-		color.Red("Ironstar API call failed! (Forbidden)")
+		color.Red("Ironstar API call failed! (403: Forbidden)")
 	case 404:
-		color.Red("Ironstar API call failed! (Not Found)")
+		color.Red("Ironstar API call failed! (404: Not Found)")
+	case 405:
+		color.Red("Ironstar API call failed! (405: Method Not Allowed)")
 	case 500:
-		color.Red("Ironstar API call failed! (Server Error)")
+		color.Red("Ironstar API call failed! (500: Server Error)")
 		fmt.Println()
 		color.Yellow("Please contact Ironstar Support - support@ironstar.io")
 	default:
@@ -51,8 +54,11 @@ func (res *RawResponse) HandleFailure() error {
 			fmt.Println()
 			fmt.Println("An unexpected error occurred")
 			fmt.Println()
-			fmt.Println(string(res.Body))
-			return err
+			fmt.Println("The server responded with status code " + strconv.Itoa(res.StatusCode))
+			if res.Body != nil {
+				fmt.Println(string(res.Body))
+			}
+			return errors.New("Unable to read server response body")
 		}
 
 		apiErr = APIError{

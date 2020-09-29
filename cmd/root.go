@@ -72,6 +72,9 @@ func init() {
 	// `iron env-vars x` alias (hidden)
 	rootCmd.AddCommand(env_vars.EnvVarsCmd)
 	env_vars.EnvVarsCmd.AddCommand(env_vars.ListCmd)
+	env_vars.EnvVarsCmd.AddCommand(env_vars.AddCmd)
+	env_vars.EnvVarsCmd.AddCommand(env_vars.RemoveCmd)
+	env_vars.EnvVarsCmd.AddCommand(env_vars.ModifyCmd)
 
 	// `iron backup x`
 	rootCmd.AddCommand(backup.BackupCmd)
@@ -152,6 +155,10 @@ func RootCmd() *cobra.Command {
 	sync.NewCmd.PersistentFlags().BoolVarP(&flags.Acc.UseLatestBackup, "use-latest-backup", "", false, "Use this flag to instruct this operation to use the latest full scheduled backup from the --source-env as the source, this will prevent a new backup from being taken and will significantly improve the sync time.")
 	sync.SyncCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for the restore section of the sync")
 	sync.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for the restore section of the sync")
+
+	env_vars.EnvVarsCmd.PersistentFlags().StringVarP(&flags.Acc.Key, "key", "", "", "The environment variable key")
+	env_vars.EnvVarsCmd.PersistentFlags().StringVarP(&flags.Acc.Value, "value", "", "", "The environment variable value")
+	env_vars.EnvVarsCmd.PersistentFlags().StringVarP(&flags.Acc.VarType, "var-type", "", "PROTECTED", "Either PROTECTED or VISIBLE. Values VISIBLE are encrypted in the Ironstar database, but visible in plaintext to authenticated users of the Ironstar API/UI. Values PROTECTED are encrypted in the Ironstar database and never visible in plaintext to the API/UI. Default PROTECTED")
 
 	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
 	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
