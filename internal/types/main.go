@@ -124,6 +124,13 @@ type Environment struct {
 	RestorePermission string `json:"restore_permission,omitempty" yaml:"restore_permission,omitempty"`
 }
 
+type EnvVars struct {
+	Key       string    `json:"key,omitempty" yaml:"key,omitempty"`
+	Value     string    `json:"value,omitempty" yaml:"value,omitempty"`
+	VarType   string    `json:"var_type,omitempty" yaml:"var_type,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+}
+
 type BackupRequest struct {
 	Name       string    `json:"name,omitempty" yaml:"name,omitempty"`
 	Kind       string    `json:"kind,omitempty" yaml:"kind,omitempty"`

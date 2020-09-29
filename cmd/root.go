@@ -7,6 +7,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/auth"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/backup"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/deploy"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/env_vars"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/environment"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
@@ -67,6 +68,10 @@ func init() {
 	environment.EnvCmd.AddCommand(environment.ListCmd)
 	environment.EnvCmd.AddCommand(environment.DisableRestoreCmd)
 	environment.EnvCmd.AddCommand(environment.EnableRestoreCmd)
+
+	// `iron env-vars x` alias (hidden)
+	rootCmd.AddCommand(env_vars.EnvVarsCmd)
+	env_vars.EnvVarsCmd.AddCommand(env_vars.ListCmd)
 
 	// `iron backup x`
 	rootCmd.AddCommand(backup.BackupCmd)
