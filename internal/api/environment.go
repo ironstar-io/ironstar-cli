@@ -3,9 +3,11 @@ package api
 import (
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"encoding/json"
+
 	"github.com/pkg/errors"
 )
 
@@ -90,14 +92,21 @@ func PatchEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAlias, resto
 
 func GetEnvironmentContext(creds types.Keylink, flg flags.Accumulator, subHashOrAlias string) (types.Environment, error) {
 	empty := types.Environment{}
-	if flg.Environment != "" {
-		env, err := GetSubscriptionEnvironment(creds, subHashOrAlias, flg.Environment)
+
+	envID := flg.Environment
+	if envID == "" {
+		env, err := services.StdinPrompt("Environment ID or Name: ")
 		if err != nil {
-			return empty, err
+			return empty, nil
 		}
 
-		return env, nil
+		envID = env
 	}
 
-	return empty, errors.New(errs.NoEnvironmentFlagSupplied)
+	env, err := GetSubscriptionEnvironment(creds, subHashOrAlias, envID)
+	if err != nil {
+		return empty, err
+	}
+
+	return env, nil
 }

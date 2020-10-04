@@ -13,6 +13,9 @@ type Accumulator struct {
 	Component         []string
 	Package           string
 	Strategy          string
+	Key               string
+	Value             string
+	VarType           string
 	Backup            string
 	Deploy            string
 	Exclude           string
