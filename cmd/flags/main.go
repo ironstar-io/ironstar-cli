@@ -10,6 +10,8 @@ type Accumulator struct {
 	Environment       string
 	Name              string
 	LockTables        bool
+	SkipHooks         bool
+	PreventRollback   bool
 	Component         []string
 	Package           string
 	Strategy          string

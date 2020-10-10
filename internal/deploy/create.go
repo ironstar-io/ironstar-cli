@@ -54,11 +54,15 @@ func Create(args []string, flg flags.Accumulator) error {
 	}
 
 	req := &api.Request{
-		RunTokenRefresh:  true,
-		Credentials:      creds,
-		Method:           "POST",
-		Path:             "/build/" + packageID + "/deploy",
-		MapStringPayload: map[string]interface{}{"environmentName": envID},
+		RunTokenRefresh: true,
+		Credentials:     creds,
+		Method:          "POST",
+		Path:            "/build/" + packageID + "/deploy",
+		MapStringPayload: map[string]interface{}{
+			"environmentName":  envID,
+			"skip_hooks":       flg.SkipHooks,
+			"prevent_rollback": flg.PreventRollback,
+		},
 	}
 
 	res, err := req.NankaiSend()
