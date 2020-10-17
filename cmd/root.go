@@ -6,6 +6,7 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/auth"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/backup"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/cache"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/deploy"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/env_vars"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/environment"
@@ -94,6 +95,13 @@ func init() {
 	sync.SyncCmd.AddCommand(sync.NewCmd)
 	sync.SyncCmd.AddCommand(sync.InfoCmd)
 	sync.SyncCmd.AddCommand(sync.ListCmd)
+
+	// `iron cache x`
+	rootCmd.AddCommand(cache.CacheCmd)
+	cache.CacheCmd.AddCommand(cache.InvalidationCmd)
+	cache.InvalidationCmd.AddCommand(cache.ListInvalidationsCmd)
+	cache.InvalidationCmd.AddCommand(cache.ShowInvalidationCmd)
+	cache.InvalidationCmd.AddCommand(cache.CreateCmd)
 
 	// `iron package x`
 	rootCmd.AddCommand(pkg.PackageCmd)
