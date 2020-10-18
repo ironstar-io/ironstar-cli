@@ -131,6 +131,13 @@ type EnvVars struct {
 	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
 
+type CacheInvalidation struct {
+	Name      string    `json:"name,omitempty" yaml:"name,omitempty"`
+	Status    string    `json:"status,omitempty" yaml:"status,omitempty"`
+	Objects   []string  `json:"objects,omitempty" yaml:"objects,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+}
+
 type BackupRequest struct {
 	Name       string    `json:"name,omitempty" yaml:"name,omitempty"`
 	Kind       string    `json:"kind,omitempty" yaml:"kind,omitempty"`
