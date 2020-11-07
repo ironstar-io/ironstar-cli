@@ -69,7 +69,7 @@ func New(args []string, flg flags.Accumulator) error {
 	}
 
 	fmt.Println()
-	fmt.Println("You can check the status at any time by running `iron restore info " + rr.Name + " --env=" + seCtx.Environment.Name + "`")
+	fmt.Println("You can check the status at any time by running `iron restore info " + rr.Name + " --env=" + seCtx.Environment.Name + " --subscription=" + seCtx.Subscription.Alias + "`")
 	fmt.Println()
 
 	color.Green("Successfully commenced restore")

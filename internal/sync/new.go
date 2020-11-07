@@ -92,7 +92,7 @@ func New(args []string, flg flags.Accumulator) error {
 	}
 
 	fmt.Println()
-	fmt.Println("You can check the status at any time by running `iron sync info " + sr.Name + "`")
+	fmt.Println("You can check the status at any time by running `iron sync info " + sr.Name + " --subscription=" + sub.Alias + "`")
 
 	return nil
 }
@@ -126,7 +126,7 @@ func RestoreFromLatestBackup(creds types.Keylink, flg flags.Accumulator, sub typ
 	}
 
 	fmt.Println()
-	fmt.Println("You can check the status at any time by running `iron restore info " + rr.Name + " --env=" + destEnv.Name + "`")
+	fmt.Println("You can check the status at any time by running `iron restore info " + rr.Name + " --env=" + destEnv.Name + " --subscription=" + sub.Alias + "`")
 	fmt.Println()
 
 	color.Green("Successfully commenced restore")
