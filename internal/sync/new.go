@@ -95,30 +95,19 @@ func New(args []string, flg flags.Accumulator) error {
 }
 
 func RestoreFromLatestBackup(creds types.Keylink, flg flags.Accumulator, sub types.Subscription, srcEnv, destEnv types.Environment, components []string, strategy string) error {
-	bi, err := api.GetLatestEnvironmentBackupIteration(creds, sub.HashedID, destEnv.HashedID)
-	if err != nil {
-		return errors.Wrap(err, "Unable to find the latest backup from the source environment when running with the `--use-latest-backup` flag. Please run without this flag to perform a full sync. Exiting...")
-	}
-
-	rr, err := api.PostRestoreRequest(creds, types.PostRestoreRequestParams{
-		SubscriptionID: sub.HashedID,
-		EnvironmentID:  destEnv.HashedID,
-		Name:           flg.Name,
-		Strategy:       strategy,
-		Backup:         bi.Iteration,
-		Components:     components,
+	rr, err := api.PostSyncRequestUseLatestBackup(creds, types.PostSyncRequestParams{
+		SubscriptionID:  sub.HashedID,
+		RestoreStrategy: strategy,
+		SrcEnvironment:  srcEnv.HashedID,
+		DestEnvironment: destEnv.HashedID,
+		Components:      components,
 	})
 	if err != nil {
 		return err
 	}
 
-	backupName := bi.Iteration
-	if bi.ClientName != "" {
-		backupName = bi.ClientName
-	}
-
 	fmt.Println()
-	fmt.Println("Creating a restore to environment [" + destEnv.Name + "] from backup run [" + backupName + "] named [" + rr.Name + "]")
+	fmt.Println("Creating a restore to environment [" + destEnv.Name + "] from backup run [" + rr.BackupIteration.Iteration + "] named [" + rr.Name + "]")
 	fmt.Println()
 	fmt.Println("The backup portion of the sync was skipped due to the `--use-latest-backup` flag being set")
 	fmt.Println()
