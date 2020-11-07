@@ -35,22 +35,25 @@ func New(args []string, flg flags.Accumulator) error {
 	}
 
 	// Check and pull source/destination environments
-	if flg.SrcEnvironment == "" {
-		return errors.New("The source environment for the sync must be specified with the --src-env=[environment-name] flag")
-	}
-	srcEnv, err := api.GetSubscriptionEnvironment(creds, sub.HashedID, flg.SrcEnvironment)
+	srcEnvName, err := getSrcEnv(flg)
 	if err != nil {
 		return err
 	}
-	if flg.DestEnvironment == "" {
-		return errors.New("The destination environment for the sync must be specified with the --dest-env=[environment-name] flag")
-	}
-	destEnv, err := api.GetSubscriptionEnvironment(creds, sub.HashedID, flg.DestEnvironment)
+	srcEnv, err := api.GetSubscriptionEnvironment(creds, sub.HashedID, srcEnvName)
 	if err != nil {
 		return err
 	}
 
-	if flg.SrcEnvironment == flg.DestEnvironment {
+	destEnvName, err := getDestEnv(flg)
+	if err != nil {
+		return err
+	}
+	destEnv, err := api.GetSubscriptionEnvironment(creds, sub.HashedID, destEnvName)
+	if err != nil {
+		return err
+	}
+
+	if srcEnvName == destEnvName {
 		return errors.New("Cannot sync between the same environment.")
 	}
 
@@ -129,4 +132,29 @@ func RestoreFromLatestBackup(creds types.Keylink, flg flags.Accumulator, sub typ
 	color.Green("Successfully commenced restore")
 
 	return nil
+}
+
+func getSrcEnv(flg flags.Accumulator) (string, error) {
+	if flg.SrcEnvironment != "" {
+		return flg.SrcEnvironment, nil
+	}
+
+	r, err := services.StdinPrompt("Source Environment: ")
+	if err != nil {
+		return "", errors.New("The source environment for the sync must be specified with the --src-env=[environment-name] flag")
+	}
+
+	return r, nil
+}
+func getDestEnv(flg flags.Accumulator) (string, error) {
+	if flg.DestEnvironment != "" {
+		return flg.DestEnvironment, nil
+	}
+
+	r, err := services.StdinPrompt("Destination Environment: ")
+	if err != nil {
+		return "", errors.New("The destionation environment for the sync must be specified with the --dest-env=[environment-name] flag")
+	}
+
+	return r, nil
 }
