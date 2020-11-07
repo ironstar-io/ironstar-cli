@@ -26,7 +26,7 @@ build-linux:
 	-ldflags "\
 	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
 	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/iron-linux
+	" -o ./dist/iron-linux-amd64
 
 build-macos:
 	env GOOS=darwin GOARCH=amd64 \
