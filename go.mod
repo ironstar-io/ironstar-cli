@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
+	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.9.0
 	github.com/gernest/wow v0.1.0
 	github.com/ironstar-io/cron v0.0.0-20200911073046-f389219e1823

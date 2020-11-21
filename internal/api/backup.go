@@ -92,6 +92,23 @@ func GetSubscriptionBackupIterations(creds types.Keylink, subAliasOrHashedID str
 	return bis, nil
 }
 
+func DownloadEnvironmentBackupComponent(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, backupName, savePath string, buComp types.BackupIterationComponent) error {
+	req := &Request{
+		RunTokenRefresh:  true,
+		Credentials:      creds,
+		Method:           "GET",
+		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backups/" + backupName + "/download?component=" + buComp.Name,
+		MapStringPayload: map[string]interface{}{},
+	}
+
+	err := req.ArimaDownload(savePath)
+	if err != nil {
+		return errors.Wrap(err, errs.APIGetBackupErrorMsg)
+	}
+
+	return nil
+}
+
 func GetEnvironmentBackupIterations(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string) ([]types.BackupIteration, error) {
 	empty := []types.BackupIteration{}
 	req := &Request{

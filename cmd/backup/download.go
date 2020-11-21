@@ -12,16 +12,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// InfoCmd - `iron backup info`
-var InfoCmd = &cobra.Command{
-	Use:   "info",
-	Short: "Backup information",
-	Long:  "View information about backups",
-	Run:   info,
+// DownloadCmd - `iron backup download`
+var DownloadCmd = &cobra.Command{
+	Use:   "download",
+	Short: "Backup download",
+	Long:  "Download a backup",
+	Run:   download,
 }
 
-func info(cmd *cobra.Command, args []string) {
-	err := backup.Info(args, flags.Acc)
+func download(cmd *cobra.Command, args []string) {
+	err := backup.Download(args, flags.Acc)
 	if err != nil {
 		if err != api.ErrIronstarAPICall {
 			fmt.Println()
