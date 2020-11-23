@@ -24,16 +24,16 @@ func GetBackupName(args []string) (string, error) {
 	return name, nil
 }
 
-func MatchBackupComponents(dlComps []string, buComps []types.BackupIterationComponent) ([]string, error) {
+func MatchBackupComponents(reqComps []string, buComps []types.BackupIterationComponent) ([]string, error) {
 	buCompList := BackupComponentsToList(buComps)
 
 	result := []string{}
 
-	if utils.SliceIncludes(dlComps, "all") {
+	if utils.SliceIncludes(reqComps, "all") {
 		return buCompList, nil
 	}
 
-	if utils.SliceIncludes(dlComps, "database:all") {
+	if utils.SliceIncludes(reqComps, "database:all") {
 		for _, buComp := range buComps {
 			if strings.Contains(buComp.Name, "database:") {
 				result = append(result, buComp.Name)
@@ -41,9 +41,12 @@ func MatchBackupComponents(dlComps []string, buComps []types.BackupIterationComp
 		}
 	}
 
-	for _, buComp := range buComps {
-		if utils.SliceIncludes(dlComps, buComp.Name) {
-			result = append(result, buComp.Name)
+	for _, reqComp := range reqComps {
+		if utils.SliceIncludes(buCompList, reqComp) {
+			result = append(result, reqComp)
+		}
+		if utils.SliceIncludes(buCompList, "path:"+reqComp) {
+			result = append(result, "path:"+reqComp)
 		}
 	}
 
