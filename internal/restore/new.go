@@ -5,6 +5,8 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/backup"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
@@ -32,9 +34,18 @@ func New(args []string, flg flags.Accumulator) error {
 		return errors.New("A source backup must be specified with the --backup=[backup-name] flag")
 	}
 
-	components := utils.CalculateRestoreComponents(flg.Component)
-	if len(components) == 0 {
+	b, err := api.GetEnvironmentBackup(creds, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, flg.Backup, constants.DISPLAY_ERRORS)
+	if err != nil {
+		return err
+	}
+
+	reqComps := utils.CalculateRestoreComponents(flg.Component)
+	if len(reqComps) == 0 {
 		return errors.New("At least one component must be specified with the --component=[component-name] flag")
+	}
+	components, err := backup.MatchBackupComponents(reqComps, b.BackupIteration.Components)
+	if err != nil {
+		return err
 	}
 
 	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
