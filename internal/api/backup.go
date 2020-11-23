@@ -101,7 +101,7 @@ func DownloadEnvironmentBackupComponent(creds types.Keylink, subAliasOrHashedID,
 		MapStringPayload: map[string]interface{}{},
 	}
 
-	err := req.ArimaDownload(savePath)
+	err := req.ArimaDownload(savePath, buComp.Name)
 	if err != nil {
 		return errors.Wrap(err, errs.APIGetBackupErrorMsg)
 	}

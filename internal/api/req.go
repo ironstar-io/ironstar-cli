@@ -54,7 +54,8 @@ func GetArimaBaseURL() string {
 // WriteCounter counts the number of bytes written to it. It implements to the io.Writer interface
 // and we can pass this into io.TeeReader() which will report progress on each write cycle.
 type WriteCounter struct {
-	Total uint64
+	Total        uint64
+	FriendlyName string
 }
 
 func (wc *WriteCounter) Write(p []byte) (int, error) {
@@ -71,7 +72,7 @@ func (wc WriteCounter) PrintProgress() {
 
 	// Return again and print current status of download
 	// We use the humanize package to print the bytes in a meaningful way (e.g. 10 MB)
-	fmt.Printf("\rDownloading... %s complete", humanize.Bytes(wc.Total))
+	fmt.Printf("\rDownloading %s... %s", wc.FriendlyName, humanize.Bytes(wc.Total))
 }
 
 func (r *Request) BuildBytePayload() error {
@@ -116,7 +117,7 @@ func (r *Request) ArimaSend() (*RawResponse, error) {
 }
 
 // ArimaSend - Make a HTTP request to the Ironstar upload/download API (ARIMA)
-func (r *Request) ArimaDownload(filepath string) error {
+func (r *Request) ArimaDownload(filepath, friendlyName string) error {
 	r.RefreshToken()
 
 	err := r.BuildBytePayload()
@@ -126,10 +127,10 @@ func (r *Request) ArimaDownload(filepath string) error {
 
 	r.URL = GetArimaBaseURL() + r.Path
 
-	return r.HTTPSDownload(filepath)
+	return r.HTTPSDownload(filepath, friendlyName)
 }
 
-func (r *Request) HTTPSDownload(filepath string) error {
+func (r *Request) HTTPSDownload(filepath, friendlyName string) error {
 	// Create the file, but give it a tmp file extension, this means we won't overwrite a
 	// file until it's downloaded, but we'll remove the tmp extension once downloaded.
 	out, err := os.Create(filepath + ".tmp")
@@ -162,14 +163,16 @@ func (r *Request) HTTPSDownload(filepath string) error {
 	defer resp.Body.Close()
 
 	// Create our progress reporter and pass it to be used alongside our writer
-	counter := &WriteCounter{}
+	counter := &WriteCounter{
+		FriendlyName: friendlyName,
+	}
 	if _, err = io.Copy(out, io.TeeReader(resp.Body, counter)); err != nil {
 		out.Close()
 		return err
 	}
 
 	// The progress use the same line so print a new line once it's finished downloading
-	fmt.Print("\n")
+	fmt.Print(" - Complete!\n")
 
 	// Close the file without defer so it can happen before Rename()
 	out.Close()
@@ -177,8 +180,6 @@ func (r *Request) HTTPSDownload(filepath string) error {
 	if err = os.Rename(filepath+".tmp", filepath); err != nil {
 		return err
 	}
-
-	fmt.Println("Download Finished")
 
 	return nil
 }

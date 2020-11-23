@@ -1,6 +1,7 @@
 package backup
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,10 +10,12 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
+	slugify "github.com/metal3d/go-slugify"
 	"github.com/pkg/errors"
 )
 
@@ -50,17 +53,24 @@ func Download(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	for _, dlComp := range dlComps {
-		savePath, err := calcSavePath(flg.SavePath, seCtx.Subscription.Alias, seCtx.Environment.Name, dlComp.ArchiveKey)
-		if err != nil {
-			return err
-		}
+	savePath, err := calcSavePath(flg.SavePath, seCtx.Subscription.Alias, seCtx.Environment.Name, backupName)
+	if err != nil {
+		return err
+	}
 
-		err = api.DownloadEnvironmentBackupComponent(creds, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, backupName, savePath, dlComp)
+	fmt.Println()
+
+	for _, dlComp := range dlComps {
+		file := filepath.Join(savePath, slugify.Marshal(dlComp.Name)+".tar.gz")
+
+		err = api.DownloadEnvironmentBackupComponent(creds, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, backupName, file, dlComp)
 		if err != nil {
 			return err
 		}
 	}
+
+	fmt.Println()
+	color.Green("Download completed and saved to " + savePath)
 
 	return nil
 }
@@ -93,24 +103,21 @@ func matchDownloadComponents(dlComps []string, buComps []types.BackupIterationCo
 	return result, nil
 }
 
-func calcSavePath(savePathFlag, subAlias, envName, filename string) (string, error) {
+func calcSavePath(savePathFlag, subAlias, envName, backupName string) (string, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
 
 	if savePathFlag == "" {
-		return filepath.Join(wd, ".ironstar", "backups", subAlias, envName, filename), nil
+		path := filepath.Join(wd, ".ironstar", "backups", subAlias, envName, backupName)
+
+		fs.Mkdir(path)
+
+		return path, nil
 	}
 
-	return filepath.Join(savePathFlag, filename), nil
-}
+	fs.Mkdir(savePathFlag)
 
-func backupComponentsToList(buComps []types.BackupIterationComponent) []string {
-	result := []string{}
-	for _, buComp := range buComps {
-		result = append(result, buComp.Name)
-	}
-
-	return result
+	return savePathFlag, nil
 }
