@@ -34,7 +34,7 @@ func Purge(args []string, flg flags.Accumulator) error {
 	}
 
 	fmt.Println()
-	color.Green("Cache purge has commenced. To see an up-to-date status please run `iron cache invalidation show " + ci.Name + "`")
+	color.Green("Cache purge has commenced. To see an up-to-date status please run `iron cache invalidation show " + ci.Name + " --subscription=" + seCtx.Subscription.Alias + " --environment=" + seCtx.Environment.Name + "`")
 
 	return nil
 }
