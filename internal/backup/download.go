@@ -69,7 +69,7 @@ func Download(args []string, flg flags.Accumulator) error {
 	fmt.Println()
 
 	for _, dlComp := range dlComps {
-		file := filepath.Join(savePath, slugify.Marshal(dlComp.Name)+".tar.gz")
+		file := calcFilename(savePath, dlComp.Name)
 
 		err = api.DownloadEnvironmentBackupComponent(creds, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, backupName, file, dlComp)
 		if err != nil {
@@ -130,4 +130,14 @@ func calcSavePath(savePathFlag, subAlias, envName, backupName string) (string, e
 	fs.Mkdir(savePathFlag)
 
 	return savePathFlag, nil
+}
+
+func calcFilename(savePath, compName string) string {
+	safeComp := slugify.Marshal(strings.ReplaceAll(compName, ":", "-"))
+
+	if strings.Contains(safeComp, "database") {
+		return filepath.Join(savePath, safeComp+".sql.gz")
+	}
+
+	return filepath.Join(savePath, safeComp+".tar.gz")
 }
