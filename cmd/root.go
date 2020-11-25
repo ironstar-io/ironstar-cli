@@ -83,6 +83,7 @@ func init() {
 	backup.BackupCmd.AddCommand(backup.InfoCmd)
 	backup.BackupCmd.AddCommand(backup.ListCmd)
 	backup.BackupCmd.AddCommand(backup.DeleteCmd)
+	backup.BackupCmd.AddCommand(backup.DownloadCmd)
 
 	// `iron restore x`
 	rootCmd.AddCommand(restore.RestoreCmd)
@@ -152,6 +153,8 @@ func RootCmd() *cobra.Command {
 
 	backup.BackupCmd.PersistentFlags().BoolVarP(&flags.Acc.LockTables, "lock-tables", "", false, "Pass the `--lock-tables` flag to mysqldump")
 	backup.NewCmd.PersistentFlags().BoolVarP(&flags.Acc.LockTables, "lock-tables", "", false, "Pass the `--lock-tables` flag to mysqldump")
+	backup.DownloadCmd.PersistentFlags().StringVarP(&flags.Acc.SavePath, "save-path", "", "", "Select a custom save path for your backup download. Default: ./.ironstar/backups/{subscription}/{environment}")
+	backup.DownloadCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "Select the backup to be the base for download")
 
 	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
 	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")

@@ -9,6 +9,7 @@ type Accumulator struct {
 	Subscription      string
 	Environment       string
 	Name              string
+	SavePath          string
 	LockTables        bool
 	SkipHooks         bool
 	PreventRollback   bool
