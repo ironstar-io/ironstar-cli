@@ -210,6 +210,12 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 		return nil, err
 	}
 
+	// chmod 400 to ensure they're read-only for the current user
+	err = os.Chmod(filepath, 0400)
+	if err != nil {
+		return nil, err
+	}
+
 	return ir, nil
 }
 
