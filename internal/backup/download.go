@@ -104,13 +104,13 @@ func matchDownloadComponents(dlComps []string, buComps []types.BackupIterationCo
 }
 
 func calcSavePath(savePathFlag, subAlias, envName, backupName string) (string, error) {
-	wd, err := os.Getwd()
+	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
 	}
 
 	if savePathFlag == "" {
-		path := filepath.Join(wd, ".ironstar", "backups", subAlias, envName, backupName)
+		path := filepath.Join(home, ".ironstar", "backups", subAlias, envName, backupName)
 
 		fs.Mkdir(path)
 
