@@ -117,12 +117,12 @@ func (r *Request) ArimaSend() (*RawResponse, error) {
 }
 
 // ArimaSend - Make a HTTP request to the Ironstar upload/download API (ARIMA)
-func (r *Request) ArimaDownload(filepath, friendlyName string) error {
+func (r *Request) ArimaDownload(filepath, friendlyName string) (*RawResponse, error) {
 	r.RefreshToken()
 
 	err := r.BuildBytePayload()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	r.URL = GetArimaBaseURL() + r.Path
@@ -130,18 +130,18 @@ func (r *Request) ArimaDownload(filepath, friendlyName string) error {
 	return r.HTTPSDownload(filepath, friendlyName)
 }
 
-func (r *Request) HTTPSDownload(filepath, friendlyName string) error {
+func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, error) {
 	// Create the file, but give it a tmp file extension, this means we won't overwrite a
 	// file until it's downloaded, but we'll remove the tmp extension once downloaded.
 	out, err := os.Create(filepath + ".tmp")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req, err := http.NewRequest(r.Method, r.URL, bytes.NewBuffer(r.BytePayload))
 	if err != nil {
 		out.Close()
-		return err
+		return nil, err
 	}
 
 	req.Header.Add("content-type", "application/json")
@@ -157,7 +157,36 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) error {
 	resp, err := client.Do(req)
 	if err != nil {
 		out.Close()
-		return err
+		return nil, err
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	ir := &RawResponse{
+		StatusCode: resp.StatusCode,
+		CallMethod: r.Method,
+		CallURL:    r.URL,
+	}
+
+	if resp.StatusCode > 399 {
+		if resp != nil && resp.Body != nil {
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			ir.Body = body
+		}
+		defer resp.Body.Close()
+
+		// Close the file without defer so it can happen before Rename()
+		out.Close()
+
+		if err = os.Remove(filepath + ".tmp"); err != nil {
+			return nil, err
+		}
+
+		return ir, nil
 	}
 
 	defer resp.Body.Close()
@@ -168,7 +197,7 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) error {
 	}
 	if _, err = io.Copy(out, io.TeeReader(resp.Body, counter)); err != nil {
 		out.Close()
-		return err
+		return nil, err
 	}
 
 	// The progress use the same line so print a new line once it's finished downloading
@@ -178,10 +207,10 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) error {
 	out.Close()
 
 	if err = os.Rename(filepath+".tmp", filepath); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return ir, nil
 }
 
 func (r *Request) HTTPSend() (*RawResponse, error) {
