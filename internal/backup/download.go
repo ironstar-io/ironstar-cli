@@ -75,14 +75,14 @@ func Download(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func matchDownloadComponents(dlComps []string, buComps []types.BackupIterationComponent) ([]types.BackupIterationComponent, error) {
+func matchDownloadComponents(reqComps []string, buComps []types.BackupIterationComponent) ([]types.BackupIterationComponent, error) {
 	result := []types.BackupIterationComponent{}
 
-	if utils.SliceIncludes(dlComps, "all") {
+	if utils.SliceIncludes(reqComps, "all") {
 		return buComps, nil
 	}
 
-	if utils.SliceIncludes(dlComps, "database:all") {
+	if utils.SliceIncludes(reqComps, "database:all") {
 		for _, buComp := range buComps {
 			if strings.Contains(buComp.Name, "database:") {
 				result = append(result, buComp)
@@ -90,9 +90,11 @@ func matchDownloadComponents(dlComps []string, buComps []types.BackupIterationCo
 		}
 	}
 
-	for _, buComp := range buComps {
-		if utils.SliceIncludes(dlComps, buComp.Name) {
-			result = append(result, buComp)
+	for _, reqComp := range reqComps {
+		for _, buComp := range buComps {
+			if buComp.Name == reqComp || buComp.Name == "path:"+reqComp {
+				result = append(result, buComp)
+			}
 		}
 	}
 
