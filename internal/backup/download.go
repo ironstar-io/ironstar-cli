@@ -60,6 +60,14 @@ func Download(args []string, flg flags.Accumulator) error {
 
 	fmt.Println()
 
+	confirmDL := services.ConfirmationPrompt("Backup downloads are included in your outbound bandwidth allocation each month.\n\nAre you sure you want to download this backup?", "y", flg.AutoAccept)
+	if !confirmDL {
+		fmt.Println("Exiting...")
+		return nil
+	}
+
+	fmt.Println()
+
 	for _, dlComp := range dlComps {
 		file := filepath.Join(savePath, slugify.Marshal(dlComp.Name)+".tar.gz")
 
