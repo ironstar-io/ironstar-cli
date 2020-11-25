@@ -12,9 +12,9 @@ import (
 
 // UploadPackage - Create a project tarball in tmp
 func UploadPackage(creds types.Keylink, subHash, tarpath, ref string) (*RawResponse, error) {
-	color.Red(`Warning! This command uploads the contents of this Git repository to Ironstar and makes it available on the web. Only paths listed under the "exclude" settings in your .ironstar/config.yml file will be excluded.
+	color.Red(`Warning! This command uploads the contents of this directory to Ironstar and makes it available on the web. Only paths listed under the "exclude" settings in your .ironstar/config.yml file will be excluded.
 
-This means that any database files, Drupal Public and Private Files, and other potentially sensitive content that you have in this repository that is not in the exclude list will be uploaded to the remote environment. 
+This means that any database files, .env files, or other potentially sensitive content that you have in this repository that is not in the exclude list will be uploaded to the remote environment and possibly made publicly visible.
 
 Please proceed with caution. 
 	`)
