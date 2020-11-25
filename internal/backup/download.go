@@ -36,7 +36,7 @@ func Download(args []string, flg flags.Accumulator) error {
 
 	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
 
-	backupName, err := GetBackupName(args)
+	backupName, err := GetBackupName(args, flg.Backup)
 	if err != nil {
 		return err
 	}

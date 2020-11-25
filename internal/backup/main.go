@@ -9,19 +9,22 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 )
 
-func GetBackupName(args []string) (string, error) {
-	var name string
-	if len(args) == 0 {
-		input, err := services.StdinPrompt("Backup Name: ")
-		if err != nil {
-			return "", err
-		}
-		name = input
-	} else {
-		name = args[0]
+func GetBackupName(args []string, backupName string) (string, error) {
+	if backupName != "" {
+		return backupName, nil
 	}
 
-	return name, nil
+	if len(args) > 0 {
+		return args[0], nil
+	}
+
+	input, err := services.StdinPrompt("Backup Name: ")
+	if err != nil {
+		return "", err
+	}
+
+	return input, nil
+
 }
 
 func MatchBackupComponents(reqComps []string, buComps []types.BackupIterationComponent) ([]string, error) {
