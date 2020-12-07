@@ -11,6 +11,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/env_vars"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/environment"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/logs"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/restore"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
@@ -97,6 +98,9 @@ func init() {
 	sync.SyncCmd.AddCommand(sync.InfoCmd)
 	sync.SyncCmd.AddCommand(sync.ListCmd)
 
+	// `iron logs x`
+	rootCmd.AddCommand(logs.LogsCmd)
+
 	// `iron cache x`
 	rootCmd.AddCommand(cache.CacheCmd)
 	cache.CacheCmd.AddCommand(cache.InvalidationCmd)
@@ -155,6 +159,9 @@ func RootCmd() *cobra.Command {
 	backup.NewCmd.PersistentFlags().BoolVarP(&flags.Acc.LockTables, "lock-tables", "", false, "Pass the `--lock-tables` flag to mysqldump")
 	backup.DownloadCmd.PersistentFlags().StringVarP(&flags.Acc.SavePath, "save-path", "", "", "Select a custom save path for your backup download. Default: ./.ironstar/backups/{subscription}/{environment}")
 	backup.DownloadCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "Select the backup to be the base for download")
+
+	// TODO
+	logs.LogsCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "Select the backup to be the base for download")
 
 	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
 	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
