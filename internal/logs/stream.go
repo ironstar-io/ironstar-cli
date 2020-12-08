@@ -1,7 +1,6 @@
 package logs
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"sort"
@@ -103,13 +102,26 @@ func calcStartTime(startFlag int, availableLogStreams []types.CWLogStreamsRespon
 		return availableLogStreams[i].LastEventTimestamp > availableLogStreams[j].LastEventTimestamp
 	})
 
-	s := availableLogStreams[len(availableLogStreams)-1]
+	s := availableLogStreams[0]
 
 	if s.LastEventTimestamp == 0 {
 		return time.Now().UTC().Add(time.Duration(-15*time.Minute)).UTC().UnixNano() / int64(time.Millisecond)
 	}
 
 	return time.Unix(0, s.LastEventTimestamp*int64(time.Millisecond)).Add(-2*time.Minute).UnixNano() / int64(time.Millisecond)
+}
+
+func formatLogTimestamp(ogTimestamp string) string {
+	split1 := strings.ReplaceAll(ogTimestamp, `"`, "")
+	split2 := strings.ReplaceAll(split1, `time=`, "")
+	split3 := strings.ReplaceAll(split2, `+0000`, "+00:00")
+
+	t, err := time.Parse(time.RFC3339, split3)
+	if err != nil {
+		return ogTimestamp
+	}
+
+	return t.Format(time.RFC3339Nano)
 }
 
 func calcEndTime(endFlag int) int64 {
@@ -162,17 +174,13 @@ func printArimaLogs(creds types.Keylink, seCtx types.SubscriptionEnvironment, fl
 	}
 
 	for _, cwLog := range cwLogs {
-		var logMsg string
-		b, err := json.Marshal(cwLog.Log)
-		if err != nil {
-			logMsg = fmt.Sprint(cwLog.Log)
-		} else {
-			logMsg = string(b)
+		if cwLog.Log == (types.LogEvent{}) {
+			continue
 		}
 
 		streamColor := streamNameColour(cwLog.LogStreamName)
 
-		fmt.Printf("%s%s\n", color.New(streamColor).SprintFunc()(streamNameWithPadding(cwLog.LogStreamName)), logMsg)
+		fmt.Printf("%s%s%s\n", color.New(streamColor).SprintFunc()(streamNameWithPadding(cwLog.LogStreamName)), color.New(color.Faint).SprintFunc()(formatLogTimestamp(cwLog.Log.Timestamp)+" | "), cwLog.Log.Message)
 	}
 
 	s := cwLogs[len(cwLogs)-1]
