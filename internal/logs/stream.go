@@ -174,18 +174,36 @@ func printArimaLogs(creds types.Keylink, seCtx types.SubscriptionEnvironment, fl
 	}
 
 	for _, cwLog := range cwLogs {
-		if cwLog.Log == (types.LogEvent{}) {
-			continue
-		}
-
 		streamColor := streamNameColour(cwLog.LogStreamName)
+		logMsg := stringifyLog(cwLog.Log)
 
-		fmt.Printf("%s%s%s\n", color.New(streamColor).SprintFunc()(streamNameWithPadding(cwLog.LogStreamName)), color.New(color.Faint).SprintFunc()(formatLogTimestamp(cwLog.Log.Timestamp)+" | "), cwLog.Log.Message)
+		fmt.Printf("%s%s%s\n", color.New(streamColor).SprintFunc()(streamNameWithPadding(cwLog.LogStreamName)), color.New(color.Faint).SprintFunc()(formatLogTimestamp(fmt.Sprintf("%v", cwLog.Log["tmst"]))+" | "), logMsg)
 	}
 
 	s := cwLogs[len(cwLogs)-1]
 
 	return s.Timestamp + 1, nil
+}
+
+func stringifyLog(logMsg map[string]interface{}) string {
+	var keys []string
+	for key := range logMsg {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	var msg string
+	for _, key := range keys {
+		if key == "tmst" {
+			continue
+		}
+
+		msg = msg + key + "=" + fmt.Sprintf("%v", logMsg[key]) + " "
+	}
+
+	msg = msg[:len(msg)-1]
+
+	return msg
 }
 
 func streamNameWithPadding(logStreamName string) string {
