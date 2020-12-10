@@ -100,6 +100,7 @@ func init() {
 
 	// `iron logs x`
 	rootCmd.AddCommand(logs.LogsCmd)
+	logs.LogsCmd.AddCommand(logs.LexiconCmd)
 
 	// `iron cache x`
 	rootCmd.AddCommand(cache.CacheCmd)

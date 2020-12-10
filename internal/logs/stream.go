@@ -51,7 +51,7 @@ func Stream(args []string, flg flags.Accumulator) error {
 	}
 
 	logStreamNames := calcLogStreamNames(logStreams)
-	startTime := calcStartTime(flg.Start, logStreams)
+	startTime := calcStartTime(flg, logStreams)
 	endTime := calcEndTime(flg.End)
 
 	if !flags.Acc.Stream {
@@ -93,9 +93,13 @@ func Stream(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func calcStartTime(startFlag int, availableLogStreams []types.CWLogStreamsResponse) int64 {
-	if startFlag != 0 {
-		return int64(startFlag)
+func calcStartTime(flags flags.Accumulator, availableLogStreams []types.CWLogStreamsResponse) int64 {
+	if flags.Start != 0 {
+		return int64(flags.Start)
+	}
+
+	if flags.Search != "" {
+		return 0
 	}
 
 	sort.SliceStable(availableLogStreams, func(i, j int) bool {
