@@ -13,14 +13,14 @@ import (
 
 // LexiconCmd - `iron logs lexicon`
 var LexiconCmd = &cobra.Command{
-	Use:   "lexicon",
+	Use:   "lexicon [term]",
 	Short: "Display log terms",
 	Long:  "Display a list of all log abbreviations and their meaning",
 	Run:   lexicon,
 }
 
 func lexicon(cmd *cobra.Command, args []string) {
-	err := logs.Lexicon()
+	err := logs.Lexicon(args)
 	if err != nil {
 		if err != api.ErrIronstarAPICall {
 			fmt.Println()
