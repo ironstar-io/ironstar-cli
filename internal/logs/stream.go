@@ -99,7 +99,7 @@ func calcStartTime(flags flags.Accumulator, availableLogStreams []types.CWLogStr
 	}
 
 	if flags.Search != "" {
-		return 0
+		return 1
 	}
 
 	sort.SliceStable(availableLogStreams, func(i, j int) bool {
