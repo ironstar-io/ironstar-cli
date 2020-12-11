@@ -78,7 +78,16 @@ func Stream(args []string, flg flags.Accumulator) error {
 	}
 
 	if flags.Acc.Stream {
+		streamEnd := time.Now().Add(time.Duration(15 * time.Minute))
+
 		for range time.Tick(3 * time.Second) {
+			if time.Now().After(streamEnd) {
+				fmt.Println()
+				fmt.Println("Stream runnning for longer than 15 minutes. Exiting...")
+
+				return nil
+			}
+
 			go func() {
 				newLast, err := printArimaLogs(creds, seCtx, flg, last, 0, logStreamNames)
 				if err != nil {
