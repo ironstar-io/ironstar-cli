@@ -204,6 +204,21 @@ type RestoreRequestResult struct {
 	CreatedAt time.Time `json:"created_at" yaml:"created_at"`
 }
 
+// RestoreRequestResponse ...
+type CWLogResponse struct {
+	Timestamp     int64                  `json:"timestamp,omitempty" yaml:"timestamp,omitempty"`
+	IngestionTime int64                  `json:"ingestionTime,omitempty" yaml:"ingestionTime,omitempty"`
+	LogStreamName string                 `json:"logStreamName,omitempty" yaml:"logStreamName,omitempty"`
+	EventId       string                 `json:"eventId,omitempty" yaml:"eventId,omitempty"`
+	Log           map[string]interface{} `json:"log,omitempty" yaml:"log,omitempty"`
+}
+
+// CWLogStreamsResponse ...
+type CWLogStreamsResponse struct {
+	LastEventTimestamp int64  `json:"lastEventTimestamp,omitempty" yaml:"lastEventTimestamp,omitempty"`
+	LogStreamName      string `json:"logStreamName,omitempty" yaml:"logStreamName,omitempty"`
+}
+
 // UploadResponse
 type UploadResponse struct {
 	PackageName string `json:"packageName,omitempty" yaml:"packageName,omitempty"`

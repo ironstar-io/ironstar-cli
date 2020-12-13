@@ -11,6 +11,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/env_vars"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/environment"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/logs"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/restore"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
@@ -97,6 +98,10 @@ func init() {
 	sync.SyncCmd.AddCommand(sync.InfoCmd)
 	sync.SyncCmd.AddCommand(sync.ListCmd)
 
+	// `iron logs x`
+	rootCmd.AddCommand(logs.LogsCmd)
+	logs.LogsCmd.AddCommand(logs.LexiconCmd)
+
 	// `iron cache x`
 	rootCmd.AddCommand(cache.CacheCmd)
 	cache.CacheCmd.AddCommand(cache.InvalidationCmd)
@@ -155,6 +160,12 @@ func RootCmd() *cobra.Command {
 	backup.NewCmd.PersistentFlags().BoolVarP(&flags.Acc.LockTables, "lock-tables", "", false, "Pass the `--lock-tables` flag to mysqldump")
 	backup.DownloadCmd.PersistentFlags().StringVarP(&flags.Acc.SavePath, "save-path", "", "", "Select a custom save path for your backup download. Default: ./.ironstar/backups/{subscription}/{environment}")
 	backup.DownloadCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "Select the backup to be the base for download")
+
+	logs.LogsCmd.PersistentFlags().StringArrayVarP(&flags.Acc.LogStreams, "log-stream", "", []string{}, "Supply a set of log stream names to display")
+	logs.LogsCmd.PersistentFlags().StringVarP(&flags.Acc.Search, "search", "", "", "Return only logs that include a matching search string")
+	logs.LogsCmd.PersistentFlags().IntVarP(&flags.Acc.End, "end", "", 0, "The end time of the logs. Doesn't work for log streaming. Should be unix time in miliseconds. Defaults to now.")
+	logs.LogsCmd.PersistentFlags().IntVarP(&flags.Acc.Start, "start", "", 0, "The start time of the logs. Should be unix time in miliseconds. Defaults to 2 minutes prior to the last available log.")
+	logs.LogsCmd.PersistentFlags().BoolVarP(&flags.Acc.Stream, "stream", "f", false, "Stream logs instead of print and exit. Default false.")
 
 	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
 	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")

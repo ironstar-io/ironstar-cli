@@ -105,7 +105,7 @@ func DisplayIndividualSyncInfo(creds types.Keylink, sub types.Subscription, sync
 		fmt.Println("------------")
 		fmt.Println("BACKUP PHASE")
 		fmt.Println("------------")
-		fmt.Println("Identifier: " + b.BackupIteration.Iteration)
+		fmt.Println("Name: " + b.BackupIteration.Iteration)
 		fmt.Println("Status:     " + b.BackupIteration.Status)
 		fmt.Println("Started:    " + b.BackupIteration.CreatedAt.Format(time.RFC3339))
 		if !b.BackupIteration.CompletedAt.IsZero() {

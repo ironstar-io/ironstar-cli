@@ -20,6 +20,11 @@ type Accumulator struct {
 	Value             string
 	VarType           string
 	Backup            string
+	Start             int
+	End               int
+	LogStreams        []string
+	Stream            bool
+	Search            string
 	Deploy            string
 	Exclude           string
 	Type              string
