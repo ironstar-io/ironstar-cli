@@ -10,6 +10,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -73,7 +74,7 @@ func Info(args []string, flg flags.Accumulator) error {
 
 	risRows := make([][]string, len(ris))
 	for _, ri := range ris {
-		tt := CalcRestoreTimeTaken(ri.Status, ri.CreatedAt, ri.CompletedAt)
+		tt := utils.CalcRestoreTimeTaken(ri.Status, ri.CreatedAt, ri.CompletedAt)
 		components := CalcRestoreResultNames(ri.Results)
 		sbu := CalcBackupIterationName(ri.BackupIteration.ClientName, ri.BackupIteration.Iteration)
 
@@ -104,7 +105,7 @@ func DisplayEnvironmentRestoreInfo(creds types.Keylink, env types.Environment, s
 
 	risRows := make([][]string, len(ris))
 	for _, ri := range ris {
-		tt := CalcRestoreTimeTaken(ri.Status, ri.CreatedAt, ri.CompletedAt)
+		tt := utils.CalcRestoreTimeTaken(ri.Status, ri.CreatedAt, ri.CompletedAt)
 		components := CalcRestoreResultNames(ri.Results)
 		sbu := CalcBackupIterationName(ri.BackupIteration.ClientName, ri.BackupIteration.Iteration)
 
@@ -135,7 +136,7 @@ func DisplayIndividualRestoreInfo(creds types.Keylink, env types.Environment, su
 	fmt.Println("Started:       " + rr.CreatedAt.Format(time.RFC3339))
 	if !rr.CompletedAt.IsZero() {
 		fmt.Println("Completed:     " + rr.CompletedAt.Format(time.RFC3339))
-		fmt.Println("Duration:      " + CalcRestoreTimeTaken(rr.Status, rr.CreatedAt, rr.CompletedAt))
+		fmt.Println("Duration:      " + utils.CalcRestoreTimeTaken(rr.Status, rr.CreatedAt, rr.CompletedAt))
 	}
 
 	fmt.Println()
@@ -170,14 +171,6 @@ func DisplayComponentInfo(components []types.RestoreRequestResult) {
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(compRows)
 	table.Render()
-}
-
-func CalcRestoreTimeTaken(status string, createdAt, completedAt time.Time) string {
-	if status != constants.RESTORE_COMPLETE || completedAt.IsZero() {
-		return time.Since(createdAt).Round(time.Second).String()
-	}
-
-	return completedAt.Sub(createdAt).Round(time.Second).String()
 }
 
 func CalcRestoreResultNames(components []types.RestoreRequestResult) string {
