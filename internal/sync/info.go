@@ -55,7 +55,7 @@ func Info(args []string, flg flags.Accumulator) error {
 
 	srsRows := make([][]string, len(srs))
 	for _, sr := range srs {
-		tt := CalcRestoreTimeTaken(sr.Status, sr.CreatedAt, sr.CompletedAt)
+		tt := utils.CalcSyncTimeTaken(sr.Status, sr.CreatedAt, sr.CompletedAt)
 
 		// Prepend rows, we want dates ordered oldest to newest
 		row := make([][]string, 1)
@@ -85,7 +85,7 @@ func DisplayIndividualSyncInfo(creds types.Keylink, sub types.Subscription, sync
 	fmt.Println("Started:       " + sr.CreatedAt.Format(time.RFC3339))
 	if !sr.CompletedAt.IsZero() {
 		fmt.Println("Completed:     " + sr.CompletedAt.Format(time.RFC3339))
-		fmt.Println("Duration:      " + CalcRestoreTimeTaken(sr.Status, sr.CreatedAt, sr.CompletedAt))
+		fmt.Println("Duration:      " + utils.CalcSyncTimeTaken(sr.Status, sr.CreatedAt, sr.CompletedAt))
 	}
 
 	fmt.Println()
@@ -129,7 +129,7 @@ func DisplayIndividualSyncInfo(creds types.Keylink, sub types.Subscription, sync
 		fmt.Println("Started:       " + sr.RestoreRequest.CreatedAt.Format(time.RFC3339))
 		if !sr.RestoreRequest.CompletedAt.IsZero() {
 			fmt.Println("Completed:     " + sr.RestoreRequest.CompletedAt.Format(time.RFC3339))
-			fmt.Println("Duration:      " + CalcRestoreTimeTaken(sr.RestoreRequest.Status, sr.RestoreRequest.CreatedAt, sr.RestoreRequest.CompletedAt))
+			fmt.Println("Duration:      " + utils.CalcRestoreTimeTaken(sr.RestoreRequest.Status, sr.RestoreRequest.CreatedAt, sr.RestoreRequest.CompletedAt))
 		}
 
 		if len(sr.RestoreRequest.Results) > 0 {
@@ -143,14 +143,6 @@ func DisplayIndividualSyncInfo(creds types.Keylink, sub types.Subscription, sync
 	}
 
 	return nil
-}
-
-func CalcRestoreTimeTaken(status string, createdAt, completedAt time.Time) string {
-	if status != constants.BACKUP_COMPLETE || completedAt.IsZero() {
-		return time.Since(createdAt).Round(time.Second).String()
-	}
-
-	return completedAt.Sub(createdAt).Round(time.Second).String()
 }
 
 func CalcBackupIterationName(clientName, iterationName string) string {

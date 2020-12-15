@@ -58,6 +58,22 @@ func CalcBackupTimeTaken(status string, createdAt, completedAt time.Time) string
 	return completedAt.Sub(createdAt).Round(time.Second).String()
 }
 
+func CalcSyncTimeTaken(status string, createdAt, completedAt time.Time) string {
+	if status != constants.SYNC_COMPLETE || completedAt.IsZero() {
+		return time.Since(createdAt).Round(time.Second).String()
+	}
+
+	return completedAt.Sub(createdAt).Round(time.Second).String()
+}
+
+func CalcRestoreTimeTaken(status string, createdAt, completedAt time.Time) string {
+	if status != constants.RESTORE_COMPLETE || completedAt.IsZero() {
+		return time.Since(createdAt).Round(time.Second).String()
+	}
+
+	return completedAt.Sub(createdAt).Round(time.Second).String()
+}
+
 func CalcBackupSize(components []types.BackupIterationComponent) string {
 	var size int
 	for _, comp := range components {
