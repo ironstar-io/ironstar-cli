@@ -214,6 +214,10 @@ func stringifyLog(logMsg map[string]interface{}) string {
 		msg = msg + key + "=" + fmt.Sprintf("%v", logMsg[key]) + " "
 	}
 
+	if len(msg) == 0 {
+		return ""
+	}
+
 	msg = msg[:len(msg)-1]
 
 	return msg
