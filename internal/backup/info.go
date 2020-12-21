@@ -49,7 +49,7 @@ func Info(args []string, flg flags.Accumulator) error {
 				return err
 			}
 		} else {
-			err = DisplayEnvironmentBackupInfo(creds, env, sub)
+			err = DisplayEnvironmentBackupInfo(creds, env, sub, flg.BackupType)
 			if err != nil {
 				return err
 			}
@@ -65,7 +65,7 @@ func Info(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
-	bis, err := api.GetSubscriptionBackupIterations(creds, sub.HashedID)
+	bis, err := api.GetSubscriptionBackupIterations(creds, sub.HashedID, flg.BackupType)
 	if err != nil {
 		return err
 	}
@@ -95,8 +95,8 @@ func Info(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func DisplayEnvironmentBackupInfo(creds types.Keylink, env types.Environment, sub types.Subscription) error {
-	bis, err := api.GetEnvironmentBackupIterations(creds, sub.HashedID, env.HashedID)
+func DisplayEnvironmentBackupInfo(creds types.Keylink, env types.Environment, sub types.Subscription, backupType string) error {
+	bis, err := api.GetEnvironmentBackupIterations(creds, sub.HashedID, env.HashedID, backupType)
 	if err != nil {
 		return err
 	}
