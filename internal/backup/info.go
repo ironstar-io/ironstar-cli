@@ -74,6 +74,10 @@ func Info(args []string, flg flags.Accumulator) error {
 	fmt.Println("Recent backup runs for subscription [" + sub.Alias + "]:")
 	fmt.Println()
 
+	if flg.BackupType != "" {
+		fmt.Println("Displaying results for backup type '" + flg.BackupType + "'")
+	}
+
 	bisRows := make([][]string, len(bis))
 	for _, bi := range bis {
 		tt := utils.CalcBackupTimeTaken(bi.Status, bi.CreatedAt, bi.CompletedAt)
@@ -104,6 +108,10 @@ func DisplayEnvironmentBackupInfo(creds types.Keylink, env types.Environment, su
 	fmt.Println()
 	fmt.Println("Recent backup runs for environment [" + env.Name + "]:")
 	fmt.Println()
+
+	if backupType != "" {
+		fmt.Println("Displaying results for backup type '" + backupType + "'")
+	}
 
 	bisRows := make([][]string, len(bis))
 	for _, bi := range bis {
