@@ -39,6 +39,8 @@ const (
 
 	APIPostBackupErrorMsg = "Failed to create backup"
 
+	APIDeleteBackupErrorMsg = "Failed to delete backup"
+
 	APIGetRestoreErrorMsg = "Failed to get restore"
 
 	APIPostRestoreErrorMsg = "Failed to create restore"
