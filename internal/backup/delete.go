@@ -22,25 +22,24 @@ func Delete(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	seCtx, err := api.GetSubscriptionEnvironmentContext(creds, flg)
+	seCtx, err := api.GetSubscriptionContext(creds, flg)
 	if err != nil {
 		return err
 	}
 
-	if seCtx.Subscription.Alias == "" {
+	if seCtx.Alias == "" {
 		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Alias + "' (" + seCtx.HashedID + ")")
 
 	name := flg.Name
 	if name == "" {
 		name = args[0]
 	}
 
-	err = api.DeleteBackupIteration(creds, types.DeleteBackupIterationParams{
-		SubscriptionID: seCtx.Subscription.HashedID,
-		EnvironmentID:  seCtx.Environment.HashedID,
+	err = api.DeleteBackup(creds, types.DeleteBackupParams{
+		SubscriptionID: seCtx.HashedID,
 		Name:           name,
 	})
 	if err != nil {
@@ -48,7 +47,7 @@ func Delete(args []string, flg flags.Accumulator) error {
 	}
 
 	fmt.Println()
-	color.Green("Successfully deleted backup of the environment '" + seCtx.Environment.Name + "' named [" + name + "]")
+	color.Green("Successfully deleted backup [" + name + "]")
 
 	return nil
 }
