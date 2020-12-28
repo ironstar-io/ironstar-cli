@@ -1,4 +1,4 @@
-package new_relic
+package newrelic
 
 import (
 	"fmt"
@@ -6,13 +6,13 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/new_relic"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/newrelic"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
-// ConfigureCmd - `iron new-relic configure`
+// ConfigureCmd - `iron newrelic configure`
 var ConfigureCmd = &cobra.Command{
 	Use:   "configure",
 	Short: "Configure New Relic for your environment",
@@ -21,7 +21,7 @@ var ConfigureCmd = &cobra.Command{
 }
 
 func configure(cmd *cobra.Command, args []string) {
-	err := new_relic.Configure(args, flags.Acc)
+	err := newrelic.Configure(args, flags.Acc)
 	if err != nil {
 		if err != api.ErrIronstarAPICall {
 			fmt.Println()

@@ -1,4 +1,4 @@
-package new_relic
+package newrelic
 
 import (
 	"fmt"

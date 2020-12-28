@@ -1,12 +1,12 @@
-package new_relic
+package newrelic
 
 import (
 	"github.com/spf13/cobra"
 )
 
-// NewRelicCmd - `iron new-relic`
+// NewRelicCmd - `iron newrelic`
 var NewRelicCmd = &cobra.Command{
-	Use:   "new-relic",
+	Use:   "newrelic",
 	Short: "",
 	Long:  "",
 	Run:   configure,
