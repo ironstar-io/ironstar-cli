@@ -12,6 +12,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/environment"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/logs"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/new_relic"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/restore"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
@@ -119,6 +120,10 @@ func init() {
 	pkg.PkgCmd.AddCommand(pkg.ListCmd)
 	pkg.PkgCmd.AddCommand(pkg.UpdateRefCmd)
 
+	// `iron new-relic x`
+	rootCmd.AddCommand(new_relic.NewRelicCmd)
+	new_relic.NewRelicCmd.AddCommand(new_relic.ConfigureCmd)
+
 	// `iron deploy x`
 	rootCmd.AddCommand(deploy.DeployCmd)
 	deploy.DeployCmd.AddCommand(deploy.ListCmd)
@@ -160,6 +165,8 @@ func RootCmd() *cobra.Command {
 	backup.NewCmd.PersistentFlags().BoolVarP(&flags.Acc.LockTables, "lock-tables", "", false, "Pass the `--lock-tables` flag to mysqldump")
 	backup.DownloadCmd.PersistentFlags().StringVarP(&flags.Acc.SavePath, "save-path", "", "", "Select a custom save path for your backup download. Default: ./.ironstar/backups/{subscription}/{environment}")
 	backup.DownloadCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "Select the backup to be the base for download")
+	backup.ListCmd.PersistentFlags().StringVarP(&flags.Acc.BackupType, "backup-type", "", "", "Filter the backup types to return. Either 'manual' or 'scheduled'")
+	backup.InfoCmd.PersistentFlags().StringVarP(&flags.Acc.BackupType, "backup-type", "", "", "Filter the backup types to return. Either 'manual' or 'scheduled'")
 
 	logs.LogsCmd.PersistentFlags().StringArrayVarP(&flags.Acc.LogStreams, "log-stream", "", []string{}, "Supply a set of log stream names to display")
 	logs.LogsCmd.PersistentFlags().StringVarP(&flags.Acc.Search, "search", "", "", "Return only logs that include a matching search string")

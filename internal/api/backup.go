@@ -43,18 +43,18 @@ func PostBackupRequest(creds types.Keylink, payload types.PostBackupRequestParam
 	return br, nil
 }
 
-func DeleteBackupIteration(creds types.Keylink, payload types.DeleteBackupIterationParams) error {
+func DeleteBackup(creds types.Keylink, payload types.DeleteBackupParams) error {
 	req := &Request{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "DELETE",
-		Path:             "/subscription/" + payload.SubscriptionID + "/environment/" + payload.EnvironmentID + "/backup-iterations/" + payload.Name,
+		Path:             "/subscription/" + payload.SubscriptionID + "/backups/" + payload.Name,
 		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return errors.Wrap(err, errs.APIPostBackupErrorMsg)
+		return errors.Wrap(err, errs.APIDeleteBackupErrorMsg)
 	}
 
 	if res.StatusCode != 204 {
@@ -64,13 +64,18 @@ func DeleteBackupIteration(creds types.Keylink, payload types.DeleteBackupIterat
 	return nil
 }
 
-func GetSubscriptionBackupIterations(creds types.Keylink, subAliasOrHashedID string) ([]types.BackupIteration, error) {
+func GetSubscriptionBackupIterations(creds types.Keylink, subAliasOrHashedID, backupType string) ([]types.BackupIteration, error) {
+	var qs string
+	if backupType != "" {
+		qs = "?backup-type=" + backupType
+	}
+
 	empty := []types.BackupIteration{}
 	req := &Request{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
-		Path:             "/subscription/" + subAliasOrHashedID + "/backups",
+		Path:             "/subscription/" + subAliasOrHashedID + "/backups" + qs,
 		MapStringPayload: map[string]interface{}{},
 	}
 
@@ -113,13 +118,18 @@ func DownloadEnvironmentBackupComponent(creds types.Keylink, subAliasOrHashedID,
 	return nil
 }
 
-func GetEnvironmentBackupIterations(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string) ([]types.BackupIteration, error) {
+func GetEnvironmentBackupIterations(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, backupType string) ([]types.BackupIteration, error) {
+	var qs string
+	if backupType != "" {
+		qs = "?backup-type=" + backupType
+	}
+
 	empty := []types.BackupIteration{}
 	req := &Request{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
-		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backup-iterations",
+		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backups" + qs,
 		MapStringPayload: map[string]interface{}{},
 	}
 
