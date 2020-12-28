@@ -23,6 +23,14 @@ type PostRestoreRequestParams struct {
 	Components     []string
 }
 
+type PutNewRelicParams struct {
+	LicenseKey  string `json:"licenseKey"`
+	AppID       string `json:"appID"`
+	AppName     string `json:"appName"`
+	APIKeyValue string `json:"apiKeyValue"`
+	APIKeyType  string `json:"apiKeyType,omitempty"`
+}
+
 type PostSyncRequestParams struct {
 	SubscriptionID  string
 	RestoreStrategy string
