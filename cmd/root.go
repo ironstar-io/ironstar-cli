@@ -12,6 +12,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/environment"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/logs"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/new_relic"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/restore"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
@@ -118,6 +119,10 @@ func init() {
 	rootCmd.AddCommand(pkg.PkgCmd)
 	pkg.PkgCmd.AddCommand(pkg.ListCmd)
 	pkg.PkgCmd.AddCommand(pkg.UpdateRefCmd)
+
+	// `iron new-relic x`
+	rootCmd.AddCommand(new_relic.NewRelicCmd)
+	new_relic.NewRelicCmd.AddCommand(new_relic.ConfigureCmd)
 
 	// `iron deploy x`
 	rootCmd.AddCommand(deploy.DeployCmd)
