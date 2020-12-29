@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"syscall"
 
 	"golang.org/x/crypto/ssh/terminal"
 
@@ -27,7 +28,7 @@ func StdinPrompt(prompt string) (string, error) {
 // StdinSecret ...
 func StdinSecret(prompt string) (string, error) {
 	fmt.Print(prompt)
-	byteSecret, err := terminal.ReadPassword(0)
+	byteSecret, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		return "", err
 	}
