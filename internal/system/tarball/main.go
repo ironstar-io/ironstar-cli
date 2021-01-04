@@ -4,13 +4,11 @@ import (
 	"archive/tar"
 	"compress/gzip"
 
-	// "errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
-	// "gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 )
 
 // NewTarGZ walks path to create tar file tarName
@@ -67,6 +65,7 @@ func NewTarGZ(tarName string, path string, excludeFiles []string) (err error) {
 		if err != nil {
 			return err
 		}
+		unixFilePath := strings.ReplaceAll(relFilePath, "\\", "/")
 
 		// Don't include any files that are explicitly excluded by the user
 		for _, excl := range excludeFiles {
@@ -75,11 +74,16 @@ func NewTarGZ(tarName string, path string, excludeFiles []string) (err error) {
 				return err
 			}
 
-			if match && finfo.IsDir() {
+			umatch, err := filepath.Match(excl, unixFilePath)
+			if err != nil {
+				return err
+			}
+
+			if (match || umatch) && finfo.IsDir() {
 				return filepath.SkipDir
 			}
 
-			if match {
+			if match || umatch {
 				return nil
 			}
 		}
@@ -90,8 +94,8 @@ func NewTarGZ(tarName string, path string, excludeFiles []string) (err error) {
 			return err
 		}
 
-		// ensure header has relative file path
-		hdr.Name = relFilePath
+		// ensure header has relative file path (unix style)
+		hdr.Name = unixFilePath
 
 		if err := tw.WriteHeader(hdr); err != nil {
 			return err
