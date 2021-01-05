@@ -30,6 +30,7 @@ type Accumulator struct {
 	Exclude           string
 	Type              string
 	Ref               string
+	CustomPackage     string
 	SrcEnvironment    string
 	DestEnvironment   string
 	UseLatestBackup   bool

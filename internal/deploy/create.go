@@ -148,7 +148,7 @@ func determinePackageSelection(args []string, flg flags.Accumulator, creds types
 
 	createNew := services.ConfirmationPrompt("No package specified. Would you like to create one?", "y", flg.AutoAccept)
 	if createNew {
-		tarpath, err := services.CreateProjectTar(flg.Exclude)
+		tarpath, err := services.CreateProjectTar(flg)
 		if err != nil {
 			return empty, err
 		}

@@ -201,6 +201,10 @@ func RootCmd() *cobra.Command {
 	pkg.UpdateRefCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
 	deploy.DeployCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
 
+	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.CustomPackage, "custom-package", "", "", "Specify a path to a existing custom tarball to be used for your package")
+	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.CustomPackage, "custom-package", "", "", "Specify a path to a existing custom tarball to be used for your package")
+	deploy.DeployCmd.PersistentFlags().StringVarP(&flags.Acc.CustomPackage, "custom-package", "", "", "Specify a path to a existing custom tarball to be used for your package")
+
 	deploy.DeployCmd.PersistentFlags().BoolVarP(&flags.Acc.ApproveProdDeploy, "approve-prod-deploy", "", false, "Allow deployments to production without a warning prompt.")
 
 	return &rootCmd
