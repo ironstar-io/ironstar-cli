@@ -146,6 +146,10 @@ func determinePackageSelection(args []string, flg flags.Accumulator, creds types
 		return args[0], nil
 	}
 
+	if flg.CustomPackage != "" {
+		return UploadPackage(creds, subHash, flg.CustomPackage, flg.Ref, flg.CustomPackage)
+	}
+
 	createNew := services.ConfirmationPrompt("No package specified. Would you like to create one?", "y", flg.AutoAccept)
 	if createNew {
 		tarpath, err := services.CreateProjectTar(flg)
@@ -153,23 +157,7 @@ func determinePackageSelection(args []string, flg flags.Accumulator, creds types
 			return empty, err
 		}
 
-		res, err := api.UploadPackage(creds, subHash, tarpath, flg.Ref)
-		if err != nil {
-			return empty, err
-		}
-
-		var ur types.UploadResponse
-		err = yaml.Unmarshal(res.Body, &ur)
-		if err != nil {
-			return empty, err
-		}
-
-		fmt.Println("PACKAGE ID: " + ur.BuildID)
-		fmt.Println("PACKAGE NAME: " + ur.BuildName)
-		fmt.Println()
-		color.Green("Continuing to deployment...")
-
-		return ur.BuildID, nil
+		return UploadPackage(creds, subHash, tarpath, flg.Ref, flg.CustomPackage)
 	}
 
 	pi, err := services.StdinPrompt("Package ID: ")
@@ -178,4 +166,25 @@ func determinePackageSelection(args []string, flg flags.Accumulator, creds types
 	}
 
 	return pi, nil
+}
+
+func UploadPackage(creds types.Keylink, subHash, tarpath, ref, customPackage string) (string, error) {
+	var empty string
+	res, err := api.UploadPackage(creds, subHash, tarpath, ref, customPackage)
+	if err != nil {
+		return empty, err
+	}
+
+	var ur types.UploadResponse
+	err = yaml.Unmarshal(res.Body, &ur)
+	if err != nil {
+		return empty, err
+	}
+
+	fmt.Println("PACKAGE ID: " + ur.BuildID)
+	fmt.Println("PACKAGE NAME: " + ur.BuildName)
+	fmt.Println()
+	color.Green("Continuing to deployment...")
+
+	return ur.BuildID, nil
 }

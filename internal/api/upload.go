@@ -11,13 +11,22 @@ import (
 )
 
 // UploadPackage - Create a project tarball in tmp
-func UploadPackage(creds types.Keylink, subHash, tarpath, ref string) (*RawResponse, error) {
-	color.Red(`Warning! This command uploads the contents of this directory to Ironstar and makes it available on the web. Only paths listed under the "exclude" settings in your .ironstar/config.yml file will be excluded.
-
-This means that any database files, .env files, or other potentially sensitive content that you have in this repository that is not in the exclude list will be uploaded to the remote environment and possibly made publicly visible.
-
-Please proceed with caution. 
-	`)
+func UploadPackage(creds types.Keylink, subHash, tarpath, ref, customPackage string) (*RawResponse, error) {
+	if customPackage != "" {
+		color.Red(`Warning! This command uploads the contents of this directory to Ironstar and makes it available on the web. Only paths listed under the "exclude" settings in your .ironstar/config.yml file will be excluded.
+		
+		This means that any database files, .env files, or other potentially sensitive content that you have in this repository that is not in the exclude list will be uploaded to the remote environment and possibly made publicly visible.
+		
+		Please proceed with caution. 
+		`)
+	} else {
+		color.Red(`Warning! This command uploads the specified tarball to Ironstar and makes it available on the web. Paths listed under the "exclude" settings in your .ironstar/config.yml file will be ignored when --custom-package is set.
+		
+		This means that any database files, .env files, or other potentially sensitive content that you have in this tarball will be uploaded to the remote environment and possibly made publicly visible.
+		
+		Please proceed with caution. 
+		`)
+	}
 
 	wo := console.SpinStart("Uploading package file to Ironstar system")
 
@@ -33,8 +42,10 @@ Please proceed with caution.
 
 	res, err := req.Send()
 
-	// Remove the tarball, regardless of the result.
-	fs.Remove(tarpath)
+	if customPackage != "" {
+		// Remove the tarball, regardless of the result. (not for custom packages)
+		fs.Remove(tarpath)
+	}
 
 	if err != nil {
 		console.SpinPersist(wo, "⛔", "There was an error while uploading your package\n")
