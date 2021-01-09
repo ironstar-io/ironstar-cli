@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
@@ -186,6 +188,37 @@ func GetEnvironmentBackup(creds types.Keylink, subAliasOrHashedID, envNameOrHash
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backups/" + backupName,
+		MapStringPayload: map[string]interface{}{},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return empty, errors.Wrap(err, errs.APIGetBackupErrorMsg)
+	}
+
+	if res.StatusCode != 200 {
+		if errorOutput == constants.SKIP_ERRORS {
+			return empty, nil
+		}
+		return empty, res.HandleFailure()
+	}
+
+	var b types.Backup
+	err = json.Unmarshal(res.Body, &b)
+	if err != nil {
+		return empty, err
+	}
+
+	return b, nil
+}
+
+func GetSubscriptionBackup(creds types.Keylink, subAliasOrHashedID, backupName, errorOutput string) (types.Backup, error) {
+	empty := types.Backup{}
+	req := &Request{
+		RunTokenRefresh:  true,
+		Credentials:      creds,
+		Method:           "GET",
+		Path:             "/subscription/" + subAliasOrHashedID + "/backups/" + backupName,
 		MapStringPayload: map[string]interface{}{},
 	}
 

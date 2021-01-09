@@ -34,7 +34,7 @@ func New(args []string, flg flags.Accumulator) error {
 		return errors.New("A source backup must be specified with the --backup=[backup-name] flag")
 	}
 
-	b, err := api.GetEnvironmentBackup(creds, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, flg.Backup, constants.DISPLAY_ERRORS)
+	b, err := api.GetSubscriptionBackup(creds, seCtx.Subscription.HashedID, flg.Backup, constants.DISPLAY_ERRORS)
 	if err != nil {
 		return err
 	}
