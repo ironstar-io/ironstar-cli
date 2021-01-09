@@ -1,8 +1,6 @@
 package api
 
 import (
-	"fmt"
-
 	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
