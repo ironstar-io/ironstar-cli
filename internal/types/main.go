@@ -122,6 +122,7 @@ type Environment struct {
 	Trigger           string `json:"trigger,omitempty" yaml:"trigger,omitempty"`
 	UpdateStrategy    string `json:"update_strategy,omitempty" yaml:"update_strategy,omitempty"`
 	RestorePermission string `json:"restore_permission,omitempty" yaml:"restore_permission,omitempty"`
+	LogRetention      int64  `json:"log_retention,omitempty" yaml:"log_retention,omitempty"`
 }
 
 type EnvVars struct {
