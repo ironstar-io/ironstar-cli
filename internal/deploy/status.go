@@ -2,17 +2,17 @@ package deploy
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/logs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
-	"github.com/pkg/errors"
-	yaml "gopkg.in/yaml.v2"
 )
 
 func Status(args []string, flg flags.Accumulator) error {
@@ -28,38 +28,66 @@ func Status(args []string, flg flags.Accumulator) error {
 
 	color.Green("Using login [" + creds.Login + "]")
 
-	err = DisplayDeploymentInfo(creds, deployID)
+	deployment, err := api.GetDeployment(creds, deployID)
 	if err != nil {
 		return err
 	}
 
-	return DisplayDeploymentActivity(creds, deployID)
+	flg.Environment = deployment.Environment.Name
+	seCtx, err := api.GetSubscriptionEnvironmentContext(creds, flg)
+	if err != nil {
+		return err
+	}
+
+	err = DisplayDeploymentInfo(creds, deployment)
+	if err != nil {
+		return err
+	}
+
+	err = DisplayDeploymentActivity(creds, deployID)
+	if err != nil {
+		return err
+	}
+
+	cwLogs, err := logs.RetrieveArimaLogs(creds, seCtx.Subscription.Alias, seCtx.Environment.Name, deployment.Name, utils.UnixMilliseconds(deployment.CreatedAt), utils.UnixMilliseconds(time.Now()), []string{"deploy.log"})
+	if err != nil {
+		return err
+	}
+
+	if len(cwLogs) == 0 {
+		if seCtx.Environment.LogRetention != 0 && deployment.CreatedAt.Before(time.Now().UTC().Add(time.Duration(time.Duration(-seCtx.Environment.LogRetention*24)*time.Hour)).UTC()) {
+			fmt.Println()
+			fmt.Println("The log for this deployment is no longer available. Logs in your " + seCtx.Environment.Name + " environment are retained for " + strconv.Itoa(int(seCtx.Environment.LogRetention)) + " days.")
+			fmt.Println()
+		} else {
+			fmt.Println()
+			fmt.Println("Logs not available for this deployment")
+			fmt.Println()
+		}
+
+		return nil
+	}
+
+	fmt.Println()
+	logs.StdoutArimaLogs(cwLogs)
+
+	return nil
 }
 
-func DisplayDeploymentInfo(creds types.Keylink, deployID string) error {
-	req := &api.Request{
-		RunTokenRefresh:  true,
-		Credentials:      creds,
-		Method:           "GET",
-		Path:             "/deployment/" + deployID,
-		MapStringPayload: map[string]interface{}{},
-	}
+func DisplayDeploymentInfo(creds types.Keylink, d types.Deployment) error {
+	fmt.Println()
+	fmt.Println("DEPLOYMENT: " + d.Name)
+	fmt.Println()
+	fmt.Println("ENVIRONMENT: " + d.Environment.Name)
+	fmt.Println("PACKAGE: " + d.Build.Name)
+	fmt.Println("APPLICATION STATUS: " + d.AppStatus)
+	fmt.Println("ADMIN SERVICE STATUS: " + d.AdminSvcStatus)
+	fmt.Println("CREATED: " + d.CreatedAt.Format(time.RFC3339))
 
-	res, err := req.NankaiSend()
-	if err != nil {
-		return errors.Wrap(err, errs.APISubListErrorMsg)
-	}
+	return nil
+}
 
-	if res.StatusCode != 200 {
-		return res.HandleFailure()
-	}
-
-	var d types.Deployment
-	err = yaml.Unmarshal(res.Body, &d)
-	if err != nil {
-		return err
-	}
-
+func DisplayDeploymentLogs(creds types.Keylink, d types.Deployment) error {
 	fmt.Println()
 	fmt.Println("DEPLOYMENT: " + d.Name)
 	fmt.Println()

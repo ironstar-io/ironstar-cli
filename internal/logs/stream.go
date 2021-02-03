@@ -72,7 +72,7 @@ func Stream(args []string, flg flags.Accumulator) error {
 	fmt.Println("Log Streams: " + strings.Join(logStreamNames, ", "))
 	fmt.Println()
 
-	last, err := printArimaLogs(creds, seCtx, flg, startTime, endTime, logStreamNames)
+	last, err := PrintArimaLogs(creds, seCtx, flg, startTime, endTime, logStreamNames)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func Stream(args []string, flg flags.Accumulator) error {
 			}
 
 			go func() {
-				newLast, err := printArimaLogs(creds, seCtx, flg, last, 0, logStreamNames)
+				newLast, err := PrintArimaLogs(creds, seCtx, flg, last, 0, logStreamNames)
 				if err != nil {
 					os.Exit(1)
 				}
@@ -169,15 +169,19 @@ func calcLogStreamNames(availableLogStreams []types.CWLogStreamsResponse) []stri
 	return streamNames
 }
 
-func printArimaLogs(creds types.Keylink, seCtx types.SubscriptionEnvironment, flags flags.Accumulator, start, end int64, logStreams []string) (int64, error) {
+func RetrieveArimaLogs(creds types.Keylink, subAlias, envName, search string, start, end int64, logStreams []string) ([]types.CWLogResponse, error) {
 	payload := map[string]interface{}{
 		"logStreamNames": logStreams,
 		"start":          start,
 		"end":            end,
-		"pattern":        flags.Search,
+		"pattern":        search,
 	}
 
-	cwLogs, err := api.QueryEnvironmentLogs(creds, seCtx.Subscription.Alias, seCtx.Environment.Name, payload)
+	return api.QueryEnvironmentLogs(creds, subAlias, envName, payload)
+}
+
+func PrintArimaLogs(creds types.Keylink, seCtx types.SubscriptionEnvironment, flags flags.Accumulator, start, end int64, logStreams []string) (int64, error) {
+	cwLogs, err := RetrieveArimaLogs(creds, seCtx.Subscription.Alias, seCtx.Environment.Name, flags.Search, start, end, logStreams)
 	if err != nil {
 		return 0, err
 	}
@@ -186,16 +190,20 @@ func printArimaLogs(creds types.Keylink, seCtx types.SubscriptionEnvironment, fl
 		return start, nil
 	}
 
+	StdoutArimaLogs(cwLogs)
+
+	s := cwLogs[len(cwLogs)-1]
+
+	return s.Timestamp + 1, nil
+}
+
+func StdoutArimaLogs(cwLogs []types.CWLogResponse) {
 	for _, cwLog := range cwLogs {
 		streamColor := streamNameColour(cwLog.LogStreamName)
 		logMsg := stringifyLog(cwLog.Log)
 
 		fmt.Printf("%s%s%s\n", color.New(streamColor).SprintFunc()(streamNameWithPadding(cwLog.LogStreamName)), color.New(color.Faint).SprintFunc()(formatLogTimestamp(fmt.Sprintf("%v", cwLog.Log["tmst"]))+" | "), logMsg)
 	}
-
-	s := cwLogs[len(cwLogs)-1]
-
-	return s.Timestamp + 1, nil
 }
 
 func stringifyLog(logMsg map[string]interface{}) string {
