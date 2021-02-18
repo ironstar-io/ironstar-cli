@@ -25,16 +25,16 @@ func Download(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	seCtx, err := api.GetSubscriptionEnvironmentContext(creds, flg)
+	sCtx, err := api.GetSubscriptionContext(creds, flg)
 	if err != nil {
 		return err
 	}
 
-	if seCtx.Subscription.Alias == "" {
+	if sCtx.Alias == "" {
 		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+	color.Green("Using login [" + creds.Login + "] for subscription '" + sCtx.Alias + "' (" + sCtx.HashedID + ")")
 
 	backupName, err := GetBackupName(args, flg.Backup)
 	if err != nil {
@@ -43,7 +43,7 @@ func Download(args []string, flg flags.Accumulator) error {
 
 	reqComps := utils.CalculateBackupComponents(flg.Component)
 
-	b, err := api.GetEnvironmentBackup(creds, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, backupName, constants.DISPLAY_ERRORS)
+	b, err := api.GetSubscriptionBackup(creds, sCtx.HashedID, backupName, constants.DISPLAY_ERRORS)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func Download(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	savePath, err := calcSavePath(flg.SavePath, seCtx.Subscription.Alias, seCtx.Environment.Name, backupName)
+	savePath, err := calcSavePath(flg.SavePath, sCtx.Alias, b.BackupIteration.EnvironmentName, backupName)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func Download(args []string, flg flags.Accumulator) error {
 	for _, dlComp := range dlComps {
 		file := calcFilename(savePath, dlComp.Name)
 
-		err = api.DownloadEnvironmentBackupComponent(creds, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, backupName, file, dlComp)
+		err = api.DownloadEnvironmentBackupComponent(creds, sCtx.HashedID, b.BackupIteration.EnvironmentName, backupName, file, dlComp)
 		if err != nil {
 			return err
 		}
