@@ -149,15 +149,16 @@ type BackupRequest struct {
 }
 
 type BackupIterationFlat struct {
-	Iteration   string                     `json:"iteration,omitempty" yaml:"iteration,omitempty"`
-	ClientName  string                     `json:"client_name,omitempty" yaml:"client_name,omitempty"`
-	Reservation []string                   `json:"reservation,omitempty" yaml:"reservation,omitempty"`
-	Components  []BackupIterationComponent `json:"components,omitempty" yaml:"components,omitempty"`
-	Status      string                     `json:"status,omitempty" yaml:"status,omitempty"`
-	Protection  string                     `json:"protection,omitempty" yaml:"protection,omitempty"`
-	ETA         int                        `json:"eta,omitempty" yaml:"eta,omitempty"`
-	CreatedAt   time.Time                  `json:"created_at" yaml:"created_at"`
-	CompletedAt time.Time                  `json:"completed_at" yaml:"completed_at"`
+	Iteration       string                     `json:"iteration,omitempty" yaml:"iteration,omitempty"`
+	ClientName      string                     `json:"client_name,omitempty" yaml:"client_name,omitempty"`
+	Reservation     []string                   `json:"reservation,omitempty" yaml:"reservation,omitempty"`
+	Components      []BackupIterationComponent `json:"components,omitempty" yaml:"components,omitempty"`
+	Status          string                     `json:"status,omitempty" yaml:"status,omitempty"`
+	Protection      string                     `json:"protection,omitempty" yaml:"protection,omitempty"`
+	EnvironmentName string                     `json:"environment_name,omitempty" yaml:"environment_name,omitempty"`
+	ETA             int                        `json:"eta,omitempty" yaml:"eta,omitempty"`
+	CreatedAt       time.Time                  `json:"created_at" yaml:"created_at"`
+	CompletedAt     time.Time                  `json:"completed_at" yaml:"completed_at"`
 }
 
 type BackupIteration struct {
