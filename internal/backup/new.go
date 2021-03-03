@@ -10,6 +10,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
+	slugify "github.com/metal3d/go-slugify"
 	"github.com/pkg/errors"
 )
 
@@ -30,7 +31,13 @@ func New(args []string, flg flags.Accumulator) error {
 
 	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
 
-	name := flg.Name
+	name := slugify.Marshal(flg.Name, false)
+	if name != flg.Name {
+		fmt.Println()
+		color.Yellow("NOTE: '" + flg.Name + "' is not a valid name for a backup in the Ironstar system. We have slugified this value for you to be '" + name + "'")
+		fmt.Println()
+	}
+
 	components := utils.CalculateBackupComponents(flg.Component)
 
 	br, err := api.PostBackupRequest(creds, types.PostBackupRequestParams{
