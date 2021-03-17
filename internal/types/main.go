@@ -140,12 +140,13 @@ type CacheInvalidation struct {
 }
 
 type BackupRequest struct {
-	Name       string    `json:"name,omitempty" yaml:"name,omitempty"`
-	Kind       string    `json:"kind,omitempty" yaml:"kind,omitempty"`
-	Schedule   string    `json:"schedule,omitempty" yaml:"schedule,omitempty"`
-	ETA        int       `json:"eta,omitempty" yaml:"eta,omitempty"`
-	Components []string  `json:"components,omitempty" yaml:"components,omitempty"`
-	CreatedAt  time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Name         string    `json:"name,omitempty" yaml:"name,omitempty"`
+	Kind         string    `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Schedule     string    `json:"schedule,omitempty" yaml:"schedule,omitempty"`
+	ETA          int       `json:"eta,omitempty" yaml:"eta,omitempty"`
+	Components   []string  `json:"components,omitempty" yaml:"components,omitempty"`
+	CreatedAt    time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ExpiresAfter time.Time `json:"expires_after" yaml:"expires_after"`
 }
 
 type BackupIterationFlat struct {
