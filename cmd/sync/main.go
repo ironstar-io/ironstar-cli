@@ -9,5 +9,5 @@ var SyncCmd = &cobra.Command{
 	Use:   "sync",
 	Short: "",
 	Long:  "",
-	Run:   new,
+	Run:   newSync,
 }

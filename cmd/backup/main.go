@@ -9,5 +9,5 @@ var BackupCmd = &cobra.Command{
 	Use:   "backup",
 	Short: "",
 	Long:  "",
-	Run:   new,
+	Run:   newBackup,
 }

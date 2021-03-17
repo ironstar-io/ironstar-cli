@@ -17,10 +17,10 @@ var NewCmd = &cobra.Command{
 	Use:   "new",
 	Short: "Create new restore",
 	Long:  "Restore a backup to an environment",
-	Run:   new,
+	Run:   newRestore,
 }
 
-func new(cmd *cobra.Command, args []string) {
+func newRestore(cmd *cobra.Command, args []string) {
 	err := restore.New(args, flags.Acc)
 	if err != nil {
 		if err != api.ErrIronstarAPICall {

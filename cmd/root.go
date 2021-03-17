@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/antivirus"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/auth"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/backup"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/cache"
@@ -114,6 +115,10 @@ func init() {
 	rootCmd.AddCommand(pkg.PackageCmd)
 	pkg.PackageCmd.AddCommand(pkg.ListCmd)
 	pkg.PackageCmd.AddCommand(pkg.UpdateRefCmd)
+
+	// `iron antivirus x`
+	rootCmd.AddCommand(antivirus.AntivirusCmd)
+	antivirus.AntivirusCmd.AddCommand(antivirus.ListScans)
 
 	// `iron pkg x` alias (hidden)
 	rootCmd.AddCommand(pkg.PkgCmd)
