@@ -119,14 +119,14 @@ func DisplayEnvironmentBackupInfo(creds types.Keylink, env types.Environment, su
 		size := utils.CalcBackupSize(bi.Components)
 		components := utils.CalcBackupComponentNames(bi.Components)
 
-		expiresAfter := ""
-		if !bi.BackupRequest.ExpiresAfter.IsZero() {
-			expiresAfter = bi.BackupRequest.ExpiresAfter.Format(time.RFC3339)
+		keepUntil := ""
+		if !bi.BackupRequest.KeepUntil.IsZero() {
+			keepUntil = bi.BackupRequest.KeepUntil.Format(time.RFC3339)
 		}
 
 		// Prepend rows, we want dates ordered oldest to newest
 		row := make([][]string, 1)
-		row = append(row, []string{bi.BackupRequest.Kind, bi.Iteration, bi.CreatedAt.Format(time.RFC3339), tt, bi.Status, size, components, expiresAfter})
+		row = append(row, []string{bi.BackupRequest.Kind, bi.Iteration, bi.CreatedAt.Format(time.RFC3339), tt, bi.Status, size, components, keepUntil})
 		bisRows = append(row, bisRows...)
 	}
 
