@@ -11,6 +11,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/env_vars"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/environment"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
+	"gitlab.com/ironstar-io/ironstar-cli/cmd/hooks"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/logs"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/newrelic"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/pkg"
@@ -71,6 +72,11 @@ func init() {
 	environment.EnvCmd.AddCommand(environment.ListCmd)
 	environment.EnvCmd.AddCommand(environment.DisableRestoreCmd)
 	environment.EnvCmd.AddCommand(environment.EnableRestoreCmd)
+
+	// `iron add-hook x` alias
+	rootCmd.AddCommand(hooks.AddHookCmd)
+	// `iron remove-hook x` alias
+	rootCmd.AddCommand(hooks.RemoveHookCmd)
 
 	// `iron env-vars x` alias (hidden)
 	rootCmd.AddCommand(env_vars.EnvVarsCmd)

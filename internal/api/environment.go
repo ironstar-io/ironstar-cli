@@ -90,6 +90,50 @@ func PatchEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAlias, resto
 	return nil
 }
 
+func PostEnvironmentHook(creds types.Keylink, subHashOrAlias, envHashOrAlias, hookName string) error {
+	req := &Request{
+		RunTokenRefresh: true,
+		Credentials:     creds,
+		Method:          "POST",
+		Path:            "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/hook",
+		MapStringPayload: map[string]interface{}{
+			"hook": hookName,
+		},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return errors.Wrap(err, errs.APIUpdateEnvironmentErrorMsg)
+	}
+
+	if res.StatusCode != 204 {
+		return res.HandleFailure()
+	}
+
+	return nil
+}
+
+func DeleteEnvironmentHook(creds types.Keylink, subHashOrAlias, envHashOrAlias, hookName string) error {
+	req := &Request{
+		RunTokenRefresh:  true,
+		Credentials:      creds,
+		Method:           "DELETE",
+		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/hook/" + hookName,
+		MapStringPayload: map[string]interface{}{},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return errors.Wrap(err, errs.APIUpdateEnvironmentErrorMsg)
+	}
+
+	if res.StatusCode != 204 {
+		return res.HandleFailure()
+	}
+
+	return nil
+}
+
 func GetEnvironmentContext(creds types.Keylink, flg flags.Accumulator, subHashOrAlias string) (types.Environment, error) {
 	empty := types.Environment{}
 
