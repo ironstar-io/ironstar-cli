@@ -158,7 +158,7 @@ func RootCmd() *cobra.Command {
 
 	LoginCmd.PersistentFlags().StringVarP(&flags.Acc.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
 
-	deploy.DeployCmd.PersistentFlags().BoolVarP(&flags.Acc.SkipHooks, "skip-hooks", "", false, "Skip running the hooks defined in .ironstar/config.yml on this release")
+	deploy.DeployCmd.PersistentFlags().BoolVarP(&flags.Acc.SkipHooks, "skip-deploy-tasks", "", false, "Skip running the deployment tasks defined in .ironstar/config.yml on this release")
 	deploy.DeployCmd.PersistentFlags().BoolVarP(&flags.Acc.PreventRollback, "prevent-rollback", "", false, "Prevent automated rollback of a deployment in case of failure.")
 
 	backup.BackupCmd.PersistentFlags().BoolVarP(&flags.Acc.LockTables, "lock-tables", "", false, "Pass the `--lock-tables` flag to mysqldump")
