@@ -17,10 +17,10 @@ var NewCmd = &cobra.Command{
 	Use:   "new",
 	Short: "Create new environment sync",
 	Long:  "Sync a source environment to a destination environment",
-	Run:   new,
+	Run:   newSync,
 }
 
-func new(cmd *cobra.Command, args []string) {
+func newSync(cmd *cobra.Command, args []string) {
 	err := sync.New(args, flags.Acc)
 	if err != nil {
 		if err != api.ErrIronstarAPICall {

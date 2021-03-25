@@ -56,7 +56,10 @@ const (
 	APIPostEnvironmentVariableErrorMsg = "Failed to add new environment variable"
 
 	APIPostCacheInvalidationErrorMsg = "Failed to create cache invalidation"
-	APIGetCacheInvalidationErrorMsg  = "Failed to retrieve cache invalidations"
+
+	APIGetCacheInvalidationErrorMsg = "Failed to retrieve cache invalidations"
+
+	APIGetAntivirusScanErrorMsg = "Failed to retrieve antivirus scans"
 
 	APIDeleteEnvironmentVariableErrorMsg = "Failed to delete environment variable"
 

@@ -139,6 +139,14 @@ type CacheInvalidation struct {
 	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
 
+type AntivirusScan struct {
+	Result        string    `json:"result,omitempty" yaml:"result,omitempty"`
+	ScannedFiles  int       `json:"scanned_files,omitempty" yaml:"scanned_files,omitempty"`
+	InfectedFiles int       `json:"infected_files,omitempty" yaml:"infected_files,omitempty"`
+	Duration      int       `json:"duration,omitempty" yaml:"duration,omitempty"`
+	CreatedAt     time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+}
+
 type BackupRequest struct {
 	Name       string    `json:"name,omitempty" yaml:"name,omitempty"`
 	Kind       string    `json:"kind,omitempty" yaml:"kind,omitempty"`

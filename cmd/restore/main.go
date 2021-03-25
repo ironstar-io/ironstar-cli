@@ -9,5 +9,5 @@ var RestoreCmd = &cobra.Command{
 	Use:   "restore",
 	Short: "",
 	Long:  "",
-	Run:   new,
+	Run:   newRestore,
 }
