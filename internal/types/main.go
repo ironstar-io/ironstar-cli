@@ -154,6 +154,7 @@ type BackupRequest struct {
 	ETA        int       `json:"eta,omitempty" yaml:"eta,omitempty"`
 	Components []string  `json:"components,omitempty" yaml:"components,omitempty"`
 	CreatedAt  time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	KeepUntil  time.Time `json:"keep_until" yaml:"keep_until"`
 }
 
 type BackupIterationFlat struct {
