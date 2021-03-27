@@ -102,6 +102,7 @@ func (s *Stream) Send() (*RawResponse, error) {
 	ir := &RawResponse{
 		StatusCode: resp.StatusCode,
 		Body:       bodyBytes,
+		Header:     resp.Header,
 	}
 
 	defer resp.Body.Close()

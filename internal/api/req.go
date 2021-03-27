@@ -167,6 +167,7 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 		StatusCode: resp.StatusCode,
 		CallMethod: r.Method,
 		CallURL:    r.URL,
+		Header:     resp.Header,
 	}
 
 	if resp.StatusCode > 399 {
@@ -255,6 +256,7 @@ func (r *Request) HTTPSend() (*RawResponse, error) {
 		StatusCode: resp.StatusCode,
 		CallMethod: r.Method,
 		CallURL:    r.URL,
+		Header:     resp.Header,
 	}
 
 	defer resp.Body.Close()

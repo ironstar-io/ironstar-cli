@@ -34,6 +34,11 @@ func (err *APIError) Error() {
 	fmt.Println()
 	fmt.Printf("Status Code: %+v\n", err.StatusCode)
 	fmt.Println("Ironstar Code: " + err.IronstarCode)
+
+	if err.CorrelationId != "" {
+		fmt.Println("Correlation ID: " + err.CorrelationId)
+	}
+
 	fmt.Println(err.Message)
 }
 
@@ -41,11 +46,18 @@ var ErrIronstarAPICall = errors.New("Ironstar API call was unsuccessful!")
 
 func (res *RawResponse) HandleFailure() error {
 	var apiErr APIError
+	var correlationId string
+
+	if res.Header["X-Correlation-Id"] != nil && res.Header["X-Correlation-Id"][0] != "" {
+		correlationId = res.Header["X-Correlation-Id"][0]
+	}
+
 	if res.StatusCode > 499 {
 		apiErr = APIError{
-			StatusCode:   res.StatusCode,
-			IronstarCode: "INTERNAL_SERVER_ERROR",
-			Message:      "An unexpected error occurred in the Ironstar API server.",
+			StatusCode:    res.StatusCode,
+			IronstarCode:  "INTERNAL_SERVER_ERROR",
+			CorrelationId: correlationId,
+			Message:       "An unexpected error occurred in the Ironstar API server.",
 		}
 	} else {
 		f := &FailureBody{}
@@ -62,9 +74,10 @@ func (res *RawResponse) HandleFailure() error {
 		}
 
 		apiErr = APIError{
-			StatusCode:   res.StatusCode,
-			IronstarCode: f.Code,
-			Message:      f.Message,
+			StatusCode:    res.StatusCode,
+			IronstarCode:  f.Code,
+			CorrelationId: correlationId,
+			Message:       f.Message,
 		}
 	}
 
@@ -102,11 +115,18 @@ var ErrExternalAPICall = errors.New("External API call was unsuccessful!")
 
 func (res *RawResponse) HandleExternalFailure() error {
 	var apiErr APIError
+	var correlationId string
+
+	if res.Header["X-Correlation-Id"] != nil && res.Header["X-Correlation-Id"][0] != "" {
+		correlationId = res.Header["X-Correlation-Id"][0]
+	}
+
 	if res.StatusCode > 499 {
 		apiErr = APIError{
-			StatusCode:   res.StatusCode,
-			IronstarCode: "INTERNAL_SERVER_ERROR",
-			Message:      "An unexpected error occurred reaching an external API server.",
+			StatusCode:    res.StatusCode,
+			IronstarCode:  "INTERNAL_SERVER_ERROR",
+			CorrelationId: correlationId,
+			Message:       "An unexpected error occurred reaching an external API server.",
 		}
 	} else {
 		f := &FailureBody{}
@@ -116,10 +136,11 @@ func (res *RawResponse) HandleExternalFailure() error {
 		}
 
 		apiErr = APIError{
-			StatusCode: res.StatusCode,
-			CallURL:    res.CallURL,
-			CallMethod: res.CallMethod,
-			Message:    f.Message,
+			StatusCode:    res.StatusCode,
+			CallURL:       res.CallURL,
+			CallMethod:    res.CallMethod,
+			CorrelationId: correlationId,
+			Message:       f.Message,
 		}
 	}
 
