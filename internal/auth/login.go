@@ -28,12 +28,12 @@ func IronstarAPILogin(args []string, flg flags.Accumulator) error {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
 
-	res, err := postLogin(email, password)
+	res, err := postLogin(email, password, flg.LockSessionToIP)
 	if err != nil {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
 
-	c, err := redirectChecks(res.Body, email)
+	c, err := redirectChecks(flg, res.Body, email)
 	if err != nil {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
@@ -81,16 +81,17 @@ func IronstarAPILogin(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func postLogin(email, password string) (*api.RawResponse, error) {
+func postLogin(email, password string, lockSessionToIP bool) (*api.RawResponse, error) {
 	req := &api.Request{
 		RunTokenRefresh: false,
 		Credentials:     types.Keylink{},
 		Method:          "POST",
 		Path:            "/auth/login",
 		MapStringPayload: map[string]interface{}{
-			"email":    email,
-			"password": password,
-			"expiry":   time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
+			"email":              email,
+			"password":           password,
+			"expiry":             time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
+			"lock_session_to_ip": lockSessionToIP,
 		},
 	}
 
@@ -132,7 +133,7 @@ func postMFAValidate(MFAAuthToken, passcode string) (*api.RawResponse, error) {
 	return res, nil
 }
 
-func redirectChecks(body []byte, email string) (*types.AuthResponseBody, error) {
+func redirectChecks(flg flags.Accumulator, body []byte, email string) (*types.AuthResponseBody, error) {
 	b := &types.AuthResponseBody{}
 	err := json.Unmarshal(body, b)
 	if err != nil {
@@ -141,7 +142,7 @@ func redirectChecks(body []byte, email string) (*types.AuthResponseBody, error) 
 
 	switch b.RedirectEndpoint {
 	case "/auth/password-reset":
-		return resetUserPassword(email, b.IDToken, b.MFAStatus)
+		return resetUserPassword(flg, email, b.IDToken, b.MFAStatus)
 	case "/auth/mfa/validate":
 		return validateMFAPasscode(b.IDToken)
 	}
@@ -149,7 +150,7 @@ func redirectChecks(body []byte, email string) (*types.AuthResponseBody, error) 
 	return b, nil
 }
 
-func resetUserPassword(email, PWResetAuthToken, mfaStatus string) (*types.AuthResponseBody, error) {
+func resetUserPassword(flg flags.Accumulator, email, PWResetAuthToken, mfaStatus string) (*types.AuthResponseBody, error) {
 	color.Yellow("Your password has expired! Please provide a new password.")
 	fmt.Println()
 
@@ -192,7 +193,7 @@ func resetUserPassword(email, PWResetAuthToken, mfaStatus string) (*types.AuthRe
 	fmt.Println()
 	color.Green("Password reset completed successfully")
 
-	lres, err := postLogin(email, password)
+	lres, err := postLogin(email, password, flg.LockSessionToIP)
 	if err != nil {
 		return nil, errors.Wrap(err, errs.APILoginErrorMsg)
 	}
