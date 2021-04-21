@@ -34,6 +34,7 @@ type Accumulator struct {
 	SrcEnvironment    string
 	DestEnvironment   string
 	UseLatestBackup   bool
+	LockSessionToIP   bool
 }
 
 var Acc Accumulator

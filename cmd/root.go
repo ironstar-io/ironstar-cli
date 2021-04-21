@@ -168,6 +168,7 @@ func RootCmd() *cobra.Command {
 	rootCmd.PersistentFlags().StringArrayVarP(&flags.Acc.Component, "component", "c", []string{}, "Supply an array of components to backup/restore/sync")
 
 	LoginCmd.PersistentFlags().StringVarP(&flags.Acc.Password, "password", "p", "", "Supply a password via the command line. Warning: Supplying the password via the command line is potentially insecure")
+	LoginCmd.PersistentFlags().BoolVarP(&flags.Acc.LockSessionToIP, "lock-session-to-ip", "", false, "Lock the session to your IP address, different origins will be denied connection")
 
 	deploy.DeployCmd.PersistentFlags().BoolVarP(&flags.Acc.SkipHooks, "skip-deploy-tasks", "", false, "Skip running the deployment tasks defined in .ironstar/config.yml on this release")
 	deploy.DeployCmd.PersistentFlags().BoolVarP(&flags.Acc.PreventRollback, "prevent-rollback", "", false, "Prevent automated rollback of a deployment in case of failure.")
