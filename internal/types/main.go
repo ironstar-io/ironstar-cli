@@ -81,6 +81,10 @@ type Build struct {
 	Name       string       `json:"name,omitempty" yaml:"name,omitempty"`
 	Ref        string       `json:"ref,omitempty" yaml:"ref,omitempty"`
 	Status     string       `json:"status,omitempty" yaml:"status,omitempty"`
+	Branch     string       `json:"branch,omitempty" yaml:"branch,omitempty"`
+	Tag        string       `json:"tag,omitempty" yaml:"tag,omitempty"`
+	Checksum   string       `json:"checksum,omitempty" yaml:"checksum,omitempty"`
+	Notes      string       `json:"notes,omitempty" yaml:"notes,omitempty"`
 	CreatedBy  string       `json:"created_by,omitempty" yaml:"created_by,omitempty"`
 	RunningIn  string       `json:"running_in,omitempty" yaml:"running_in,omitempty"`
 	CreatedAt  time.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`

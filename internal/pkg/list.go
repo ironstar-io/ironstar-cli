@@ -76,12 +76,12 @@ func List(args []string, flg flags.Accumulator) error {
 
 		// Prepend rows, we want dates ordered oldest to newest
 		row := make([][]string, 1)
-		row = append(row, []string{b.CreatedAt.Format(time.RFC3339), b.Name, b.Ref, b.CreatedBy, runningIn})
+		row = append(row, []string{b.CreatedAt.Format(time.RFC3339), b.Name, b.Tag, b.CreatedBy, runningIn})
 		bsRows = append(row, bsRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Date Created", "Name", "Ref", "Created By", "Running In"})
+	table.SetHeader([]string{"Date Created", "Name", "Tag", "Created By", "Running In"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(bsRows)
 	table.Render()

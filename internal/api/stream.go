@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"crypto/tls"
-	"encoding/json"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -11,19 +10,16 @@ import (
 	"os"
 	"path/filepath"
 
-	// "gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 )
 
 type Stream struct {
-	RunTokenRefresh  bool
-	Credentials      types.Keylink
-	Method           string
-	Path             string
-	FilePath         string
-	MapStringPayload map[string]interface{}
-	BytePayload      []byte
-	Ref              string
+	RunTokenRefresh bool
+	Credentials     types.Keylink
+	Method          string
+	Path            string
+	FilePath        string
+	Payload         map[string]string
 }
 
 const IronstarUploadAPIDomain = "https://uploads.ironstar.io"
@@ -56,13 +52,19 @@ func (s *Stream) Send() (*RawResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	ref, err := writer.CreateFormField("ref")
-	if err != nil {
-		return nil, err
-	}
-	_, err = ref.Write([]byte(s.Ref))
-	if err != nil {
-		return nil, err
+	for k, v := range s.Payload {
+		if v == "" {
+			continue
+		}
+
+		f, err := writer.CreateFormField(k)
+		if err != nil {
+			return nil, err
+		}
+		_, err = f.Write([]byte(v))
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	err = writer.Close()
@@ -108,17 +110,4 @@ func (s *Stream) Send() (*RawResponse, error) {
 	defer resp.Body.Close()
 
 	return ir, nil
-}
-
-func (s *Stream) BuildBytePayload() error {
-	if s.MapStringPayload != nil {
-		b, err := json.Marshal(s.MapStringPayload)
-		if err != nil {
-			return err
-		}
-
-		s.BytePayload = b
-	}
-
-	return nil
 }
