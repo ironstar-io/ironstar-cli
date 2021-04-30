@@ -51,7 +51,7 @@ Please proceed with caution.
 
 	res, err := req.Send()
 
-	if customPackage != "" {
+	if flg.CustomPackage == "" {
 		// Remove the tarball, regardless of the result. (not for custom packages)
 		fs.Remove(tarpath)
 	}
