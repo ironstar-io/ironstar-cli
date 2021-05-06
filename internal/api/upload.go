@@ -13,10 +13,6 @@ import (
 
 // UploadPackage - Create a project tarball in tmp
 func UploadPackage(creds types.Keylink, subHash, tarpath string, flg flags.Accumulator) (*RawResponse, error) {
-	if flg.Tag != "" && flg.Branch != "" {
-		return nil, errors.New("The fields 'branch' and 'tag' should not be specified at the same time.")
-	}
-
 	if flg.CustomPackage != "" {
 		color.Red(`Warning! This command uploads the contents of this directory to your Ironstar Subscription. Only paths listed under the "exclude" settings in your .ironstar/config.yml file will be excluded.
 

@@ -138,6 +138,11 @@ func checkOperatingEnvironment(flg flags.Accumulator, creds types.Keylink, subID
 
 func determinePackageSelection(args []string, flg flags.Accumulator, creds types.Keylink, subHash string) (string, error) {
 	var empty string
+
+	if flg.Tag != "" && flg.Branch != "" {
+		return "", errors.New("The fields 'branch' and 'tag' should not be specified at the same time.")
+	}
+
 	if flg.Package != "" {
 		return flg.Package, nil
 	}
