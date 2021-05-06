@@ -38,10 +38,11 @@ Please proceed with caution.
 		FilePath:        tarpath,
 		Path:            "/upload/subscription/" + subHash,
 		Payload: map[string]string{
-			"ref":      flg.Ref,
-			"branch":   flg.Branch,
-			"tag":      flg.Tag,
-			"checksum": flg.Checksum,
+			"ref":        flg.Ref,
+			"branch":     flg.Branch,
+			"tag":        flg.Tag,
+			"checksum":   flg.Checksum,
+			"commit_sha": flg.CommitSHA,
 		},
 	}
 

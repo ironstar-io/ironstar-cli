@@ -84,6 +84,7 @@ type Build struct {
 	Branch     string       `json:"branch,omitempty" yaml:"branch,omitempty"`
 	Tag        string       `json:"tag,omitempty" yaml:"tag,omitempty"`
 	Checksum   string       `json:"checksum,omitempty" yaml:"checksum,omitempty"`
+	CommitSHA  string       `json:"commit_sha,omitempty" yaml:"commit_sha,omitempty"`
 	Notes      string       `json:"notes,omitempty" yaml:"notes,omitempty"`
 	CreatedBy  string       `json:"created_by,omitempty" yaml:"created_by,omitempty"`
 	RunningIn  string       `json:"running_in,omitempty" yaml:"running_in,omitempty"`

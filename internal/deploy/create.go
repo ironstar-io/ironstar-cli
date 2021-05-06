@@ -59,7 +59,7 @@ func Create(args []string, flg flags.Accumulator) error {
 		Method:          "POST",
 		Path:            "/build/" + packageID + "/deploy",
 		MapStringPayload: map[string]interface{}{
-			"environmentName":  envID,
+			"environment":      envID,
 			"skip_hooks":       flg.SkipHooks,
 			"prevent_rollback": flg.PreventRollback,
 		},
