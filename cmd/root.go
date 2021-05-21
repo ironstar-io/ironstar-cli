@@ -209,9 +209,22 @@ func RootCmd() *cobra.Command {
 	env_vars.EnvVarsCmd.PersistentFlags().StringVarP(&flags.Acc.VarType, "var-type", "", "PROTECTED", "Either PROTECTED or VISIBLE. Values VISIBLE are encrypted in the Ironstar database, but visible in plaintext to authenticated users of the Ironstar API/UI. Values PROTECTED are encrypted in the Ironstar database and never visible in plaintext to the API/UI. Default PROTECTED")
 
 	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
+	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.Tag, "tag", "", "", "The git tag used to reference this package. The flags 'branch' and 'tag' cannot be set at the same time")
+	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.Branch, "branch", "", "", "The git branch used to reference this package. The flags 'branch' and 'tag' cannot be set at the same time")
+	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.Checksum, "checksum", "", "", "A checksum value for the package")
+	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.CommitSHA, "commit-sha", "", "", "A git commit SHA value for the package")
 	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
+	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.Tag, "tag", "", "", "The git tag used to reference this package. The flags 'branch' and 'tag' cannot be set at the same time")
+	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.Branch, "branch", "", "", "The git branch used to reference this package. The flags 'branch' and 'tag' cannot be set at the same time")
+	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.Checksum, "checksum", "", "", "A checksum value for the package")
+	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.CommitSHA, "commit-sha", "", "", "A git commit SHA value for the package")
 	pkg.UpdateRefCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
+
 	deploy.DeployCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
+	deploy.DeployCmd.PersistentFlags().StringVarP(&flags.Acc.Tag, "tag", "", "", "The git tag used to reference the package, if creating a new package. The flags 'branch' and 'tag' cannot be set at the same time")
+	deploy.DeployCmd.PersistentFlags().StringVarP(&flags.Acc.Branch, "branch", "", "", "The git branch used to reference this package, if creating a new package. The flags 'branch' and 'tag' cannot be set at the same time")
+	deploy.DeployCmd.PersistentFlags().StringVarP(&flags.Acc.Checksum, "checksum", "", "", "A checksum value for the package, if creating a new package")
+	deploy.DeployCmd.PersistentFlags().StringVarP(&flags.Acc.CommitSHA, "commit-sha", "", "", "A git commit SHA value for the package, if creating a new package")
 
 	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.CustomPackage, "custom-package", "", "", "Specify a path to a existing custom tarball to be used for your package")
 	pkg.PkgCmd.PersistentFlags().StringVarP(&flags.Acc.CustomPackage, "custom-package", "", "", "Specify a path to a existing custom tarball to be used for your package")

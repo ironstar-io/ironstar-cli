@@ -91,7 +91,7 @@ func GetSubscriptionContext(creds types.Keylink, flg flags.Accumulator) (types.S
 	exists := fs.CheckExists(confPath)
 	if !exists {
 		createNewProj := services.ConfirmationPrompt("Couldn't find a project configuration in this directory. Would you like to create one?", "y", flg.AutoAccept)
-		if createNewProj == true {
+		if createNewProj {
 			err = services.InitializeIronstarProject()
 			if err != nil {
 				return empty, err

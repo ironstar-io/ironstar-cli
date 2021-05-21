@@ -59,7 +59,7 @@ func Create(args []string, flg flags.Accumulator) error {
 		Method:          "POST",
 		Path:            "/build/" + packageID + "/deploy",
 		MapStringPayload: map[string]interface{}{
-			"environmentName":  envID,
+			"environment":      envID,
 			"skip_hooks":       flg.SkipHooks,
 			"prevent_rollback": flg.PreventRollback,
 		},
@@ -138,6 +138,11 @@ func checkOperatingEnvironment(flg flags.Accumulator, creds types.Keylink, subID
 
 func determinePackageSelection(args []string, flg flags.Accumulator, creds types.Keylink, subHash string) (string, error) {
 	var empty string
+
+	if flg.Tag != "" && flg.Branch != "" {
+		return "", errors.New("The fields 'branch' and 'tag' should not be specified at the same time.")
+	}
+
 	if flg.Package != "" {
 		return flg.Package, nil
 	}
@@ -147,7 +152,7 @@ func determinePackageSelection(args []string, flg flags.Accumulator, creds types
 	}
 
 	if flg.CustomPackage != "" {
-		return UploadPackage(creds, subHash, flg.CustomPackage, flg.Ref, flg.CustomPackage)
+		return UploadPackage(creds, subHash, flg.CustomPackage, flg)
 	}
 
 	createNew := services.ConfirmationPrompt("No package specified. Would you like to create one?", "y", flg.AutoAccept)
@@ -157,7 +162,7 @@ func determinePackageSelection(args []string, flg flags.Accumulator, creds types
 			return empty, err
 		}
 
-		return UploadPackage(creds, subHash, tarpath, flg.Ref, flg.CustomPackage)
+		return UploadPackage(creds, subHash, tarpath, flg)
 	}
 
 	pi, err := services.StdinPrompt("Package ID: ")
@@ -168,9 +173,9 @@ func determinePackageSelection(args []string, flg flags.Accumulator, creds types
 	return pi, nil
 }
 
-func UploadPackage(creds types.Keylink, subHash, tarpath, ref, customPackage string) (string, error) {
+func UploadPackage(creds types.Keylink, subHash, tarpath string, flg flags.Accumulator) (string, error) {
 	var empty string
-	res, err := api.UploadPackage(creds, subHash, tarpath, ref, customPackage)
+	res, err := api.UploadPackage(creds, subHash, tarpath, flg)
 	if err != nil {
 		return empty, err
 	}

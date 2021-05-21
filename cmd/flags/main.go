@@ -30,6 +30,10 @@ type Accumulator struct {
 	Exclude           string
 	Type              string
 	Ref               string
+	Tag               string
+	Branch            string
+	Checksum          string
+	CommitSHA         string
 	CustomPackage     string
 	SrcEnvironment    string
 	DestEnvironment   string
