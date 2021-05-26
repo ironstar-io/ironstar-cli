@@ -15,7 +15,8 @@ require (
 	github.com/spf13/cobra v0.0.7
 	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71
-	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+	golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea
+	golang.org/x/term v0.0.0-20210503060354-a79de5458b56 // indirect
 	gopkg.in/yaml.v2 v2.2.8
 )

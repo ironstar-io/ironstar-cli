@@ -10,7 +10,7 @@ build:
 	-X $(VERSION_PATH).version=$(VERSION) \
 	" -o ./dist/iron
 
-build-all: build-macos build-windows build-linux
+build-all: build-macos build-arm build-windows build-linux
 
 build-windows:
 	env GOOS=windows GOARCH=amd64 \
@@ -36,10 +36,18 @@ build-macos:
 	-X $(VERSION_PATH).version=$(VERSION) \
 	" -o ./dist/iron-macos
 
+build-arm:
+	env GOOS=darwin GOARCH=arm64 \
+	go build \
+	-ldflags "\
+	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
+	-X $(VERSION_PATH).version=$(VERSION) \
+	" -o ./dist/iron-macos-arm64
+
 test:
 	ginkgo test ./...
 
 clean:
 	rm -rf ./dist/*
 
-.PHONY: build build-windows build-linux build-macos test clean
+.PHONY: build build-windows build-linux build-macos build-arm test clean
