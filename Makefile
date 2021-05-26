@@ -34,7 +34,7 @@ build-macos:
 	-ldflags "\
 	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
 	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/iron-macos-amd64
+	" -o ./dist/iron-macos
 
 build-arm:
 	env GOOS=darwin GOARCH=arm64 \

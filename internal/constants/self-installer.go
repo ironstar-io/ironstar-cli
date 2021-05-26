@@ -17,7 +17,7 @@ const (
 	BinaryNameLinux = "iron-linux-amd64"
 
 	// BinaryNameIntelMacOS is the name of the Ironstar CLI (Intel) macOS binary on Github
-	BinaryNameIntelMacOS = "iron-macos-amd64"
+	BinaryNameIntelMacOS = "iron-macos"
 
 	// BinaryNameARMMacOS is the name of the Ironstar CLI (ARM) macOS binary on Github
 	BinaryNameARMMacOS = "iron-macos-arm64"
