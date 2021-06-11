@@ -232,6 +232,9 @@ func RootCmd() *cobra.Command {
 
 	deploy.DeployCmd.PersistentFlags().BoolVarP(&flags.Acc.ApproveProdDeploy, "approve-prod-deploy", "", false, "Allow deployments to production without a warning prompt.")
 
+	deploy.ListCmd.PersistentFlags().StringVarP(&flags.Acc.Limit, "limit", "", "", "Limit the number of deployments to return. Defaults to 10.")
+	deploy.ListCmd.PersistentFlags().StringVarP(&flags.Acc.Offset, "offset", "", "", "Specify an offset for pagination. Defaults to 0.")
+
 	return &rootCmd
 }
 

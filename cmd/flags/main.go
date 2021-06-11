@@ -21,6 +21,8 @@ type Accumulator struct {
 	VarType           string
 	Backup            string
 	BackupType        string
+	Limit             string
+	Offset            string
 	Start             int
 	End               int
 	LogStreams        []string

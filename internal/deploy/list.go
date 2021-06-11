@@ -34,7 +34,7 @@ func List(args []string, flg flags.Accumulator) error {
 
 	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
 
-	qs := services.BuildQSFilters(flg)
+	qs := services.BuildQSFilters(flg, "10")
 	req := &api.Request{
 		RunTokenRefresh:  true,
 		Credentials:      creds,
@@ -65,12 +65,18 @@ func List(args []string, flg flags.Accumulator) error {
 	for _, d := range ds {
 		// Prepend rows, we want dates ordered oldest to newest
 		row := make([][]string, 1)
-		row = append(row, []string{d.CreatedAt.Format(time.RFC3339), d.Environment.Name, d.Name, d.Build.Name, d.AppStatus, d.AdminSvcStatus})
+
+		status := d.AppStatus
+		if d.Status.Lifecycle != "" {
+			status = d.Status.Lifecycle
+		}
+
+		row = append(row, []string{d.CreatedAt.Format(time.RFC3339), d.Environment.Name, d.Name, d.Build.Name, status, d.Build.Branch, d.Build.Tag})
 		dsRows = append(row, dsRows...)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Date Created", "Environment", "Deployment", "Package", "Application Status", "Admin Service Status"})
+	table.SetHeader([]string{"Date Created", "Environment", "Deployment", "Package", "Status", "Branch", "Tag"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(dsRows)
 	table.Render()

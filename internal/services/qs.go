@@ -6,7 +6,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 )
 
-func BuildQSFilters(flg flags.Accumulator) string {
+func BuildQSFilters(flg flags.Accumulator, fallbackLimit string) string {
 	var acc []string
 
 	if flg.Deploy != "" {
@@ -23,6 +23,16 @@ func BuildQSFilters(flg flags.Accumulator) string {
 
 	if flg.Package != "" {
 		acc = append(acc, "build="+flg.Package)
+	}
+
+	if flg.Limit != "" {
+		acc = append(acc, "limit="+flg.Limit)
+	} else if fallbackLimit != "" {
+		acc = append(acc, "limit="+fallbackLimit)
+	}
+
+	if flg.Offset != "" {
+		acc = append(acc, "offset="+flg.Offset)
 	}
 
 	if len(acc) == 0 {
