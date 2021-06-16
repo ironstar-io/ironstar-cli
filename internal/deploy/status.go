@@ -2,6 +2,7 @@ package deploy
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
+	"github.com/olekukonko/tablewriter"
 )
 
 func Status(args []string, flg flags.Accumulator) error {
@@ -44,7 +46,7 @@ func Status(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	err = DisplayDeploymentActivity(creds, deployID)
+	err = DisplayDeploymentLifecycle(deployment.Lifecycle)
 	if err != nil {
 		return err
 	}
@@ -77,25 +79,43 @@ func Status(args []string, flg flags.Accumulator) error {
 func DisplayDeploymentInfo(creds types.Keylink, d types.Deployment) error {
 	fmt.Println()
 	fmt.Println("DEPLOYMENT: " + d.Name)
-	fmt.Println()
 	fmt.Println("ENVIRONMENT: " + d.Environment.Name)
-	fmt.Println("PACKAGE: " + d.Build.Name)
-	fmt.Println("APPLICATION STATUS: " + d.AppStatus)
-	fmt.Println("ADMIN SERVICE STATUS: " + d.AdminSvcStatus)
 	fmt.Println("CREATED: " + d.CreatedAt.Format(time.RFC3339))
+
+	if d.Status.Lifecycle != "" {
+		fmt.Println("STATUS: " + d.Status.Lifecycle)
+	} else {
+		fmt.Println("APPLICATION STATUS: " + d.AppStatus)
+		fmt.Println("ADMIN SERVICE STATUS: " + d.AdminSvcStatus)
+	}
+	fmt.Println()
+	fmt.Println("PACKAGE: " + d.Build.Name)
+	fmt.Println("BRANCH: " + d.Build.Branch)
+	fmt.Println("TAG: " + d.Build.Tag)
 
 	return nil
 }
 
-func DisplayDeploymentLogs(creds types.Keylink, d types.Deployment) error {
+func DisplayDeploymentLifecycle(lifecycle []types.DeploymentLifecycleEvent) error {
 	fmt.Println()
-	fmt.Println("DEPLOYMENT: " + d.Name)
-	fmt.Println()
-	fmt.Println("ENVIRONMENT: " + d.Environment.Name)
-	fmt.Println("PACKAGE: " + d.Build.Name)
-	fmt.Println("APPLICATION STATUS: " + d.AppStatus)
-	fmt.Println("ADMIN SERVICE STATUS: " + d.AdminSvcStatus)
-	fmt.Println("CREATED: " + d.CreatedAt.Format(time.RFC3339))
+	fmt.Println("LIFECYCLE: ")
+
+	daRows := make([][]string, len(lifecycle))
+	for _, s := range lifecycle {
+		// Prepend rows, we want dates ordered oldest to newest
+		exit := s.Exit.Format(time.RFC3339)
+		if s.Exit.IsZero() {
+			exit = ""
+		}
+
+		daRows = append(daRows, []string{s.Stage, s.Status, s.Command, s.Enter.Format(time.RFC3339), exit})
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Stage", "Status", "Command", "Enter", "Exit"})
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	table.AppendBulk(daRows)
+	table.Render()
 
 	return nil
 }

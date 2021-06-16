@@ -1,6 +1,7 @@
 package types
 
 import (
+	"reflect"
 	"time"
 )
 
@@ -72,6 +73,10 @@ type BuildFlat struct {
 	Status    string    `json:"status,omitempty" yaml:"status,omitempty"`
 	CreatedBy string    `json:"created_by,omitempty" yaml:"created_by,omitempty"`
 	RunningIn string    `json:"running_in,omitempty" yaml:"running_in,omitempty"`
+	Branch    string    `json:"branch,omitempty" yaml:"branch,omitempty"`
+	Tag       string    `json:"tag,omitempty" yaml:"tag,omitempty"`
+	Checksum  string    `json:"checksum,omitempty" yaml:"checksum,omitempty"`
+	CommitSHA string    `json:"commit_sha,omitempty" yaml:"commit_sha,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
 
@@ -92,16 +97,38 @@ type Build struct {
 	Deployment []Deployment `json:"deployments,omitempty" yaml:"deployments,omitempty"`
 }
 
+func (s Deployment) IsStructureEmpty() bool {
+	return reflect.DeepEqual(s, Deployment{})
+}
+
 // Deployment
 type Deployment struct {
-	HashedID       string      `json:"deployment_id,omitempty" yaml:"deployment_id,omitempty"`
-	Name           string      `json:"name,omitempty" yaml:"name,omitempty"`
-	AppStatus      string      `json:"app_status,omitempty" yaml:"app_status,omitempty"`
-	AdminSvcStatus string      `json:"admin_svc_status,omitempty" yaml:"admin_svc_status,omitempty"`
-	BuildID        string      `json:"build_token,omitempty" yaml:"build_token,omitempty"`
-	CreatedAt      time.Time   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	Environment    Environment `json:"environment,omitempty" yaml:"environment,omitempty"`
-	Build          BuildFlat   `json:"build,omitempty" yaml:"build,omitempty"`
+	HashedID       string                     `json:"deployment_id,omitempty" yaml:"deployment_id,omitempty"`
+	Name           string                     `json:"name,omitempty" yaml:"name,omitempty"`
+	AppStatus      string                     `json:"app_status,omitempty" yaml:"app_status,omitempty"`
+	AdminSvcStatus string                     `json:"admin_svc_status,omitempty" yaml:"admin_svc_status,omitempty"`
+	BuildID        string                     `json:"build_token,omitempty" yaml:"build_token,omitempty"`
+	CreatedAt      time.Time                  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Environment    Environment                `json:"environment,omitempty" yaml:"environment,omitempty"`
+	Build          BuildFlat                  `json:"build,omitempty" yaml:"build,omitempty"`
+	Status         DeploymentStatus           `json:"status,omitempty" yaml:"status,omitempty"`
+	Lifecycle      []DeploymentLifecycleEvent `json:"lifecycle,omitempty" yaml:"lifecycle,omitempty"`
+}
+
+type DeploymentLifecycleEvent struct {
+	Stage   string    `json:"stage,omitempty" example:"Requested" extensions:"x-description=The name of the lifecycle stage"`
+	Status  string    `json:"status,omitempty" example:"Successful" extensions:"x-description=The status of the lifecycle change"`
+	Command string    `json:"command,omitempty" example:"drush cr" extensions:"x-description=The command in the lifecycle change"`
+	Host    string    `json:"host,omitempty" example:"host" extensions:"x-description=The host name of the deployment"`
+	Enter   time.Time `json:"enter,omitempty" example:"2023-01-02T15:04:05Z07:00" format:"RFC3339" extensions:"x-description=The date in which the deployment entered this state"`
+	Exit    time.Time `json:"exit,omitempty" example:"2023-01-02T15:04:05Z07:00" format:"RFC3339" extensions:"x-description=The date in which the deployment exited this state"`
+}
+
+type DeploymentStatus struct {
+	Lifecycle      string    `json:"lifecycle,omitempty" yaml:"lifecycle,omitempty"`
+	ActiveDate     time.Time `json:"activeDate,omitempty" yaml:"activeDate,omitempty"`
+	RetiredDate    time.Time `json:"retiredDate,omitempty" yaml:"retiredDate,omitempty"`
+	AppDeployments int       `json:"appDeployments,omitempty" yaml:"appDeployments,omitempty"`
 }
 
 // UserMinimal
