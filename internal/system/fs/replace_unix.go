@@ -4,19 +4,20 @@ package fs
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 )
 
 // Replace ...
-func Replace(path string, body []byte) {
+func Replace(path string, body []byte, octal fs.FileMode) {
 	var _, err = os.Stat(path)
 
 	if os.IsNotExist(err) {
-		TouchByteArray(path, body)
+		TouchByteArray(path, body, octal)
 		return
 	}
 
-	if err := TouchByteArray(path+"-copy", body); err != nil {
+	if err := TouchByteArray(path+"-copy", body, octal); err != nil {
 		escapeHatch(path)
 		return
 	}

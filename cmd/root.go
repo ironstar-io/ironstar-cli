@@ -19,6 +19,7 @@ import (
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/restore"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/subscription"
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/sync"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/system/security"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version"
 
 	"github.com/spf13/cobra"
@@ -34,6 +35,7 @@ var rootCmd = cobra.Command{
 }
 
 func init() {
+	cobra.OnInitialize(securityChecks)
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.AddCommand(VersionCmd)
@@ -253,4 +255,8 @@ func initConfig() {
 	}
 
 	viper.ReadInConfig()
+}
+
+func securityChecks() {
+	security.CheckFilePermissions()
 }

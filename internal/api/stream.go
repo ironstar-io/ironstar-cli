@@ -25,7 +25,7 @@ type Stream struct {
 const IronstarUploadAPIDomain = "https://uploads.ironstar.io"
 
 func GetBaseUploadURL() string {
-	ipa := os.Getenv("IRONSTAR_UPLOAD_API_ADDRESS")
+	ipa := os.Getenv("IRONSTAR_ARIMA_API_ADDRESS")
 	if ipa != "" {
 		return ipa
 	}

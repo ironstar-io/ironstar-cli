@@ -94,7 +94,7 @@ func LinkSubscriptionToProject(config types.ProjectConfig, sub types.Subscriptio
 	}
 
 	py := filepath.Join(wd, ".ironstar", "config.yml")
-	fs.Replace(py, newMarhsalled)
+	fs.Replace(py, newMarhsalled, 0400)
 
 	return nil
 }
