@@ -112,7 +112,7 @@ func generateQRHTMLPage(login, qrImg string) (string, error) {
 
 	hf := filepath.Join(hp, "qr.html")
 
-	err := fs.TouchByteArray(hf, []byte(tmpl))
+	err := fs.TouchByteArray(hf, []byte(tmpl), 0400)
 	if err != nil {
 		return "", err
 	}

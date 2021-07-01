@@ -37,7 +37,7 @@ func UpdateCredentialsFile(newCreds types.Keylink) error {
 		return err
 	}
 
-	fs.Replace(cp, newMarhsalled)
+	fs.Replace(cp, newMarhsalled, 0400)
 
 	return nil
 }
@@ -73,7 +73,7 @@ func RemoveCredentials(oldCreds types.Keylink) error {
 		return err
 	}
 
-	fs.Replace(cp, newMarhsalled)
+	fs.Replace(cp, newMarhsalled, 0400)
 
 	return nil
 }
@@ -105,7 +105,7 @@ func UpdateActiveCredentials(login string) (types.Keylink, error) {
 		return empty, err
 	}
 
-	fs.Replace(cp, newMarhsalled)
+	fs.Replace(cp, newMarhsalled, 0400)
 
 	return credMatch, nil
 }
