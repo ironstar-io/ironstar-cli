@@ -36,7 +36,7 @@ func ReadInCredentials() (types.Credentials, error) {
 	empty := types.Credentials{}
 	cp := filepath.Join(fs.HomeDir(), ".ironstar", "credentials.yml")
 
-	err := SafeTouchConfigYAML(cp)
+	err := SafeTouchCredentialsYAML()
 	if err != nil {
 		return empty, err
 	}

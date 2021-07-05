@@ -19,7 +19,24 @@ func SafeTouchConfigYAML(path string) error {
 				return err
 			}
 		}
-		return fs.TouchEmpty(path)
+		return fs.TouchEmpty(path, 0400)
+	}
+
+	return nil
+}
+
+func SafeTouchCredentialsYAML() error {
+	cp := filepath.Join(fs.HomeDir(), ".ironstar", "credentials.yml")
+	exists := fs.CheckExists(cp)
+	if !exists {
+		np := filepath.Dir(cp)
+		if !fs.CheckExists(np) {
+			err := os.MkdirAll(np, 0700)
+			if err != nil {
+				return err
+			}
+		}
+		return fs.TouchEmpty(cp, 0400)
 	}
 
 	return nil

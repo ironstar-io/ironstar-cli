@@ -41,7 +41,7 @@ func InitializeIronstarProject() error {
 		return err
 	}
 
-	fs.Replace(confPath, newMarhsalled)
+	fs.Replace(confPath, newMarhsalled, 0400)
 
 	return nil
 }
