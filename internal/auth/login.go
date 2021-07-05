@@ -145,6 +145,22 @@ func redirectChecks(flg flags.Accumulator, body []byte, email string) (*types.Au
 		return resetUserPassword(flg, email, b.IDToken, b.MFAStatus)
 	case "/auth/mfa/validate":
 		return validateMFAPasscode(b.IDToken)
+	case "/auth/mfa/enable":
+		fmt.Println()
+		color.Yellow(`NOTICE!`)
+		color.Yellow(`Usage of the Ironstar API now requires all users to have MFA enabled`)
+		fmt.Println()
+
+		cnt := services.ConfirmationPrompt("Would like to enable MFA now?", "n", false)
+		if !cnt {
+			return nil, errors.New("Unable to proceed without enabling MFA.")
+		}
+
+		return MFAEnable(flg, types.Keylink{
+			Login:     email,
+			AuthToken: b.IDToken,
+			Expiry:    b.Expiry,
+		})
 	}
 
 	return b, nil

@@ -6,6 +6,7 @@ import (
 
 	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/auth"
+	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -17,7 +18,7 @@ var MFAEnableCmd = &cobra.Command{
 	Short: "Enable MFA",
 	Long:  "Enable MFA for the currently logged in user",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := auth.MFAEnable(args, flags.Acc)
+		_, err := auth.MFAEnable(flags.Acc, types.Keylink{})
 		if err != nil {
 			fmt.Println()
 			color.Red(err.Error())
