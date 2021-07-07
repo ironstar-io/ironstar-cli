@@ -17,7 +17,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func MFAEnable(flg flags.Accumulator, creds types.Keylink) (*types.AuthResponseBody, error) {
+func MFAEnable(flg flags.Accumulator, creds types.Keylink, email string) (*types.AuthResponseBody, error) {
 	if creds == (types.Keylink{}) {
 		cr, err := services.ResolveUserCredentials(flg.Login)
 		if err != nil {
@@ -81,7 +81,7 @@ func MFAEnable(flg flags.Accumulator, creds types.Keylink) (*types.AuthResponseB
 	color.Green("Once registered in your preferred Authenticator application, we'll need to verify a supplied passcode")
 
 	// Request first passcode for verification
-	c, err := validateMFAPasscodeWithRetries(m.IDToken)
+	c, err := validateMFAPasscodeWithRetries(flg, m.IDToken, email)
 	if err != nil {
 		color.Yellow("Please try running `iron auth mfa enable` again or reach out to Ironstar Support for help`")
 		fmt.Println()

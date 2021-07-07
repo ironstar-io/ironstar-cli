@@ -179,6 +179,13 @@ type AntivirusScan struct {
 	CreatedAt     time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
 
+type APIUsageTerms struct {
+	Terms     string    `json:"terms,omitempty" yaml:"terms,omitempty"`
+	Version   string    `json:"version,omitempty" yaml:"version,omitempty"`
+	Status    string    `json:"status,omitempty" yaml:"status,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+}
+
 type BackupRequest struct {
 	Name       string    `json:"name,omitempty" yaml:"name,omitempty"`
 	Kind       string    `json:"kind,omitempty" yaml:"kind,omitempty"`

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -33,7 +34,7 @@ func IronstarAPILogin(args []string, flg flags.Accumulator) error {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
 
-	c, err := redirectChecks(flg, res.Body, email)
+	c, err := loginRedirectChecks(flg, res.Body, email)
 	if err != nil {
 		return errors.Wrap(err, errs.APILoginErrorMsg)
 	}
@@ -133,7 +134,7 @@ func postMFAValidate(MFAAuthToken, passcode string) (*api.RawResponse, error) {
 	return res, nil
 }
 
-func redirectChecks(flg flags.Accumulator, body []byte, email string) (*types.AuthResponseBody, error) {
+func loginRedirectChecks(flg flags.Accumulator, body []byte, email string) (*types.AuthResponseBody, error) {
 	b := &types.AuthResponseBody{}
 	err := json.Unmarshal(body, b)
 	if err != nil {
@@ -141,10 +142,8 @@ func redirectChecks(flg flags.Accumulator, body []byte, email string) (*types.Au
 	}
 
 	switch b.RedirectEndpoint {
-	case "/auth/password-reset":
-		return resetUserPassword(flg, email, b.IDToken, b.MFAStatus)
 	case "/auth/mfa/validate":
-		return validateMFAPasscode(b.IDToken)
+		return validateMFAPasscode(flg, b.IDToken, email)
 	case "/auth/mfa/enable":
 		fmt.Println()
 		fmt.Println()
@@ -161,7 +160,24 @@ func redirectChecks(flg flags.Accumulator, body []byte, email string) (*types.Au
 			Login:     email,
 			AuthToken: b.IDToken,
 			Expiry:    b.Expiry,
-		})
+		}, email)
+	}
+
+	return b, nil
+}
+
+func mfaValidateRedirectChecks(flg flags.Accumulator, body []byte, email string) (*types.AuthResponseBody, error) {
+	b := &types.AuthResponseBody{}
+	err := json.Unmarshal(body, b)
+	if err != nil {
+		return nil, err
+	}
+
+	switch b.RedirectEndpoint {
+	case "/auth/password-reset":
+		return resetUserPassword(flg, email, b.IDToken, b.MFAStatus)
+	case "/auth/accept-api-usage-terms":
+		return acceptAPIUsageTerms(b.IDToken)
 	}
 
 	return b, nil
@@ -239,11 +255,13 @@ func resetUserPassword(flg flags.Accumulator, email, PWResetAuthToken, mfaStatus
 	return b, nil
 }
 
-func validateMFAPasscodeWithRetries(MFAAuthToken string) (*types.AuthResponseBody, error) {
+func validateMFAPasscodeWithRetries(flg flags.Accumulator, MFAAuthToken, email string) (*types.AuthResponseBody, error) {
 	maxRetries := 3
 	for i := 0; i < maxRetries; i++ {
-		c, err := validateMFAPasscode(MFAAuthToken)
+		c, err := validateMFAPasscode(flg, MFAAuthToken, email)
 		if err != nil {
+			fmt.Println(err.Error() + ". Retry...")
+
 			continue
 		}
 
@@ -253,13 +271,46 @@ func validateMFAPasscodeWithRetries(MFAAuthToken string) (*types.AuthResponseBod
 	return nil, errors.New("Unable to verify your MFA passcode. Code: FTevOS")
 }
 
-func validateMFAPasscode(MFAAuthToken string) (*types.AuthResponseBody, error) {
+func validateMFAPasscode(flg flags.Accumulator, MFAAuthToken, email string) (*types.AuthResponseBody, error) {
 	passcode, err := services.GetCLIMFAPasscode()
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println()
 
 	res, err := postMFAValidate(MFAAuthToken, passcode)
+	if err != nil {
+		return nil, err
+	}
+
+	return mfaValidateRedirectChecks(flg, res.Body, email)
+}
+
+func acceptAPIUsageTerms(APIUsageAcceptAuthToken string) (*types.AuthResponseBody, error) {
+	aut, err := api.GetCurrentAPIUsageTerms()
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println()
+	color.Yellow(`NOTICE!`)
+	color.Yellow(`Your use of the Ironstar API, CLI and Console is subject to the "Ironstar API Usage Terms".`)
+	fmt.Println()
+
+	terms, err := base64.StdEncoding.DecodeString(aut.Terms)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(string(terms))
+	fmt.Println()
+
+	cnt := services.ConfirmationPrompt("Do you accept these usage terms?", "y", false)
+	if !cnt {
+		return nil, errors.New("Unable to proceed without accepting API usage terms.")
+	}
+
+	res, err := api.PostAcceptAPIUsageTerms(APIUsageAcceptAuthToken)
 	if err != nil {
 		return nil, err
 	}
