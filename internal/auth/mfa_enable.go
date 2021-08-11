@@ -17,10 +17,13 @@ import (
 	"github.com/pkg/errors"
 )
 
-func MFAEnable(args []string, flg flags.Accumulator) error {
-	creds, err := services.ResolveUserCredentials(flg.Login)
-	if err != nil {
-		return err
+func MFAEnable(flg flags.Accumulator, creds types.Keylink) (*types.AuthResponseBody, error) {
+	if creds == (types.Keylink{}) {
+		cr, err := services.ResolveUserCredentials(flg.Login)
+		if err != nil {
+			return nil, err
+		}
+		creds = cr
 	}
 
 	req := &api.Request{
@@ -33,20 +36,20 @@ func MFAEnable(args []string, flg flags.Accumulator) error {
 
 	res, err := req.NankaiSend()
 	if err != nil {
-		return errors.Wrap(err, errs.APISubListErrorMsg)
+		return nil, errors.Wrap(err, errs.APISubListErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
-		return res.HandleFailure()
+		return nil, res.HandleFailure()
 	}
 
 	var m types.MFAEnrolResponse
 	err = json.Unmarshal(res.Body, &m)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if m.QRCode == "" {
-		return errors.New(errs.APIMFAEnrolErrorMsg)
+		return nil, errors.New(errs.APIMFAEnrolErrorMsg)
 	}
 
 	// Display QR token
@@ -55,7 +58,7 @@ func MFAEnable(args []string, flg flags.Accumulator) error {
 
 	p, err := generateQRHTMLPage(creds.Login, m.QRCode)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	output, err := utils.OpenSite(p)
@@ -82,7 +85,7 @@ func MFAEnable(args []string, flg flags.Accumulator) error {
 	if err != nil {
 		color.Yellow("Please try running `iron auth mfa enable` again or reach out to Ironstar Support for help`")
 		fmt.Println()
-		return err
+		return nil, err
 	}
 
 	err = services.UpdateCredentialsFile(types.Keylink{
@@ -91,7 +94,7 @@ func MFAEnable(args []string, flg flags.Accumulator) error {
 		Expiry:    c.Expiry,
 	})
 	if err != nil {
-		return errors.Wrap(err, errs.APIMFAVerifyErrorMsg)
+		return nil, errors.Wrap(err, errs.APIMFAVerifyErrorMsg)
 	}
 
 	fmt.Println()
@@ -101,7 +104,7 @@ func MFAEnable(args []string, flg flags.Accumulator) error {
 	fmt.Println()
 	color.Green("Successfully enabled MFA for this account!")
 
-	return nil
+	return c, nil
 }
 
 func generateQRHTMLPage(login, qrImg string) (string, error) {
@@ -111,6 +114,8 @@ func generateQRHTMLPage(login, qrImg string) (string, error) {
 	tmpl := buildQRHTMLTemplate(qrImg)
 
 	hf := filepath.Join(hp, "qr.html")
+
+	fs.Remove(hf)
 
 	err := fs.TouchByteArray(hf, []byte(tmpl), 0400)
 	if err != nil {
