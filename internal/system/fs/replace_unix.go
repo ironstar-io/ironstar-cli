@@ -4,12 +4,12 @@ package fs
 
 import (
 	"fmt"
-	"io/fs"
+	iofs "io/fs"
 	"os"
 )
 
 // Replace ...
-func Replace(path string, body []byte, octal fs.FileMode) {
+func Replace(path string, body []byte, octal iofs.FileMode) {
 	var _, err = os.Stat(path)
 
 	if os.IsNotExist(err) {
