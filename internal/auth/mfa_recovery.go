@@ -89,7 +89,7 @@ func MFARecovery(args []string, flg flags.Accumulator) error {
 		return errors.New("Recovery successful, MFA not re-enabled.")
 	}
 
-	_, err = MFAEnable(flg, enableCreds)
+	_, err = MFAEnable(flg, enableCreds, email)
 	if err != nil {
 		return err
 	}
