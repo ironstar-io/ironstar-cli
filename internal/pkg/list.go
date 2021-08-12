@@ -107,11 +107,6 @@ func calcRunningBuildEnv(bs []types.Build) map[string]MinimalBuildMatcher {
 		if len(b.Deployment) == 0 {
 			continue
 		}
-		fmt.Println()
-		fmt.Println()
-		fmt.Println(b.Deployment)
-		fmt.Println()
-		fmt.Println()
 
 		for _, d := range b.Deployment {
 			if !d.IsStructureEmpty() && d.Environment != (types.Environment{}) {
