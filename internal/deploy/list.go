@@ -23,6 +23,53 @@ func List(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
+	if flg.Environment != "" {
+		return retrieveAndDisplayEnvDeployments(creds, flg)
+	}
+
+	return retrieveAndDisplaySubDeployments(creds, flg)
+}
+
+func retrieveAndDisplayEnvDeployments(creds types.Keylink, flg flags.Accumulator) error {
+	seCtx, err := api.GetSubscriptionEnvironmentContext(creds, flg)
+	if err != nil {
+		return err
+	}
+
+	if seCtx.Subscription.Alias == "" {
+		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+	}
+
+	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+
+	qs := services.BuildQSFilters(flg, "10")
+	req := &api.Request{
+		RunTokenRefresh:  true,
+		Credentials:      creds,
+		Method:           "GET",
+		Path:             "/subscription/" + seCtx.Subscription.HashedID + "/environment/" + seCtx.Environment.HashedID + "/deployments" + qs,
+		MapStringPayload: map[string]interface{}{},
+	}
+
+	res, err := req.NankaiSend()
+	if err != nil {
+		return errors.Wrap(err, errs.APISubListErrorMsg)
+	}
+
+	if res.StatusCode != 200 {
+		return res.HandleFailure()
+	}
+
+	var ds []types.Deployment
+	err = yaml.Unmarshal(res.Body, &ds)
+	if err != nil {
+		return err
+	}
+
+	return displayDeployments(ds)
+}
+
+func retrieveAndDisplaySubDeployments(creds types.Keylink, flg flags.Accumulator) error {
 	sub, err := api.GetSubscriptionContext(creds, flg)
 	if err != nil {
 		return err
@@ -58,6 +105,10 @@ func List(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
+	return displayDeployments(ds)
+}
+
+func displayDeployments(ds []types.Deployment) error {
 	fmt.Println()
 	fmt.Println("Deployments:")
 
