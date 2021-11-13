@@ -32,14 +32,21 @@ func (err *APIError) Error() {
 	}
 
 	fmt.Println()
-	fmt.Printf("Status Code: %+v\n", err.StatusCode)
-	fmt.Println("Ironstar Code: " + err.IronstarCode)
+	if err.StatusCode != 0 {
+		fmt.Printf("Status Code: %+v\n", err.StatusCode)
+	}
+
+	if err.IronstarCode != "" {
+		fmt.Println("Ironstar Code: " + err.IronstarCode)
+	}
 
 	if err.CorrelationId != "" {
 		fmt.Println("Correlation ID: " + err.CorrelationId)
 	}
 
-	fmt.Println(err.Message)
+	if err.Message != "" {
+		fmt.Println("Message: " + err.Message)
+	}
 }
 
 var ErrIronstarAPICall = errors.New("Ironstar API call was unsuccessful!")
@@ -52,7 +59,7 @@ func (res *RawResponse) HandleFailure() error {
 		correlationId = res.Header["X-Correlation-Id"][0]
 	}
 
-	if res.StatusCode > 499 {
+	if res.StatusCode == 500 {
 		apiErr = APIError{
 			StatusCode:    res.StatusCode,
 			IronstarCode:  "INTERNAL_SERVER_ERROR",
@@ -121,7 +128,7 @@ func (res *RawResponse) HandleExternalFailure() error {
 		correlationId = res.Header["X-Correlation-Id"][0]
 	}
 
-	if res.StatusCode > 499 {
+	if res.StatusCode == 500 {
 		apiErr = APIError{
 			StatusCode:    res.StatusCode,
 			IronstarCode:  "INTERNAL_SERVER_ERROR",
