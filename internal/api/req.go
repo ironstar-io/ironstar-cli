@@ -68,11 +68,11 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 func (wc WriteCounter) PrintProgress() {
 	// Clear the line by using a character return to go back to the start and remove
 	// the remaining characters by filling it with spaces
-	fmt.Printf("\r%s", strings.Repeat(" ", 35))
+	fmt.Printf("\rDownloading %s... %s", wc.FriendlyName, strings.Repeat(" ", 12))
 
 	// Return again and print current status of download
 	// We use the humanize package to print the bytes in a meaningful way (e.g. 10 MB)
-	fmt.Printf("\rDownloading %s... %s", wc.FriendlyName, humanize.Bytes(wc.Total))
+	fmt.Printf("\rDownloading %s... %s", wc.FriendlyName, humanize.IBytes(wc.Total))
 }
 
 func (r *Request) BuildBytePayload() error {
