@@ -193,7 +193,7 @@ func resetUserPassword(flg flags.Accumulator, email, PWResetAuthToken, mfaStatus
 	}
 
 	var passcode string
-	if mfaStatus == "ENABLED" {
+	if mfaStatus == "VIRTUAL_MFA_ENABLED" {
 		pc, err := services.GetCLIMFAPasscode()
 		if err != nil {
 			return nil, err
@@ -237,7 +237,7 @@ func resetUserPassword(flg flags.Accumulator, email, PWResetAuthToken, mfaStatus
 		return nil, err
 	}
 
-	if b.MFAStatus == "ENABLED" {
+	if b.MFAStatus == "VIRTUAL_MFA_ENABLED" {
 		vres, err := postMFAValidate(b.IDToken, passcode)
 		if err != nil {
 			return nil, err
