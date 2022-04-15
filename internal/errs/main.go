@@ -27,6 +27,8 @@ const (
 
 	ProjectRootNotFoundError = "Unable to find a matching project"
 
+	APIGetUserOrgControlsErrorMsg = "Failed to retrieve user organisation controls"
+
 	APISubListErrorMsg = "Failed to retrieve subscriptions"
 
 	APISubLinkErrorMsg = "Failed to link subscription"

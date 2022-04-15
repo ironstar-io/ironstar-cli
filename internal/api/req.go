@@ -280,37 +280,28 @@ func (r *Request) RefreshToken() {
 		return
 	}
 
-	newReq := Request{
-		RunTokenRefresh: false,
-		Credentials: types.Keylink{
-			AuthToken: r.Credentials.AuthToken,
-		},
-		Method: "POST",
-		Path:   "/auth/token/refresh",
-		MapStringPayload: map[string]interface{}{
-			"expiry": time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
-		},
-	}
-
-	res, err := newReq.NankaiSend()
+	// Get users' organisation security controls
+	uoc, err := GetUserOrganisationControls(r.Credentials)
 	if err != nil {
 		return
 	}
-
-	if res.StatusCode != 200 {
+	if err != nil {
+		return
+	}
+	if uoc != nil && uoc.CLIReauthOnRefresh {
+		// Automated token refresh not permitted
 		return
 	}
 
-	b := &types.AuthResponseBody{}
-	err = json.Unmarshal(res.Body, b)
+	rt, err := postAuthTokenRefresh(r.Credentials)
 	if err != nil {
 		return
 	}
 
 	newCreds := types.Keylink{
 		Login:     r.Credentials.Login,
-		AuthToken: b.IDToken,
-		Expiry:    b.Expiry,
+		AuthToken: rt.IDToken,
+		Expiry:    rt.Expiry,
 	}
 
 	err = services.UpdateCredentialsFile(newCreds)

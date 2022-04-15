@@ -63,7 +63,17 @@ type Role struct {
 type UserAccessResponse struct {
 	Role         Role         `json:"role,omitempty" yaml:"role,omitempty"`
 	Subscription Subscription `json:"subscription,omitempty" yaml:"subscription,omitempty"`
-	// Environment  Environment  `yaml:"environment,omitempty"`
+}
+
+type OrganisationControls struct {
+	SSHTFARequired                   bool `json:"ssh_tfa_required" yaml:"ssh_tfa_required"`
+	IdleAPISessionTerminationMinutes int  `json:"idle_api_session_termination_minutes" yaml:"idle_api_session_termination_minutes"`
+	IdleSSHSessionTerminationMinutes int  `json:"idle_ssh_session_termination_minutes" yaml:"idle_ssh_session_termination_minutes"`
+	CLIReauthOnRefresh               bool `json:"cli_reauth_on_refresh" yaml:"cli_reauth_on_refresh"`
+	MaxSessionHours                  int  `json:"max_session_hours" yaml:"max_session_hours"`
+	EnforceStrongSSHKeys             bool `json:"enforce_strong_ssh_keys" yaml:"enforce_strong_ssh_keys"`
+	SSHKeyCycleDays                  int  `json:"ssh_key_cycle_days" yaml:"ssh_key_cycle_days"`
+	DisableIdleAccountDays           int  `json:"disable_idle_account_days" yaml:"disable_idle_account_days"`
 }
 
 // Build
