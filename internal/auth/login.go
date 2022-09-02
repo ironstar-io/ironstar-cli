@@ -67,8 +67,8 @@ func IronstarAPILogin(args []string, flg flags.Accumulator) error {
 	fmt.Println()
 	color.Green("Expiry: ")
 
-	expDiff := strconv.Itoa(int(math.RoundToEven(c.Expiry.Sub(time.Now().UTC()).Hours() / 24)))
-	fmt.Println(c.Expiry.String() + " (" + expDiff + " days)")
+	expDiff := strconv.Itoa(int(math.RoundToEven(c.Expiry.Sub(time.Now().UTC()).Hours())))
+	fmt.Println(c.Expiry.String() + " (" + expDiff + " hours)")
 
 	proj, err := services.GetProjectDataSkipNew()
 	if err != nil {
@@ -91,7 +91,6 @@ func postLogin(email, password string, lockSessionToIP bool) (*api.RawResponse, 
 		MapStringPayload: map[string]interface{}{
 			"email":              email,
 			"password":           password,
-			"expiry":             time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
 			"lock_session_to_ip": lockSessionToIP,
 		},
 	}
@@ -118,7 +117,6 @@ func postMFAValidate(MFAAuthToken, passcode string) (*api.RawResponse, error) {
 		Path:   "/auth/mfa/validate",
 		MapStringPayload: map[string]interface{}{
 			"passcode": passcode,
-			"expiry":   time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
 		},
 	}
 

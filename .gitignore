@@ -23,3 +23,5 @@ dist/*
 .vscode
 .DS_Store
 *.DS_Store
+*.tar.gz
+.cache
