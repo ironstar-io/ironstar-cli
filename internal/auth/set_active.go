@@ -38,8 +38,8 @@ func IronstarSetActiveCredentials(args []string) error {
 	fmt.Println()
 	color.Green("Expiry: ")
 
-	expDiff := strconv.Itoa(int(math.RoundToEven(c.Expiry.Sub(time.Now().UTC()).Hours() / 24)))
-	fmt.Println(c.Expiry.String() + " (" + expDiff + " days)")
+	expDiff := strconv.Itoa(int(math.RoundToEven(c.Expiry.Sub(time.Now().UTC()).Hours())))
+	fmt.Println(c.Expiry.String() + " (" + expDiff + " hours)")
 
 	return nil
 }

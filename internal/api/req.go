@@ -7,17 +7,13 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"math"
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/dustin/go-humanize"
-	"github.com/fatih/color"
 )
 
 type Request struct {
@@ -90,8 +86,6 @@ func (r *Request) BuildBytePayload() error {
 
 // NankaiSend - Make a HTTP request to the Ironstar API
 func (r *Request) NankaiSend() (*RawResponse, error) {
-	r.RefreshToken()
-
 	err := r.BuildBytePayload()
 	if err != nil {
 		return nil, err
@@ -104,8 +98,6 @@ func (r *Request) NankaiSend() (*RawResponse, error) {
 
 // ArimaSend - Make a HTTP request to the Ironstar upload/download API (ARIMA)
 func (r *Request) ArimaSend() (*RawResponse, error) {
-	r.RefreshToken()
-
 	err := r.BuildBytePayload()
 	if err != nil {
 		return nil, err
@@ -118,8 +110,6 @@ func (r *Request) ArimaSend() (*RawResponse, error) {
 
 // ArimaSend - Make a HTTP request to the Ironstar upload/download API (ARIMA)
 func (r *Request) ArimaDownload(filepath, friendlyName string) (*RawResponse, error) {
-	r.RefreshToken()
-
 	err := r.BuildBytePayload()
 	if err != nil {
 		return nil, err
@@ -262,64 +252,4 @@ func (r *Request) HTTPSend() (*RawResponse, error) {
 	defer resp.Body.Close()
 
 	return ir, nil
-}
-
-func (r *Request) RefreshToken() {
-	//
-	// If any leg fails, return silently, user will need to relog manually
-	//
-
-	if !r.RunTokenRefresh || r.Credentials == (types.Keylink{}) || r.Credentials.Login == "" || r.Credentials.AuthToken == "" || r.Credentials.Expiry.IsZero() {
-		return
-	}
-
-	// Get the time difference in days
-	expDiff := int(math.RoundToEven(r.Credentials.Expiry.Sub(time.Now().UTC()).Hours() / 24))
-	// Only refresh if there's less than seven days remaining and not already expired
-	if expDiff > 7 || expDiff < 0 {
-		return
-	}
-
-	newReq := Request{
-		RunTokenRefresh: false,
-		Credentials: types.Keylink{
-			AuthToken: r.Credentials.AuthToken,
-		},
-		Method: "POST",
-		Path:   "/auth/token/refresh",
-		MapStringPayload: map[string]interface{}{
-			"expiry": time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
-		},
-	}
-
-	res, err := newReq.NankaiSend()
-	if err != nil {
-		return
-	}
-
-	if res.StatusCode != 200 {
-		return
-	}
-
-	b := &types.AuthResponseBody{}
-	err = json.Unmarshal(res.Body, b)
-	if err != nil {
-		return
-	}
-
-	newCreds := types.Keylink{
-		Login:     r.Credentials.Login,
-		AuthToken: b.IDToken,
-		Expiry:    b.Expiry,
-	}
-
-	err = services.UpdateCredentialsFile(newCreds)
-	if err != nil {
-		return
-	}
-
-	r.Credentials = newCreds
-
-	color.Yellow("Authentication token has been automatically refreshed")
-	fmt.Println()
 }

@@ -1,8 +1,6 @@
 package api
 
 import (
-	"time"
-
 	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
 	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
 
@@ -45,11 +43,9 @@ func PostAcceptAPIUsageTerms(authToken string) (*RawResponse, error) {
 		Credentials: types.Keylink{
 			AuthToken: authToken,
 		},
-		Method: "POST",
-		Path:   "/user/accept-api-usage-terms",
-		MapStringPayload: map[string]interface{}{
-			"expiry": time.Now().AddDate(0, 0, 14).UTC().Format(time.RFC3339),
-		},
+		Method:           "POST",
+		Path:             "/user/accept-api-usage-terms",
+		MapStringPayload: map[string]interface{}{},
 	}
 
 	res, err := req.NankaiSend()
