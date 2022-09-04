@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"gitlab.com/ironstar-io/ironstar-cli/cmd"
+	"github.com/ironstar-io/ironstar-cli/cmd"
 )
 
 func main() {

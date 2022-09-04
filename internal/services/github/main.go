@@ -1,7 +1,7 @@
 package github
 
 import (
-	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/api"
 )
 
 // ReleaseBody - Used properties from the GH API GET call

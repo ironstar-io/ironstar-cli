@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
+	"github.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/system/fs"
 
 	"github.com/pkg/errors"
 )

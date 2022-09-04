@@ -1,7 +1,7 @@
 package fs
 
 import (
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs/goos"
+	"github.com/ironstar-io/ironstar-cli/internal/system/fs/goos"
 )
 
 // Writable - Check if a file/folder is writable

@@ -4,8 +4,8 @@ import (
 	"os"
 	"time"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
+	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/pkg/errors"
 )

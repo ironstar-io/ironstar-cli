@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/services"
 )
 
 func GetCacheInvalidationName(args []string) (string, error) {

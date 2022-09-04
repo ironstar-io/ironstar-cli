@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services/github"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version/goos"
+	"github.com/ironstar-io/ironstar-cli/internal/services/github"
+	"github.com/ironstar-io/ironstar-cli/internal/system/version/goos"
 )
 
 // GetInstallPath - Check if Ironstar CLI version is installed or not

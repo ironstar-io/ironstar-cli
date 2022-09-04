@@ -1,9 +1,9 @@
 package api
 
 import (
-	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
+	"github.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
+	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"encoding/json"
 

@@ -4,8 +4,8 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
+	"github.com/ironstar-io/ironstar-cli/internal/system/fs"
+	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	yaml "gopkg.in/yaml.v2"
 )

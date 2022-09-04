@@ -3,7 +3,7 @@ package services
 import (
 	"strings"
 
-	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
+	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 )
 
 func BuildQSFilters(flg flags.Accumulator, fallbackLimit string) string {

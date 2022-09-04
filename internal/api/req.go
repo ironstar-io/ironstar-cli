@@ -11,7 +11,7 @@ import (
 	"os"
 	"strings"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
+	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/dustin/go-humanize"
 )

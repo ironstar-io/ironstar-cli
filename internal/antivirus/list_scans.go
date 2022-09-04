@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/cmd/flags"
+	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/services"
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"

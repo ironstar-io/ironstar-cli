@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/auth"
+	"github.com/ironstar-io/ironstar-cli/internal/auth"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"

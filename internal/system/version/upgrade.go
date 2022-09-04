@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/version/goos"
+	"github.com/ironstar-io/ironstar-cli/cmd/flags"
+	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/version/goos"
 
 	"github.com/blang/semver"
 	"github.com/fatih/color"

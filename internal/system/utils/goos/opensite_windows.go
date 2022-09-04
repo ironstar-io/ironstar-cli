@@ -1,7 +1,7 @@
 package goos
 
 import (
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/cmd"
+	"github.com/ironstar-io/ironstar-cli/internal/system/cmd"
 )
 
 // OpenSite - Open a URL using PowerShell

@@ -3,11 +3,11 @@ package sync
 import (
 	"fmt"
 
-	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
+	"github.com/ironstar-io/ironstar-cli/cmd/flags"
+	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
+	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
 	"github.com/pkg/errors"

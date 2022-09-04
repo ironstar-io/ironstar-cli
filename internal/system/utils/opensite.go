@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils/goos"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils/goos"
 )
 
 // OpenSite - Split for multi platform

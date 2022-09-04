@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"runtime"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services/github"
+	"github.com/ironstar-io/ironstar-cli/internal/services/github"
 )
 
 var (
