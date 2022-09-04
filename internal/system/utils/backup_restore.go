@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/olekukonko/tablewriter"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
+	"github.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/types"
 )
 
 func DisplayRestoreComponentInfo(components []types.RestoreRequestResult) {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/services"
 
 	"github.com/olekukonko/tablewriter"
 )

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/fatih/color"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
+	"github.com/ironstar-io/ironstar-cli/internal/system/fs"
 )
 
 // CheckFilePermissions - Checks ~/.ironstar and ~/.ironstar/credentials.yml to ensure they have the correct permissions set

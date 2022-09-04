@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
+	"github.com/ironstar-io/ironstar-cli/internal/services"
 
 	"github.com/fatih/color"
 	"github.com/pkg/errors"

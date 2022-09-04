@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/console"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
+	"github.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/system/console"
+	"github.com/ironstar-io/ironstar-cli/internal/system/fs"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 
 	"github.com/pkg/errors"
 )

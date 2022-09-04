@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.com/ironstar-io/ironstar-cli/cmd/flags"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/console"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/tarball"
+	"github.com/ironstar-io/ironstar-cli/cmd/flags"
+	"github.com/ironstar-io/ironstar-cli/internal/system/console"
+	"github.com/ironstar-io/ironstar-cli/internal/system/fs"
+	"github.com/ironstar-io/ironstar-cli/internal/system/tarball"
 
 	uuid "github.com/satori/go.uuid"
 )

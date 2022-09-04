@@ -1,4 +1,4 @@
-module gitlab.com/ironstar-io/ironstar-cli
+module github.com/ironstar-io/ironstar-cli
 
 go 1.19
 

@@ -4,9 +4,9 @@ import (
 	"errors"
 	"strings"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/utils"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
+	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
+	"github.com/ironstar-io/ironstar-cli/internal/types"
 )
 
 func GetBackupName(args []string, backupName string) (string, error) {

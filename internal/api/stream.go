@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
+	"github.com/ironstar-io/ironstar-cli/internal/types"
 )
 
 type Stream struct {

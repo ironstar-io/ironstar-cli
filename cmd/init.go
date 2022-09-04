@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/api"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/services"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"

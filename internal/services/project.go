@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"gitlab.com/ironstar-io/ironstar-cli/internal/errs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/system/fs"
-	"gitlab.com/ironstar-io/ironstar-cli/internal/types"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
+	"github.com/ironstar-io/ironstar-cli/internal/system/fs"
+	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
 	"github.com/pkg/errors"

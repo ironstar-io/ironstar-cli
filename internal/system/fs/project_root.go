@@ -1,7 +1,7 @@
 package fs
 
 import (
-	"gitlab.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/constants"
 
 	"io/ioutil"
 	"log"
