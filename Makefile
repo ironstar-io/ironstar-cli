@@ -1,4 +1,4 @@
-VERSION_PATH ?= gitlab.com/ironstar-io/ironstar-cli/internal/system/version
+VERSION_PATH ?= github.com/ironstar-io/ironstar-cli/internal/system/version
 BUILD_DATE   ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 VERSION      ?= $(shell git describe --tags)
 GO_IMAGE     ?= golang:1.19
