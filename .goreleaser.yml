@@ -60,7 +60,4 @@ archives:
     format: binary
 
 release:
-  github:
-    owner: ironstar-io
-    name: ironstar-cli
   draft: true
