@@ -19,7 +19,7 @@ builds:
       - -X github.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
       - -X github.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
   - id: windows-amd64
-    binary: iron-windows-amd64.exe
+    binary: iron-windows-amd64
     goos:
       - windows
     goarch:
