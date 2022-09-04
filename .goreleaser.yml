@@ -1,0 +1,66 @@
+project_name: ironstar-cli
+builds:
+  - id: macos-amd64
+    binary: iron-macos-amd64
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    ldflags:
+      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
+      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+  - id: macos-arm64
+    binary: iron-macos-arm64
+    goos:
+      - darwin
+    goarch:
+      - arm64
+    ldflags:
+      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
+      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+  - id: windows-amd64
+    binary: iron-windows-amd64.exe
+    goos:
+      - windows
+    goarch:
+      - amd64
+    ldflags:
+      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
+      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+  - id: linux-amd64
+    binary: iron-linux-amd64
+    goos:
+      - linux
+    goarch:
+      - amd64
+    ldflags:
+      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
+      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+
+universal_binaries:
+-
+  ids:
+  - macos-amd64
+  - macos-arm64
+  replace: true
+  name_template: 'iron-macos'
+  hooks:
+    post: gon gon.hcl
+
+signs:
+  - signature: "${artifact}.dmg"
+    ids: ["macos-amd64", "macos-arm64"]
+    cmd: gon
+    args: ["gon.hcl"]
+    artifacts: all
+
+archives:
+  - id: binaries
+    builds: ["iron-macos"]
+    format: binary
+
+release:
+  github:
+    owner: ironstar-io
+    name: ironstar-cli
+  draft: true
