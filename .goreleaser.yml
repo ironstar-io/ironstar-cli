@@ -38,21 +38,11 @@ builds:
       - -X github.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
 
 universal_binaries:
--
-  ids:
-  - macos-amd64
-  - macos-arm64
-  replace: true
-  name_template: 'iron-macos'
-  hooks:
-    post: gon gon.hcl
-
-signs:
-  - signature: "${artifact}.dmg"
-    ids: ["macos-amd64", "macos-arm64"]
-    cmd: gon
-    args: ["gon.hcl"]
-    artifacts: all
+  - ids:
+      - macos-amd64
+      - macos-arm64
+    replace: true
+    name_template: "iron-macos"
 
 archives:
   - id: binaries
