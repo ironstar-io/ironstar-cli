@@ -7,8 +7,8 @@ builds:
     goarch:
       - amd64
     ldflags:
-      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
-      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
+      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
   - id: macos-arm64
     binary: iron-macos-arm64
     goos:
@@ -16,8 +16,8 @@ builds:
     goarch:
       - arm64
     ldflags:
-      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
-      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
+      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
   - id: windows-amd64
     binary: iron-windows-amd64.exe
     goos:
@@ -25,8 +25,8 @@ builds:
     goarch:
       - amd64
     ldflags:
-      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
-      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
+      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
   - id: linux-amd64
     binary: iron-linux-amd64
     goos:
@@ -34,8 +34,8 @@ builds:
     goarch:
       - amd64
     ldflags:
-      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
-      - -X gitlab.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
+      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
 
 universal_binaries:
 -
