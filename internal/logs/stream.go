@@ -11,7 +11,6 @@ import (
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
-	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -35,23 +34,25 @@ func Stream(args []string, flg flags.Accumulator) error {
 
 	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
 
-	cwLogStreams, err := api.GetEnvironmentLogStreams(creds, seCtx.Subscription.Alias, seCtx.Environment.Name)
-	if err != nil {
-		return err
-	}
+	// labelValues, err := api.GetEnvironmentLogLabelValues(creds, seCtx.Subscription.Alias, seCtx.Environment.Name, "filename")
+	// if err != nil {
+	// 	return err
+	// }
 
-	if len(cwLogStreams) == 0 {
-		return errors.New("There are no logs for this environment")
-	}
+	// if len(labelValues) == 0 {
+	// 	return errors.New("There are no logs for this environment")
+	// }
 
-	logStreams := calcTargetLogStreams(flg.LogStreams, cwLogStreams)
+	// logStreams := calcTargetLogStreams(flg.LogStreams)
 
-	if len(logStreams) == 0 {
-		return errors.New("There were no matching logs available for this environment")
-	}
+	// if len(logStreams) == 0 {
+	// 	return errors.New("There were no matching logs available for this environment")
+	// }
 
-	logStreamNames := calcLogStreamNames(logStreams)
-	startTime := calcStartTime(flg, logStreams)
+	// logStreamNames := calcLogStreamNames(logStreams)
+	var logStreamNames []string // TODO
+
+	startTime := calcStartTime(flg.Start)
 	endTime := calcEndTime(flg.End)
 
 	if !flags.Acc.Stream {
@@ -69,10 +70,10 @@ func Stream(args []string, flg flags.Accumulator) error {
 	if endTime != 0 && !flags.Acc.Stream {
 		fmt.Println("End Time: " + time.Unix(0, endTime*int64(time.Millisecond)).UTC().String())
 	}
-	fmt.Println("Log Streams: " + strings.Join(logStreamNames, ", "))
+	// fmt.Println("Log Streams: " + strings.Join(logStreamNames, ", "))
 	fmt.Println()
 
-	last, err := PrintArimaLogs(creds, seCtx, flg, startTime, endTime, logStreamNames)
+	last, err := PrintEnvironmentLogs(creds, seCtx, flg, startTime, endTime, logStreamNames)
 	if err != nil {
 		return err
 	}
@@ -89,7 +90,7 @@ func Stream(args []string, flg flags.Accumulator) error {
 			}
 
 			go func() {
-				newLast, err := PrintArimaLogs(creds, seCtx, flg, last, 0, logStreamNames)
+				newLast, err := PrintEnvironmentLogs(creds, seCtx, flg, last, 0, logStreamNames)
 				if err != nil {
 					os.Exit(1)
 				}
@@ -102,26 +103,28 @@ func Stream(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func calcStartTime(flags flags.Accumulator, availableLogStreams []types.CWLogStreamsResponse) int64 {
-	if flags.Start != 0 {
-		return int64(flags.Start)
+func calcStartTime(start int) int64 {
+	if start != 0 {
+		return int64(start)
 	}
 
-	if flags.Search != "" {
-		return 1
-	}
+	return 0
 
-	sort.SliceStable(availableLogStreams, func(i, j int) bool {
-		return availableLogStreams[i].LastEventTimestamp > availableLogStreams[j].LastEventTimestamp
-	})
+	// if flags.Search != "" {
+	// 	return 1
+	// }
 
-	s := availableLogStreams[0]
+	// sort.SliceStable(availableLogStreams, func(i, j int) bool {
+	// 	return availableLogStreams[i].LastEventTimestamp > availableLogStreams[j].LastEventTimestamp
+	// })
 
-	if s.LastEventTimestamp == 0 {
-		return time.Now().UTC().Add(time.Duration(-15*time.Minute)).UTC().UnixNano() / int64(time.Millisecond)
-	}
+	// s := availableLogStreams[0]
 
-	return time.Unix(0, s.LastEventTimestamp*int64(time.Millisecond)).Add(-2*time.Minute).UnixNano() / int64(time.Millisecond)
+	// if s.LastEventTimestamp == 0 {
+	// 	return time.Now().UTC().Add(time.Duration(-15*time.Minute)).UTC().UnixNano() / int64(time.Millisecond)
+	// }
+
+	// return time.Unix(0, s.LastEventTimestamp*int64(time.Millisecond)).Add(-2*time.Minute).UnixNano() / int64(time.Millisecond)
 }
 
 func formatLogTimestamp(ogTimestamp string) string {
@@ -145,19 +148,24 @@ func calcEndTime(endFlag int) int64 {
 	return int64(endFlag)
 }
 
-func calcTargetLogStreams(logStreamFlag []string, availableLogStreams []types.CWLogStreamsResponse) []types.CWLogStreamsResponse {
+func calcTargetLogStreams(logStreamFlag []string) []string {
 	if len(logStreamFlag) == 0 {
-		return availableLogStreams
+		return nil
 	}
 
-	var targetStreams []types.CWLogStreamsResponse
-	for _, ls := range availableLogStreams {
-		if utils.SliceIncludes(logStreamFlag, ls.LogStreamName) {
-			targetStreams = append(targetStreams, ls)
-		}
-	}
+	return logStreamFlag
+	// if len(logStreamFlag) == 0 {
+	// 	return availableLogStreams
+	// }
 
-	return targetStreams
+	// var targetStreams []types.CWLogStreamsResponse
+	// for _, ls := range availableLogStreams {
+	// 	if utils.SliceIncludes(logStreamFlag, ls.LogStreamName) {
+	// 		targetStreams = append(targetStreams, ls)
+	// 	}
+	// }
+
+	// return targetStreams
 }
 
 func calcLogStreamNames(availableLogStreams []types.CWLogStreamsResponse) []string {
@@ -169,7 +177,7 @@ func calcLogStreamNames(availableLogStreams []types.CWLogStreamsResponse) []stri
 	return streamNames
 }
 
-func RetrieveArimaLogs(creds types.Keylink, subAlias, envName, search string, start, end int64, logStreams []string) ([]types.CWLogResponse, error) {
+func RetrieveEnvironmentLogs(creds types.Keylink, subAlias, envName, search string, start, end int64, logStreams []string) (*types.CustomerLogsResponse, error) {
 	payload := map[string]interface{}{
 		"logStreamNames": logStreams,
 		"start":          start,
@@ -180,29 +188,30 @@ func RetrieveArimaLogs(creds types.Keylink, subAlias, envName, search string, st
 	return api.QueryEnvironmentLogs(creds, subAlias, envName, payload)
 }
 
-func PrintArimaLogs(creds types.Keylink, seCtx types.SubscriptionEnvironment, flags flags.Accumulator, start, end int64, logStreams []string) (int64, error) {
-	cwLogs, err := RetrieveArimaLogs(creds, seCtx.Subscription.Alias, seCtx.Environment.Name, flags.Search, start, end, logStreams)
+func PrintEnvironmentLogs(creds types.Keylink, seCtx types.SubscriptionEnvironment, flags flags.Accumulator, start, end int64, logStreams []string) (int64, error) {
+	custLogs, err := RetrieveEnvironmentLogs(creds, seCtx.Subscription.Alias, seCtx.Environment.Name, flags.Search, start, end, logStreams)
 	if err != nil {
 		return 0, err
 	}
 
-	if len(cwLogs) == 0 {
+	if custLogs == nil || len(custLogs.Results) == 0 {
 		return start, nil
 	}
 
-	StdoutArimaLogs(cwLogs)
+	StdoutEnvironmentLogs(custLogs.Results)
 
-	s := cwLogs[len(cwLogs)-1]
+	// s := custLogs.Results[len(custLogs.Results)-1]
 
-	return s.Timestamp + 1, nil
+	// return s.Values + 1, nil
+	return 1, nil // TODO
 }
 
-func StdoutArimaLogs(cwLogs []types.CWLogResponse) {
-	for _, cwLog := range cwLogs {
-		streamColor := streamNameColour(cwLog.LogStreamName)
-		logMsg := stringifyLog(cwLog.Log)
+func StdoutEnvironmentLogs(custLogs []types.CustomerLogsResult) {
+	for _, custLog := range custLogs[0].Values {
+		streamColor := streamNameColour(custLog[2])
+		// logMsg := stringifyLog(cwLog.Log)
 
-		fmt.Printf("%s%s%s\n", color.New(streamColor).SprintFunc()(streamNameWithPadding(cwLog.LogStreamName)), color.New(color.Faint).SprintFunc()(formatLogTimestamp(fmt.Sprintf("%v", cwLog.Log["tmst"]))+" | "), logMsg)
+		fmt.Printf("%s%s%s\n", color.New(streamColor).SprintFunc()(streamNameWithPadding(custLog[4])), color.New(color.Faint).SprintFunc()(formatLogTimestamp(fmt.Sprintf("%v", custLog[0]))+" | "), custLog[1])
 	}
 }
 
