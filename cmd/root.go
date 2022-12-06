@@ -49,7 +49,6 @@ func init() {
 	auth.AuthCmd.AddCommand(auth.ShowCmd)
 	auth.AuthCmd.AddCommand(auth.SetActiveCmd)
 	auth.AuthCmd.AddCommand(auth.MFACmd)
-	auth.MFACmd.AddCommand(auth.MFADisableCmd)
 	auth.MFACmd.AddCommand(auth.MFARecoveryCmd)
 
 	// `iron subscription x`
