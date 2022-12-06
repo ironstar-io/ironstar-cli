@@ -51,7 +51,16 @@ func Status(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	custLogs, err := logs.RetrieveEnvironmentLogs(creds, seCtx.Subscription.Alias, seCtx.Environment.Name, deployment.Name, utils.UnixMilliseconds(deployment.CreatedAt), utils.UnixMilliseconds(time.Now()), []string{"deploy.log"})
+	custLogs, err := logs.RetrieveEnvironmentLogs(
+		logs.RetrieveEnvironmentLogsParams{
+			Creds:    creds,
+			SubAlias: seCtx.Subscription.Alias,
+			EnvName:  seCtx.Environment.Name,
+			Search:   deployment.Name,
+			Start:    utils.UnixMilliseconds(deployment.CreatedAt),
+			End:      utils.UnixMilliseconds(time.Now()),
+			Sources:  []string{"deploy"},
+		})
 	if err != nil {
 		return err
 	}

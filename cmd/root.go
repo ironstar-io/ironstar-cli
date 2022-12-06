@@ -181,11 +181,11 @@ func RootCmd() *cobra.Command {
 	backup.ListCmd.PersistentFlags().StringVarP(&flags.Acc.BackupType, "backup-type", "", "", "Filter the backup types to return. Either 'manual' or 'scheduled'")
 	backup.InfoCmd.PersistentFlags().StringVarP(&flags.Acc.BackupType, "backup-type", "", "", "Filter the backup types to return. Either 'manual' or 'scheduled'")
 
-	logs.LogsCmd.PersistentFlags().StringArrayVarP(&flags.Acc.LogStreams, "log-stream", "", []string{}, "Supply a set of log stream names to display")
+	logs.LogsCmd.PersistentFlags().StringArrayVarP(&flags.Acc.Filenames, "filenames", "", []string{}, "Supply a set of filenames for which to display logs")
+	logs.LogsCmd.PersistentFlags().StringArrayVarP(&flags.Acc.Sources, "sources", "", []string{}, "Supply a set of sources for which to display logs")
 	logs.LogsCmd.PersistentFlags().StringVarP(&flags.Acc.Search, "search", "", "", "Return only logs that include a matching search string")
-	logs.LogsCmd.PersistentFlags().IntVarP(&flags.Acc.End, "end", "", 0, "The end time of the logs. Doesn't work for log streaming. Should be unix time in miliseconds. Defaults to now.")
-	logs.LogsCmd.PersistentFlags().IntVarP(&flags.Acc.Start, "start", "", 0, "The start time of the logs. Should be unix time in miliseconds. Defaults to 2 minutes prior to the last available log.")
-	logs.LogsCmd.PersistentFlags().BoolVarP(&flags.Acc.Stream, "stream", "f", false, "Stream logs instead of print and exit. Default false.")
+	logs.LogsCmd.PersistentFlags().Int64VarP(&flags.Acc.End, "end", "", 0, "The end time of the logs. Doesn't work for log streaming. Should be unix time in miliseconds. Defaults to now.")
+	logs.LogsCmd.PersistentFlags().Int64VarP(&flags.Acc.Start, "start", "", 0, "The start time of the logs. Should be unix time in miliseconds. Defaults to 2 minutes prior to the last available log.")
 
 	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
 	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")

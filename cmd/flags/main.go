@@ -23,10 +23,10 @@ type Accumulator struct {
 	BackupType        string
 	Limit             string
 	Offset            string
-	Start             int
-	End               int
-	LogStreams        []string
-	Stream            bool
+	Start             int64
+	End               int64
+	Filenames         []string
+	Sources           []string
 	Search            string
 	Deploy            string
 	Exclude           string

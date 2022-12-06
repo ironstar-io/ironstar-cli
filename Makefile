@@ -3,6 +3,18 @@ BUILD_DATE   ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 VERSION      ?= $(shell git describe --tags)
 GO_IMAGE     ?= golang:1.19
 
+DOCKER_SCRIPT=docker run --rm \
+		-v $(PWD)/.cache/go:/.cache \
+		-v $(PWD):/src \
+		-e GOCACHE=/.cache/go-build \
+		-e GOMODCACHE=/.cache/go-mod \
+		-e IRONSTAR_API_ADDRESS=https://nankai-dev:8443 \
+		-e IRONSTAR_ARIMA_API_ADDRESS=http://arima:8000 \
+		--network nankai_nankai \
+		-w /src \
+		-it \
+		$(GO_IMAGE) \
+
 build:
 	time \
 	go build \
@@ -50,25 +62,20 @@ build-arm:
 	-X $(VERSION_PATH).version=$(VERSION) \
 	" -o ./dist/iron-macos-arm64
 
+.PHONY: docker-run
+docker-run: ## Run a CLI command in Docker, exiting immediately
+docker-run:
+	$(DOCKER_SCRIPT) --rm /bin/bash -c "go run main.go $(CMD)"
 
-.PHONY: exec-docker
-exec-docker: ## Run a CLI command in Docker
-exec-docker:
-	@docker run --rm \
-		-v $(PWD)/.cache/go:/.cache \
-		-v $(PWD):/src \
-		-e GOCACHE=/.cache/go-build \
-		-e GOMODCACHE=/.cache/go-mod \
-		-e IRONSTAR_API_ADDRESS=https://nankai-dev:8443 \
-		-e IRONSTAR_ARIMA_API_ADDRESS=http://arima:8000 \
-		--network nankai_nankai \
-		-w /src \
-		-it \
-		$(GO_IMAGE) \
-		/bin/bash -c "go run main.go $(CMD)"
+.PHONY: docker-exec
+docker-exec:
+docker-exec:
+	$(DOCKER_SCRIPT) /bin/bash
 
-test:
-	ginkgo test ./...
+.PHONY: docker-test
+docker-test:
+docker-test:
+	$(DOCKER_SCRIPT) go test ./...
 
 clean:
 	rm -rf ./dist/*
