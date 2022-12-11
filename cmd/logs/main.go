@@ -21,7 +21,7 @@ var LogsCmd = &cobra.Command{
 }
 
 func streamLogs(cmd *cobra.Command, args []string) {
-	err := logs.Stream(args, flags.Acc)
+	err := logs.Display(args, flags.Acc)
 	if err != nil {
 		if err != api.ErrIronstarAPICall {
 			fmt.Println()

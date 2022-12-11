@@ -263,10 +263,44 @@ type CWLogResponse struct {
 	Log           map[string]interface{} `json:"log,omitempty" yaml:"log,omitempty"`
 }
 
+// LogQueryRequest ...
+type LogQueryRequest struct {
+	Sources   []string  `json:"sources,omitempty" yaml:"sources,omitempty"`
+	Filenames []string  `json:"filenames,omitempty" yaml:"filenames,omitempty"`
+	Search    string    `json:"search,omitempty" yaml:"search,omitempty"`
+	Direction string    `json:"direction,omitempty" yaml:"direction,omitempty"`
+	Output    string    `json:"output,omitempty" yaml:"output,omitempty"`
+	Limit     int       `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Start     time.Time `json:"start,omitempty" yaml:"start,omitempty"`
+	End       time.Time `json:"end,omitempty" yaml:"end,omitempty"`
+}
+
+type CustomerLogsResponse struct {
+	Results []CustomerLogsResult `json:"results" yaml:"results,omitempty"`
+}
+
+type CustomerLogsResult struct {
+	Stream CustomerLogsStream `json:"stream" yaml:"stream,omitempty"`
+	Values [][]string         `json:"values" yaml:"values,omitempty"`
+}
+
+type CustomerLogsStream struct {
+	Subscription string `json:"subscription" yaml:"subscription,omitempty"`
+	Environment  string `json:"environment" yaml:"environment,omitempty"`
+	Filename     string `json:"filename,omitempty" yaml:"filename,omitempty"`
+	Source       string `json:"source,omitempty" yaml:"source,omitempty"`
+	Pod          string `json:"pod,omitempty" yaml:"pod,omitempty"`
+}
+
 // CWLogStreamsResponse ...
 type CWLogStreamsResponse struct {
 	LastEventTimestamp int64  `json:"lastEventTimestamp,omitempty" yaml:"lastEventTimestamp,omitempty"`
 	LogStreamName      string `json:"logStreamName,omitempty" yaml:"logStreamName,omitempty"`
+}
+
+// LogLabelValuesResponse ...
+type LogLabelValuesResponse struct {
+	Result []string `json:"result,omitempty" yaml:"result,omitempty"`
 }
 
 // UploadResponse

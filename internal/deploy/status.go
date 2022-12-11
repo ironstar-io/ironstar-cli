@@ -51,12 +51,21 @@ func Status(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	cwLogs, err := logs.RetrieveArimaLogs(creds, seCtx.Subscription.Alias, seCtx.Environment.Name, deployment.Name, utils.UnixMilliseconds(deployment.CreatedAt), utils.UnixMilliseconds(time.Now()), []string{"deploy.log"})
+	custLogs, err := logs.RetrieveEnvironmentLogs(
+		logs.RetrieveEnvironmentLogsParams{
+			Creds:    creds,
+			SubAlias: seCtx.Subscription.Alias,
+			EnvName:  seCtx.Environment.Name,
+			Search:   deployment.Name,
+			Start:    utils.UnixMilliseconds(deployment.CreatedAt),
+			End:      utils.UnixMilliseconds(time.Now()),
+			Sources:  []string{"deploy"},
+		})
 	if err != nil {
 		return err
 	}
 
-	if len(cwLogs) == 0 {
+	if custLogs == nil || len(custLogs.Results) == 0 {
 		if seCtx.Environment.LogRetention != 0 && deployment.CreatedAt.Before(time.Now().UTC().Add(time.Duration(time.Duration(-seCtx.Environment.LogRetention*24)*time.Hour)).UTC()) {
 			fmt.Println()
 			fmt.Println("The log for this deployment is no longer available. Logs in your " + seCtx.Environment.Name + " environment are retained for " + strconv.Itoa(int(seCtx.Environment.LogRetention)) + " days.")
@@ -71,7 +80,7 @@ func Status(args []string, flg flags.Accumulator) error {
 	}
 
 	fmt.Println()
-	logs.StdoutArimaLogs(cwLogs)
+	logs.StdoutEnvironmentLogs(custLogs.Results)
 
 	return nil
 }
