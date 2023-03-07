@@ -36,6 +36,7 @@ func List(args []string, flg flags.Accumulator) error {
 	color.Green("Using login [" + creds.Login + "] for subscription <" + sub.Alias + ">")
 
 	req := &api.Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",

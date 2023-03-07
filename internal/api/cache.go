@@ -5,12 +5,14 @@ import (
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"encoding/json"
+
 	"github.com/pkg/errors"
 )
 
 func GetEnvironmentCacheInvalidations(creds types.Keylink, subHashOrAlias, envHashOrAlias string) ([]types.CacheInvalidation, error) {
 	empty := []types.CacheInvalidation{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -39,6 +41,7 @@ func GetEnvironmentCacheInvalidations(creds types.Keylink, subHashOrAlias, envHa
 func GetEnvironmentCacheInvalidation(creds types.Keylink, subHashOrAlias, envHashOrAlias, invalidationName string) (types.CacheInvalidation, error) {
 	empty := types.CacheInvalidation{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -67,6 +70,7 @@ func GetEnvironmentCacheInvalidation(creds types.Keylink, subHashOrAlias, envHas
 func PostEnvironmentCacheInvalidation(creds types.Keylink, subHashOrAlias, envHashOrAlias string) (types.CacheInvalidation, error) {
 	empty := types.CacheInvalidation{}
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "POST",

@@ -12,6 +12,7 @@ import (
 func PostSyncRequest(creds types.Keylink, payload types.PostSyncRequestParams) (types.SyncRequest, error) {
 	empty := types.SyncRequest{}
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "POST",
@@ -45,6 +46,7 @@ func PostSyncRequest(creds types.Keylink, payload types.PostSyncRequestParams) (
 func PostSyncRequestUseLatestBackup(creds types.Keylink, payload types.PostSyncRequestParams) (types.RestoreRequest, error) {
 	empty := types.RestoreRequest{}
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "POST",
@@ -78,6 +80,7 @@ func PostSyncRequestUseLatestBackup(creds types.Keylink, payload types.PostSyncR
 func GetSubscriptionSync(creds types.Keylink, subAliasOrHashedID, syncName string) (types.SyncRequest, error) {
 	empty := types.SyncRequest{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -106,6 +109,7 @@ func GetSubscriptionSync(creds types.Keylink, subAliasOrHashedID, syncName strin
 func GetSubscriptionSyncRequests(creds types.Keylink, subAliasOrHashedID string) ([]types.SyncRequest, error) {
 	empty := []types.SyncRequest{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",

@@ -14,6 +14,7 @@ import (
 func GetSubscriptionEnvironments(creds types.Keylink, hashOrAlias string) ([]types.Environment, error) {
 	empty := []types.Environment{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -42,6 +43,7 @@ func GetSubscriptionEnvironments(creds types.Keylink, hashOrAlias string) ([]typ
 func GetSubscriptionEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAlias string) (types.Environment, error) {
 	empty := types.Environment{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -69,6 +71,7 @@ func GetSubscriptionEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAl
 
 func PatchEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAlias, restorePermission string) error {
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "PATCH",
@@ -92,6 +95,7 @@ func PatchEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAlias, resto
 
 func PostEnvironmentHook(creds types.Keylink, subHashOrAlias, envHashOrAlias, hookName string) error {
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "POST",
@@ -115,6 +119,7 @@ func PostEnvironmentHook(creds types.Keylink, subHashOrAlias, envHashOrAlias, ho
 
 func DeleteEnvironmentHook(creds types.Keylink, subHashOrAlias, envHashOrAlias, hookName string) error {
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "DELETE",

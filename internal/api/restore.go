@@ -12,6 +12,7 @@ import (
 func PostRestoreRequest(creds types.Keylink, payload types.PostRestoreRequestParams) (types.RestoreRequest, error) {
 	empty := types.RestoreRequest{}
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "POST",
@@ -45,6 +46,7 @@ func PostRestoreRequest(creds types.Keylink, payload types.PostRestoreRequestPar
 func GetSubscriptionRestoreIterations(creds types.Keylink, subAliasOrHashedID string) ([]types.RestoreRequest, error) {
 	empty := []types.RestoreRequest{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -73,6 +75,7 @@ func GetSubscriptionRestoreIterations(creds types.Keylink, subAliasOrHashedID st
 func GetEnvironmentRestoreIterations(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string) ([]types.RestoreRequest, error) {
 	empty := []types.RestoreRequest{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -101,6 +104,7 @@ func GetEnvironmentRestoreIterations(creds types.Keylink, subAliasOrHashedID, en
 func GetEnvironmentRestore(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, restoreName string) (types.RestoreRequest, error) {
 	empty := types.RestoreRequest{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",

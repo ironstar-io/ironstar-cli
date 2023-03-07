@@ -58,6 +58,7 @@ func Logout(args []string, flg flags.Accumulator) error {
 
 func postLogout(creds types.Keylink) (*api.RawResponse, error) {
 	req := &api.Request{
+		Retries:          3,
 		RunTokenRefresh:  false,
 		Credentials:      creds,
 		Method:           "POST",

@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/dustin/go-humanize"
@@ -24,6 +25,7 @@ type Request struct {
 	URL              string
 	MapStringPayload map[string]interface{}
 	BytePayload      []byte
+	Retries          int
 }
 
 const IronstarProductionAPIDomain = "https://api.ironstar.io"
@@ -93,7 +95,17 @@ func (r *Request) NankaiSend() (*RawResponse, error) {
 
 	r.URL = GetNankaiBaseURL() + r.Path
 
-	return r.HTTPSend()
+	res, err := retryHTTPWithExpBackoff(
+		func() (*RawResponse, error) {
+			return r.HTTPSend()
+		}, r.Retries)
+	if err != nil {
+		debugLogs(r.URL, r.Retries, err)
+
+		return nil, errors.New(errs.IronstarAPIConnectionErrorMsg)
+	}
+
+	return res, nil
 }
 
 // ArimaSend - Make a HTTP request to the Ironstar upload/download API (ARIMA)
@@ -105,7 +117,17 @@ func (r *Request) ArimaSend() (*RawResponse, error) {
 
 	r.URL = GetArimaBaseURL() + r.Path
 
-	return r.HTTPSend()
+	res, err := retryHTTPWithExpBackoff(
+		func() (*RawResponse, error) {
+			return r.HTTPSend()
+		}, r.Retries)
+	if err != nil {
+		debugLogs(r.URL, r.Retries, err)
+
+		return nil, errors.New(errs.IronstarAPIConnectionErrorMsg)
+	}
+
+	return res, nil
 }
 
 // ArimaSend - Make a HTTP request to the Ironstar upload/download API (ARIMA)
@@ -117,7 +139,17 @@ func (r *Request) ArimaDownload(filepath, friendlyName string) (*RawResponse, er
 
 	r.URL = GetArimaBaseURL() + r.Path
 
-	return r.HTTPSDownload(filepath, friendlyName)
+	res, err := retryHTTPWithExpBackoff(
+		func() (*RawResponse, error) {
+			return r.HTTPSDownload(filepath, friendlyName)
+		}, r.Retries)
+	if err != nil {
+		debugLogs(r.URL, r.Retries, err)
+
+		return nil, errors.New(errs.IronstarAPIConnectionErrorMsg)
+	}
+
+	return res, nil
 }
 
 func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, error) {
@@ -162,7 +194,7 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 
 	if resp.StatusCode > 399 {
 		if resp != nil && resp.Body != nil {
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err := io.ReadAll(resp.Body)
 			if err != nil {
 				return nil, err
 			}
@@ -230,7 +262,7 @@ func (r *Request) HTTPSend() (*RawResponse, error) {
 
 	var bodyBytes []byte
 	if resp != nil && resp.Body != nil {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
 		}

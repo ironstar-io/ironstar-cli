@@ -12,6 +12,7 @@ import (
 
 func QueryEnvironmentLogs(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string, payload map[string]interface{}) (*types.CustomerLogsResponse, error) {
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "POST",
@@ -39,6 +40,7 @@ func QueryEnvironmentLogs(creds types.Keylink, subAliasOrHashedID, envNameOrHash
 
 func GetEnvironmentLogStreams(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string) ([]types.CWLogStreamsResponse, error) {
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -66,6 +68,7 @@ func GetEnvironmentLogStreams(creds types.Keylink, subAliasOrHashedID, envNameOr
 
 func GetEnvironmentLogLabelValues(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, label string) ([]string, error) {
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",

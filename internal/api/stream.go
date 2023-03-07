@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/tls"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -17,7 +16,7 @@ type Stream struct {
 	RunTokenRefresh bool
 	Credentials     types.Keylink
 	Method          string
-	Path            string
+	URL             string
 	FilePath        string
 	Payload         map[string]string
 }
@@ -72,8 +71,7 @@ func (s *Stream) Send() (*RawResponse, error) {
 		return nil, err
 	}
 
-	url := GetBaseUploadURL() + s.Path
-	req, err := http.NewRequest(s.Method, url, body)
+	req, err := http.NewRequest(s.Method, s.URL, body)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +88,7 @@ func (s *Stream) Send() (*RawResponse, error) {
 
 	var bodyBytes []byte
 	if resp != nil && resp.Body != nil {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
 		}

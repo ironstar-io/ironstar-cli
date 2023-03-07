@@ -44,6 +44,7 @@ func retrieveAndDisplayEnvDeployments(creds types.Keylink, flg flags.Accumulator
 
 	qs := services.BuildQSFilters(flg, "10")
 	req := &api.Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -83,6 +84,7 @@ func retrieveAndDisplaySubDeployments(creds types.Keylink, flg flags.Accumulator
 
 	qs := services.BuildQSFilters(flg, "10")
 	req := &api.Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",

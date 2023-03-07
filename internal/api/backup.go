@@ -13,6 +13,7 @@ import (
 func PostBackupRequest(creds types.Keylink, payload types.PostBackupRequestParams) (types.BackupRequest, error) {
 	empty := types.BackupRequest{}
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "POST",
@@ -45,6 +46,7 @@ func PostBackupRequest(creds types.Keylink, payload types.PostBackupRequestParam
 
 func DeleteBackup(creds types.Keylink, payload types.DeleteBackupParams) error {
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "DELETE",
@@ -72,6 +74,7 @@ func GetSubscriptionBackupIterations(creds types.Keylink, subAliasOrHashedID, ba
 
 	empty := []types.BackupIteration{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -99,6 +102,7 @@ func GetSubscriptionBackupIterations(creds types.Keylink, subAliasOrHashedID, ba
 
 func DownloadEnvironmentBackupComponent(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, backupName, savePath string, buComp types.BackupIterationComponent) error {
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -126,6 +130,7 @@ func GetEnvironmentBackupIterations(creds types.Keylink, subAliasOrHashedID, env
 
 	empty := []types.BackupIteration{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -154,6 +159,7 @@ func GetEnvironmentBackupIterations(creds types.Keylink, subAliasOrHashedID, env
 func GetLatestEnvironmentBackupIteration(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string) (types.BackupIteration, error) {
 	empty := types.BackupIteration{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -182,6 +188,7 @@ func GetLatestEnvironmentBackupIteration(creds types.Keylink, subAliasOrHashedID
 func GetEnvironmentBackup(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, backupName, errorOutput string) (types.Backup, error) {
 	empty := types.Backup{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -213,6 +220,7 @@ func GetEnvironmentBackup(creds types.Keylink, subAliasOrHashedID, envNameOrHash
 func GetSubscriptionBackup(creds types.Keylink, subAliasOrHashedID, backupName, errorOutput string) (types.Backup, error) {
 	empty := types.Backup{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",

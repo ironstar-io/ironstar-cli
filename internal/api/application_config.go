@@ -9,6 +9,7 @@ import (
 
 func PutNewRelicApplicationConfig(creds types.Keylink, subId, envId string, payload types.PutNewRelicParams) error {
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "PUT",

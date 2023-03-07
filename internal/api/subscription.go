@@ -11,12 +11,14 @@ import (
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"encoding/json"
+
 	"github.com/pkg/errors"
 )
 
 func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscription, error) {
 	empty := types.Subscription{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -45,6 +47,7 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 func GetUserSubscriptions(creds types.Keylink) ([]types.UserAccessResponse, error) {
 	empty := []types.UserAccessResponse{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
