@@ -27,6 +27,7 @@ func MFAEnable(flg flags.Accumulator, creds types.Keylink, email string) (*types
 	}
 
 	req := &api.Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "POST",

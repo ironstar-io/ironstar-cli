@@ -70,6 +70,10 @@ const (
 	NoEnvironmentFlagSupplied = "An environment flag must be supplied for this command with `--env=[env-name]`"
 
 	UnexpectedErrorMsg = "An unexpected error occurred"
+
+	UploadFailedErrorMsg = "An unexpected error occurred during upload"
+
+	IronstarAPIConnectionErrorMsg = "Unable to connect to the Ironstar API. Please try again later"
 )
 
 var NoCredentialMatch = errors.New("There are no credentials available for the supplied email")

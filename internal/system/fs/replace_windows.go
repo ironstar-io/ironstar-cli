@@ -1,3 +1,4 @@
+//go:build windows
 // +build windows
 
 package fs
@@ -5,7 +6,6 @@ package fs
 import (
 	"fmt"
 	iofs "io/fs"
-	"io/ioutil"
 	"os"
 )
 
@@ -18,7 +18,7 @@ func Replace(path string, body []byte, octal iofs.FileMode) {
 		return
 	}
 
-	err = ioutil.WriteFile(path, body, 0)
+	err = os.WriteFile(path, body, 0)
 	if err != nil {
 		fmt.Println("There was an issue replacing file contents: ", err)
 	}

@@ -5,6 +5,7 @@ import (
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"encoding/json"
+
 	"github.com/pkg/errors"
 )
 
@@ -16,6 +17,7 @@ func GetEnvironmentAntivirusScans(creds types.Keylink, subHashOrAlias, envHashOr
 		Method:           "GET",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/antivirus-scans",
 		MapStringPayload: map[string]interface{}{},
+		Retries:          3,
 	}
 
 	res, err := req.NankaiSend()

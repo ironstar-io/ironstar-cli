@@ -31,7 +31,7 @@ func IronstarAPILogin(args []string, flg flags.Accumulator) error {
 
 	res, err := postLogin(email, password, flg.LockSessionToIP)
 	if err != nil {
-		return errors.Wrap(err, errs.APILoginErrorMsg)
+		return err
 	}
 
 	c, err := loginRedirectChecks(flg, res.Body, email)
@@ -84,6 +84,7 @@ func IronstarAPILogin(args []string, flg flags.Accumulator) error {
 
 func postLogin(email, password string, lockSessionToIP bool) (*api.RawResponse, error) {
 	req := &api.Request{
+		Retries:         3,
 		RunTokenRefresh: false,
 		Credentials:     types.Keylink{},
 		Method:          "POST",
@@ -109,6 +110,7 @@ func postLogin(email, password string, lockSessionToIP bool) (*api.RawResponse, 
 
 func postMFAValidate(MFAAuthToken, passcode string) (*api.RawResponse, error) {
 	req := &api.Request{
+		Retries:         3,
 		RunTokenRefresh: false,
 		Credentials: types.Keylink{
 			AuthToken: MFAAuthToken,
@@ -200,6 +202,7 @@ func resetUserPassword(flg flags.Accumulator, email, PWResetAuthToken, mfaStatus
 	}
 
 	req := &api.Request{
+		Retries:         3,
 		RunTokenRefresh: false,
 		Credentials: types.Keylink{
 			AuthToken: PWResetAuthToken,
@@ -226,7 +229,7 @@ func resetUserPassword(flg flags.Accumulator, email, PWResetAuthToken, mfaStatus
 
 	lres, err := postLogin(email, password, flg.LockSessionToIP)
 	if err != nil {
-		return nil, errors.Wrap(err, errs.APILoginErrorMsg)
+		return nil, err
 	}
 
 	b := &types.AuthResponseBody{}

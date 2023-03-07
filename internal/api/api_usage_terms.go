@@ -17,6 +17,7 @@ func GetCurrentAPIUsageTerms() (types.APIUsageTerms, error) {
 		Method:           "GET",
 		Path:             "/api-usage-terms",
 		MapStringPayload: map[string]interface{}{},
+		Retries:          3,
 	}
 
 	res, err := req.NankaiSend()
@@ -39,6 +40,7 @@ func GetCurrentAPIUsageTerms() (types.APIUsageTerms, error) {
 
 func PostAcceptAPIUsageTerms(authToken string) (*RawResponse, error) {
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: false,
 		Credentials: types.Keylink{
 			AuthToken: authToken,

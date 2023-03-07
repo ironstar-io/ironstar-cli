@@ -12,6 +12,7 @@ import (
 func GetDeployment(creds types.Keylink, deployID string) (types.Deployment, error) {
 	empty := types.Deployment{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -40,6 +41,7 @@ func GetDeployment(creds types.Keylink, deployID string) (types.Deployment, erro
 func GetDeploymentActivity(creds types.Keylink, deployID string) ([]types.DeploymentActivityResponse, error) {
 	empty := []types.DeploymentActivityResponse{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",

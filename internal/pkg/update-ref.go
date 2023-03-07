@@ -40,6 +40,7 @@ func UpdateRef(args []string, flg flags.Accumulator) error {
 	}
 
 	req := &api.Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "PUT",

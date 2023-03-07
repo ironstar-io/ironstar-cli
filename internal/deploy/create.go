@@ -54,6 +54,7 @@ func Create(args []string, flg flags.Accumulator) error {
 	}
 
 	req := &api.Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "POST",
@@ -98,6 +99,7 @@ func Create(args []string, flg flags.Accumulator) error {
 
 func checkOperatingEnvironment(flg flags.Accumulator, creds types.Keylink, subID, envID string) error {
 	req := &api.Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "GET",

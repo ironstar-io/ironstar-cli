@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/system/console"
@@ -29,14 +31,19 @@ Please proceed with caution.
 		`)
 	}
 
-	wo := console.SpinStart("Uploading package")
+	if flg.CustomPackage == "" {
+		// Remove the tarball, regardless of the result. (not for custom packages)
+		defer fs.Remove(tarpath)
+	}
+
+	retries := 2
 
 	req := &Stream{
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "POST",
 		FilePath:        tarpath,
-		Path:            "/upload/subscription/" + subHash,
+		URL:             fmt.Sprintf("%s/upload/subscription/%s", GetBaseUploadURL(), subHash),
 		Payload: map[string]string{
 			"ref":        flg.Ref,
 			"branch":     flg.Branch,
@@ -46,24 +53,27 @@ Please proceed with caution.
 		},
 	}
 
-	res, err := req.Send()
+	res, err := retryHTTPWithExpBackoff(
+		func() (*RawResponse, error) {
+			wo := console.SpinStart("Uploading package")
+			res, err := req.Send()
+			if err != nil {
+				console.SpinPersist(wo, "⛔", "There was an error while uploading the package\n")
+				return nil, err
+			}
 
-	if flg.CustomPackage == "" {
-		// Remove the tarball, regardless of the result. (not for custom packages)
-		fs.Remove(tarpath)
-	}
-
+			console.SpinPersist(wo, "💾", "Package upload completed successfully!\n")
+			return res, nil
+		}, retries)
 	if err != nil {
-		console.SpinPersist(wo, "⛔", "There was an error while uploading your package\n")
-		return nil, errors.Wrap(err, errs.APISubListErrorMsg)
+		debugLogs(req.URL, retries, err)
+
+		return nil, errors.Wrap(err, errs.UploadFailedErrorMsg)
 	}
 
 	if res.StatusCode != 200 {
-		console.SpinPersist(wo, "⛔", "There was an error while uploading your package\n")
 		return nil, res.HandleFailure()
 	}
-
-	console.SpinPersist(wo, "💾", "Package upload completed successfully!\n")
 
 	return res, nil
 }

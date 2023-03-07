@@ -3,13 +3,12 @@ package fs
 import (
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 )
 
 // TouchByteArray ...
 func TouchByteArray(path string, body []byte, octal fs.FileMode) error {
-	if err := ioutil.WriteFile(path, body, octal); err != nil {
+	if err := os.WriteFile(path, body, octal); err != nil {
 		fmt.Println("There was an error creating a file: ", err)
 		return err
 	}

@@ -1,7 +1,7 @@
 package services
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/ironstar-io/ironstar-cli/internal/system/fs"
@@ -19,7 +19,7 @@ func ReadInProjectConfig(projectRoot string) (types.ProjectConfig, error) {
 		return projConf, err
 	}
 
-	pBytes, err := ioutil.ReadFile(py)
+	pBytes, err := os.ReadFile(py)
 	if err != nil {
 		return projConf, err
 	}
@@ -41,7 +41,7 @@ func ReadInCredentials() (types.Credentials, error) {
 		return empty, err
 	}
 
-	cBytes, err := ioutil.ReadFile(cp)
+	cBytes, err := os.ReadFile(cp)
 	if err != nil {
 		return empty, err
 	}

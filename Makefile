@@ -65,7 +65,7 @@ build-arm:
 .PHONY: docker-run
 docker-run: ## Run a CLI command in Docker, exiting immediately
 docker-run:
-	$(DOCKER_SCRIPT) --rm /bin/bash -c "go run main.go $(CMD)"
+	$(DOCKER_SCRIPT) /bin/bash -c "go run main.go $(CMD)"
 
 .PHONY: docker-exec
 docker-exec:

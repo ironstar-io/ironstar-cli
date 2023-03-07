@@ -3,7 +3,6 @@ package fs
 import (
 	"github.com/ironstar-io/ironstar-cli/internal/constants"
 
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -25,7 +24,7 @@ func ProjectRoot() string {
 
 // IsProjectRoot ...
 func IsProjectRoot(path string) bool {
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
 	}

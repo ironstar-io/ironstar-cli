@@ -5,12 +5,14 @@ import (
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"encoding/json"
+
 	"github.com/pkg/errors"
 )
 
 func GetEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias string) ([]types.EnvVars, error) {
 	empty := []types.EnvVars{}
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
@@ -38,6 +40,7 @@ func GetEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias s
 
 func PostEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias, key, value, varType string) error {
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "POST",
@@ -63,6 +66,7 @@ func PostEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias,
 
 func PatchEnvironmentEnvVar(creds types.Keylink, subHashOrAlias, envHashOrAlias, key, value, varType string) error {
 	req := &Request{
+		Retries:         3,
 		RunTokenRefresh: true,
 		Credentials:     creds,
 		Method:          "PATCH",
@@ -87,6 +91,7 @@ func PatchEnvironmentEnvVar(creds types.Keylink, subHashOrAlias, envHashOrAlias,
 
 func DeleteEnvironmentEnvVar(creds types.Keylink, subHashOrAlias, envHashOrAlias, key string) error {
 	req := &Request{
+		Retries:          3,
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "DELETE",
