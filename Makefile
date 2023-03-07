@@ -24,7 +24,7 @@ build:
 	-X $(VERSION_PATH).version=$(VERSION) \
 	" -o ./dist/iron
 
-build-all: build-macos build-arm build-windows build-linux
+build-all: build-macos-amd64 build-macos-arm64 build-windows build-linux-amd64 build-linux-arm64
 
 build-windows:
 	env GOOS=windows GOARCH=amd64 \
@@ -35,7 +35,7 @@ build-windows:
 	-X $(VERSION_PATH).version=$(VERSION) \
 	" -o ./dist/iron-windows.exe
 
-build-linux:
+build-linux-amd64:
 	env GOOS=linux GOARCH=amd64 \
 	go build \
 	-trimpath \
@@ -44,7 +44,16 @@ build-linux:
 	-X $(VERSION_PATH).version=$(VERSION) \
 	" -o ./dist/iron-linux-amd64
 
-build-macos:
+build-linux-arm64:
+	env GOOS=linux GOARCH=arm64 \
+	go build \
+	-trimpath \
+	-ldflags "\
+	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
+	-X $(VERSION_PATH).version=$(VERSION) \
+	" -o ./dist/iron-linux-arm64
+
+build-macos-amd64:
 	env GOOS=darwin GOARCH=amd64 \
 	go build \
 	-trimpath \
@@ -53,7 +62,7 @@ build-macos:
 	-X $(VERSION_PATH).version=$(VERSION) \
 	" -o ./dist/iron-macos
 
-build-arm:
+build-macos-arm64:
 	env GOOS=darwin GOARCH=arm64 \
 	go build \
 	-trimpath \
@@ -80,4 +89,4 @@ docker-test:
 clean:
 	rm -rf ./dist/*
 
-.PHONY: build build-windows build-linux build-macos build-arm test clean
+.PHONY: build build-windows build-linux-arm64 build-linux-amd-64 build-macos-amd64 build-macos-arm64 test clean
