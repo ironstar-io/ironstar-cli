@@ -52,7 +52,7 @@ func Status(args []string, flg flags.Accumulator) error {
 	}
 	fmt.Printf("Timeout: %s\n", time.Duration(rc.Timeout)*time.Second)
 	fmt.Printf("Environment Variables: %s\n", rc.EnvironmentVariables)
-
+	fmt.Println()
 	fmt.Printf("Creator: %s (%s)\n", rc.Creator.Name, rc.Creator.Kind)
 	fmt.Printf("Created At: %s\n", rc.CreatedAt.Format(time.RFC3339))
 
