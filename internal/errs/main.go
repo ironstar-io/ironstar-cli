@@ -53,6 +53,10 @@ const (
 
 	APIGetEnvironmentVariablesErrorMsg = "Failed to get environment variables"
 
+	APIGetRemoteCommandsErrorMsg = "Failed to get remote commands"
+
+	APIPostRemoteCommandsErrorMsg = "Failed to create remote command"
+
 	APIPostEnvironmentVariableErrorMsg = "Failed to add new environment variable"
 
 	APIPostCacheInvalidationErrorMsg = "Failed to create cache invalidation"

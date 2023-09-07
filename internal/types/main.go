@@ -164,6 +164,38 @@ type EnvVars struct {
 	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
 
+type RemoteCommandResponse struct {
+	HashedId             string                             `json:"remote_command_id" yaml:"remote_command_id"`
+	Name                 string                             `json:"name" yaml:"name"`
+	Command              string                             `json:"command" yaml:"command"`
+	WorkDir              string                             `json:"work_dir" yaml:"work_dir"`
+	Timeout              int                                `json:"timeout" yaml:"timeout"`
+	EnvironmentVariables []RemoteCommandEnvironmentVariable `json:"environment_variables" yaml:"environment_variables"`
+	Status               CommandStatus                      `json:"status" yaml:"status"`
+	Creator              RemoteCommandCreator               `json:"creator" yaml:"creator"`
+	CreatedAt            time.Time                          `json:"created_at" yaml:"created_at"`
+}
+
+type RemoteCommandEnvironmentVariable struct {
+	Key   string `json:"key" yaml:"key"`
+	Value string `json:"value" yaml:"value"`
+}
+
+type CommandStatus struct {
+	Lifecycle        string    `json:"lifecycle" yaml:""`
+	CancellationTime time.Time `json:"cancellationTime" yaml:"cancellationTime"`
+	ExecutionStart   time.Time `json:"executionStart" yaml:"executionStart"`
+	ExecutionEnd     time.Time `json:"executionEnd" yaml:"executionEnd"`
+	Error            string    `json:"error" yaml:"error"`
+}
+
+type RemoteCommandCreator struct {
+	Kind      string `json:"kind"`
+	TokenType string `json:"token_type,omitempty"`
+	Name      string `json:"name"`
+	HashedId  string `json:"hashed_id"`
+}
+
 type CacheInvalidation struct {
 	Name      string    `json:"name,omitempty" yaml:"name,omitempty"`
 	Status    string    `json:"status,omitempty" yaml:"status,omitempty"`
