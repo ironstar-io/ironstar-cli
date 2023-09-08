@@ -96,6 +96,22 @@ func init() {
 	remote_command.RemoteCommandCmd.AddCommand(remote_command.DrushCmd)
 	remote_command.RemoteCommandCmd.AddCommand(remote_command.ShellCmd)
 
+	// `iron rc x` alias (hidden)
+	rootCmd.AddCommand(remote_command.RCCmd)
+	remote_command.RCCmd.AddCommand(remote_command.ListCmd)
+	remote_command.RCCmd.AddCommand(remote_command.StatusCmd)
+	remote_command.RCCmd.AddCommand(remote_command.DrushCacheRebuildCmd)
+	remote_command.RCCmd.AddCommand(remote_command.DrushCmd)
+	remote_command.RCCmd.AddCommand(remote_command.ShellCmd)
+
+	// `iron remote-commands x` alias (hidden)
+	rootCmd.AddCommand(remote_command.RemoteCommandsCmd)
+	remote_command.RemoteCommandsCmd.AddCommand(remote_command.ListCmd)
+	remote_command.RemoteCommandsCmd.AddCommand(remote_command.StatusCmd)
+	remote_command.RemoteCommandsCmd.AddCommand(remote_command.DrushCacheRebuildCmd)
+	remote_command.RemoteCommandsCmd.AddCommand(remote_command.DrushCmd)
+	remote_command.RemoteCommandsCmd.AddCommand(remote_command.ShellCmd)
+
 	// `iron backup x`
 	rootCmd.AddCommand(backup.BackupCmd)
 	backup.BackupCmd.AddCommand(backup.NewCmd)
