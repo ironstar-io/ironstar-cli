@@ -16,6 +16,7 @@ import (
 	"github.com/ironstar-io/ironstar-cli/cmd/logs"
 	"github.com/ironstar-io/ironstar-cli/cmd/newrelic"
 	"github.com/ironstar-io/ironstar-cli/cmd/pkg"
+	"github.com/ironstar-io/ironstar-cli/cmd/remote_command"
 	"github.com/ironstar-io/ironstar-cli/cmd/restore"
 	"github.com/ironstar-io/ironstar-cli/cmd/subscription"
 	"github.com/ironstar-io/ironstar-cli/cmd/sync"
@@ -86,6 +87,30 @@ func init() {
 	env_vars.EnvVarsCmd.AddCommand(env_vars.AddCmd)
 	env_vars.EnvVarsCmd.AddCommand(env_vars.RemoveCmd)
 	env_vars.EnvVarsCmd.AddCommand(env_vars.ModifyCmd)
+
+	// `iron remote-command x`
+	rootCmd.AddCommand(remote_command.RemoteCommandCmd)
+	remote_command.RemoteCommandCmd.AddCommand(remote_command.ListCmd)
+	remote_command.RemoteCommandCmd.AddCommand(remote_command.StatusCmd)
+	remote_command.RemoteCommandCmd.AddCommand(remote_command.DrushCacheRebuildCmd)
+	remote_command.RemoteCommandCmd.AddCommand(remote_command.DrushCmd)
+	remote_command.RemoteCommandCmd.AddCommand(remote_command.ShellCmd)
+
+	// `iron rc x` alias (hidden)
+	rootCmd.AddCommand(remote_command.RCCmd)
+	remote_command.RCCmd.AddCommand(remote_command.ListCmd)
+	remote_command.RCCmd.AddCommand(remote_command.StatusCmd)
+	remote_command.RCCmd.AddCommand(remote_command.DrushCacheRebuildCmd)
+	remote_command.RCCmd.AddCommand(remote_command.DrushCmd)
+	remote_command.RCCmd.AddCommand(remote_command.ShellCmd)
+
+	// `iron remote-commands x` alias (hidden)
+	rootCmd.AddCommand(remote_command.RemoteCommandsCmd)
+	remote_command.RemoteCommandsCmd.AddCommand(remote_command.ListCmd)
+	remote_command.RemoteCommandsCmd.AddCommand(remote_command.StatusCmd)
+	remote_command.RemoteCommandsCmd.AddCommand(remote_command.DrushCacheRebuildCmd)
+	remote_command.RemoteCommandsCmd.AddCommand(remote_command.DrushCmd)
+	remote_command.RemoteCommandsCmd.AddCommand(remote_command.ShellCmd)
 
 	// `iron backup x`
 	rootCmd.AddCommand(backup.BackupCmd)
@@ -191,6 +216,16 @@ func RootCmd() *cobra.Command {
 	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
 	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "The source backup identifier to restore from")
 	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "The source backup identifier to restore from")
+
+	remote_command.DrushCacheRebuildCmd.PersistentFlags().StringArrayVarP(&flags.Acc.EnvironmentVars, "env-var", "", []string{}, "Supply a set of environment variables for the remote command in the format KEY=VALUE")
+	remote_command.DrushCacheRebuildCmd.PersistentFlags().IntVarP(&flags.Acc.Timeout, "timeout", "", 0, "Remote command timeout (seconds)")
+
+	remote_command.DrushCmd.PersistentFlags().StringArrayVarP(&flags.Acc.EnvironmentVars, "env-var", "", []string{}, "Supply a set of environment variables for the remote command in the format KEY=VALUE")
+	remote_command.DrushCmd.PersistentFlags().IntVarP(&flags.Acc.Timeout, "timeout", "", 0, "Remote command timeout (seconds)")
+
+	remote_command.ShellCmd.PersistentFlags().StringArrayVarP(&flags.Acc.EnvironmentVars, "env-var", "", []string{}, "Supply a set of environment variables for the remote command in the format KEY=VALUE")
+	remote_command.ShellCmd.PersistentFlags().IntVarP(&flags.Acc.Timeout, "timeout", "", 0, "Remote command timeout (seconds)")
+	remote_command.ShellCmd.PersistentFlags().StringVarP(&flags.Acc.WorkDir, "work-dir", "", "", "The working directory in which to execute the shell command")
 
 	sync.SyncCmd.PersistentFlags().StringVarP(&flags.Acc.SrcEnvironment, "src", "", "", "Identifies the source environment to copy from")
 	sync.NewCmd.PersistentFlags().StringVarP(&flags.Acc.SrcEnvironment, "src", "", "", "Identifies the source environment to copy from")

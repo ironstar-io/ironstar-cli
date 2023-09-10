@@ -121,6 +121,20 @@ func GetDeployID(args []string, deployFlag string) (string, error) {
 	return args[0], nil
 }
 
+// GetRemoteCommandID
+func GetRemoteCommandID(args []string) (string, error) {
+	if len(args) == 0 {
+		di, err := StdinPrompt("Remote Command ID or Name: ")
+		if err != nil {
+			return "", errors.New("No remote command ID or name argument supplied")
+		}
+
+		return di, nil
+	}
+
+	return args[0], nil
+}
+
 // ConfirmationPrompt - The 'weighting' param should be one of [ "y", "n" ].
 func ConfirmationPrompt(prompt, weighting string, autoAccept bool) bool {
 	// Should be set by flag --yes (-y), allowing these prompts to be skipped
