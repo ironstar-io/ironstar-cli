@@ -94,7 +94,7 @@ func UpdateActiveCredentials(login string) (types.Keylink, error) {
 		}
 	}
 	if credMatch == (types.Keylink{}) {
-		return empty, errs.NoCredentialMatch
+		return empty, errs.ErrNoCredentialMatch
 	}
 
 	newMarhsalled, err := yaml.Marshal(&types.Credentials{

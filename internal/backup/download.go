@@ -9,6 +9,7 @@ import (
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
 	"github.com/ironstar-io/ironstar-cli/internal/system/fs"
 	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
@@ -31,10 +32,10 @@ func Download(args []string, flg flags.Accumulator) error {
 	}
 
 	if sCtx.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + sCtx.Alias + "' (" + sCtx.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, sCtx.Alias, sCtx.HashedID)
 
 	backupName, err := GetBackupName(args, flg.Backup)
 	if err != nil {
@@ -43,7 +44,7 @@ func Download(args []string, flg flags.Accumulator) error {
 
 	reqComps := utils.CalculateBackupComponents(flg.Component)
 
-	b, err := api.GetSubscriptionBackup(creds, sCtx.HashedID, backupName, constants.DISPLAY_ERRORS)
+	b, err := api.GetSubscriptionBackup(creds, flg.Output, sCtx.HashedID, backupName, constants.DISPLAY_ERRORS)
 	if err != nil {
 		return err
 	}
@@ -71,7 +72,7 @@ func Download(args []string, flg flags.Accumulator) error {
 	for _, dlComp := range dlComps {
 		file := calcFilename(savePath, dlComp.Name)
 
-		err = api.DownloadEnvironmentBackupComponent(creds, sCtx.HashedID, b.BackupIteration.EnvironmentName, backupName, file, dlComp)
+		err = api.DownloadEnvironmentBackupComponent(creds, flg.Output, sCtx.HashedID, b.BackupIteration.EnvironmentName, backupName, file, dlComp)
 		if err != nil {
 			return err
 		}

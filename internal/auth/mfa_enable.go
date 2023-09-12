@@ -41,7 +41,7 @@ func MFAEnable(flg flags.Accumulator, creds types.Keylink, email string) (*types
 	}
 
 	if res.StatusCode != 200 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure(flg.Output)
 	}
 
 	var m types.MFAEnrolResponse

@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func GetDeployment(creds types.Keylink, deployID string) (types.Deployment, error) {
+func GetDeployment(creds types.Keylink, output, deployID string) (types.Deployment, error) {
 	empty := types.Deployment{}
 	req := &Request{
 		Retries:          3,
@@ -26,7 +26,7 @@ func GetDeployment(creds types.Keylink, deployID string) (types.Deployment, erro
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var d types.Deployment
@@ -38,7 +38,7 @@ func GetDeployment(creds types.Keylink, deployID string) (types.Deployment, erro
 	return d, nil
 }
 
-func GetDeploymentActivity(creds types.Keylink, deployID string) ([]types.DeploymentActivityResponse, error) {
+func GetDeploymentActivity(creds types.Keylink, output, deployID string) ([]types.DeploymentActivityResponse, error) {
 	empty := []types.DeploymentActivityResponse{}
 	req := &Request{
 		Retries:          3,
@@ -55,7 +55,7 @@ func GetDeploymentActivity(creds types.Keylink, deployID string) ([]types.Deploy
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var d []types.DeploymentActivityResponse

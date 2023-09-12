@@ -64,7 +64,7 @@ func MFARecovery(args []string, flg flags.Accumulator) error {
 	}
 
 	if rres.StatusCode != 200 {
-		return rres.HandleFailure()
+		return res.HandleFailure(flg.Output)
 	}
 
 	rrc := &types.AuthResponseBody{}

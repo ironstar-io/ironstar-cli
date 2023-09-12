@@ -15,7 +15,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscription, error) {
+func GetSubscription(creds types.Keylink, output, hashOrAlias string) (types.Subscription, error) {
 	empty := types.Subscription{}
 	req := &Request{
 		Retries:          3,
@@ -32,7 +32,7 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var sub types.Subscription
@@ -44,7 +44,7 @@ func GetSubscription(creds types.Keylink, hashOrAlias string) (types.Subscriptio
 	return sub, nil
 }
 
-func GetUserSubscriptions(creds types.Keylink) ([]types.UserAccessResponse, error) {
+func GetUserSubscriptions(creds types.Keylink, output string) ([]types.UserAccessResponse, error) {
 	empty := []types.UserAccessResponse{}
 	req := &Request{
 		Retries:          3,
@@ -61,7 +61,7 @@ func GetUserSubscriptions(creds types.Keylink) ([]types.UserAccessResponse, erro
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var uar []types.UserAccessResponse
@@ -76,7 +76,7 @@ func GetUserSubscriptions(creds types.Keylink) ([]types.UserAccessResponse, erro
 func GetSubscriptionContext(creds types.Keylink, flg flags.Accumulator) (types.Subscription, error) {
 	empty := types.Subscription{}
 	if flg.Subscription != "" {
-		sub, err := GetSubscription(creds, flg.Subscription)
+		sub, err := GetSubscription(creds, flg.Output, flg.Subscription)
 		if err != nil {
 			return empty, err
 		}

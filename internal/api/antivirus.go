@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func GetEnvironmentAntivirusScans(creds types.Keylink, subHashOrAlias, envHashOrAlias string) ([]types.AntivirusScan, error) {
+func GetEnvironmentAntivirusScans(creds types.Keylink, output, subHashOrAlias, envHashOrAlias string) ([]types.AntivirusScan, error) {
 	empty := []types.AntivirusScan{}
 	req := &Request{
 		RunTokenRefresh:  true,
@@ -26,7 +26,7 @@ func GetEnvironmentAntivirusScans(creds types.Keylink, subHashOrAlias, envHashOr
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var avs []types.AntivirusScan

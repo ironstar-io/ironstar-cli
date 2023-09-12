@@ -72,7 +72,7 @@ func postLogout(creds types.Keylink) (*api.RawResponse, error) {
 	}
 
 	if res.StatusCode != 204 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure("text")
 	}
 
 	return res, nil

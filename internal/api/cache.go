@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func GetEnvironmentCacheInvalidations(creds types.Keylink, subHashOrAlias, envHashOrAlias string) ([]types.CacheInvalidation, error) {
+func GetEnvironmentCacheInvalidations(creds types.Keylink, output, subHashOrAlias, envHashOrAlias string) ([]types.CacheInvalidation, error) {
 	empty := []types.CacheInvalidation{}
 	req := &Request{
 		Retries:          3,
@@ -26,7 +26,7 @@ func GetEnvironmentCacheInvalidations(creds types.Keylink, subHashOrAlias, envHa
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var cis []types.CacheInvalidation
@@ -38,7 +38,7 @@ func GetEnvironmentCacheInvalidations(creds types.Keylink, subHashOrAlias, envHa
 	return cis, nil
 }
 
-func GetEnvironmentCacheInvalidation(creds types.Keylink, subHashOrAlias, envHashOrAlias, invalidationName string) (types.CacheInvalidation, error) {
+func GetEnvironmentCacheInvalidation(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, invalidationName string) (types.CacheInvalidation, error) {
 	empty := types.CacheInvalidation{}
 	req := &Request{
 		Retries:          3,
@@ -55,7 +55,7 @@ func GetEnvironmentCacheInvalidation(creds types.Keylink, subHashOrAlias, envHas
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var ci types.CacheInvalidation
@@ -67,7 +67,7 @@ func GetEnvironmentCacheInvalidation(creds types.Keylink, subHashOrAlias, envHas
 	return ci, nil
 }
 
-func PostEnvironmentCacheInvalidation(creds types.Keylink, subHashOrAlias, envHashOrAlias string) (types.CacheInvalidation, error) {
+func PostEnvironmentCacheInvalidation(creds types.Keylink, output, subHashOrAlias, envHashOrAlias string) (types.CacheInvalidation, error) {
 	empty := types.CacheInvalidation{}
 	req := &Request{
 		Retries:         3,
@@ -86,7 +86,7 @@ func PostEnvironmentCacheInvalidation(creds types.Keylink, subHashOrAlias, envHa
 	}
 
 	if res.StatusCode != 201 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var ci types.CacheInvalidation

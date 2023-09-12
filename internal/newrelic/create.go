@@ -2,10 +2,13 @@ package newrelic
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -24,10 +27,10 @@ func Configure(args []string, flg flags.Accumulator) error {
 	}
 
 	if seCtx.Subscription.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, seCtx.Subscription.Alias, seCtx.Subscription.HashedID)
 
 	fmt.Println()
 
@@ -51,7 +54,7 @@ func Configure(args []string, flg flags.Accumulator) error {
 		return errors.New("License Key must be supplied. Exiting...")
 	}
 
-	err = api.PutNewRelicApplicationConfig(creds, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, types.PutNewRelicParams{
+	err = api.PutNewRelicApplicationConfig(creds, flg.Output, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, types.PutNewRelicParams{
 		LicenseKey:  licenseKey,
 		AppName:     appName,
 		AppID:       appID,
@@ -60,6 +63,14 @@ func Configure(args []string, flg flags.Accumulator) error {
 	})
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(map[string]string{
+			"result": "success",
+			"info":   "It may take several minutes for these changes to reflect in your New Relic dashboard",
+		})
+		return nil
 	}
 
 	fmt.Println()

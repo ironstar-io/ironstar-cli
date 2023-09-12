@@ -9,13 +9,13 @@ import (
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
 	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
-	"github.com/pkg/errors"
 )
 
 func Info(args []string, flg flags.Accumulator) error {
@@ -30,10 +30,10 @@ func Info(args []string, flg flags.Accumulator) error {
 	}
 
 	if sub.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, sub.Alias, sub.HashedID)
 
 	if flg.Environment != "" {
 		env, err := api.GetEnvironmentContext(creds, flg, sub.HashedID)
@@ -42,12 +42,12 @@ func Info(args []string, flg flags.Accumulator) error {
 		}
 
 		if len(args) > 0 {
-			err = DisplayIndividualRestoreInfo(creds, env, sub, args[0])
+			err = DisplayIndividualRestoreInfo(creds, flg.Output, env, sub, args[0])
 			if err != nil {
 				return err
 			}
 		} else {
-			err = DisplayEnvironmentRestoreInfo(creds, env, sub)
+			err = DisplayEnvironmentRestoreInfo(creds, flg.Output, env, sub)
 			if err != nil {
 				return err
 			}
@@ -63,9 +63,14 @@ func Info(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
-	ris, err := api.GetSubscriptionRestoreIterations(creds, sub.HashedID)
+	ris, err := api.GetSubscriptionRestoreIterations(creds, flg.Output, sub.HashedID)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(ris)
+		return nil
 	}
 
 	fmt.Println()
@@ -93,8 +98,8 @@ func Info(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func DisplayEnvironmentRestoreInfo(creds types.Keylink, env types.Environment, sub types.Subscription) error {
-	ris, err := api.GetEnvironmentRestoreIterations(creds, sub.HashedID, env.HashedID)
+func DisplayEnvironmentRestoreInfo(creds types.Keylink, output string, env types.Environment, sub types.Subscription) error {
+	ris, err := api.GetEnvironmentRestoreIterations(creds, output, sub.HashedID, env.HashedID)
 	if err != nil {
 		return err
 	}
@@ -122,8 +127,8 @@ func DisplayEnvironmentRestoreInfo(creds types.Keylink, env types.Environment, s
 	return nil
 }
 
-func DisplayIndividualRestoreInfo(creds types.Keylink, env types.Environment, sub types.Subscription, restoreName string) error {
-	rr, err := api.GetEnvironmentRestore(creds, sub.HashedID, env.HashedID, restoreName)
+func DisplayIndividualRestoreInfo(creds types.Keylink, output string, env types.Environment, sub types.Subscription, restoreName string) error {
+	rr, err := api.GetEnvironmentRestore(creds, output, sub.HashedID, env.HashedID, restoreName)
 	if err != nil {
 		return err
 	}

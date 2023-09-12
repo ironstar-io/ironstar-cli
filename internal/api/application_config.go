@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func PutNewRelicApplicationConfig(creds types.Keylink, subId, envId string, payload types.PutNewRelicParams) error {
+func PutNewRelicApplicationConfig(creds types.Keylink, output, subId, envId string, payload types.PutNewRelicParams) error {
 	req := &Request{
 		Retries:         3,
 		RunTokenRefresh: true,
@@ -25,7 +25,7 @@ func PutNewRelicApplicationConfig(creds types.Keylink, subId, envId string, payl
 	}
 
 	if res.StatusCode != 204 {
-		return res.HandleFailure()
+		return res.HandleFailure(output)
 	}
 
 	return nil

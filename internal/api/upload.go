@@ -72,7 +72,7 @@ Please proceed with caution.
 	}
 
 	if res.StatusCode != 200 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure(flg.Output)
 	}
 
 	return res, nil

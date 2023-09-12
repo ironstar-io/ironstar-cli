@@ -80,8 +80,10 @@ const (
 	IronstarAPIConnectionErrorMsg = "Unable to connect to the Ironstar API. Please try again later"
 )
 
-var NoCredentialMatch = errors.New("There are no credentials available for the supplied email")
+var ErrNoCredentialMatch = errors.New("There are no credentials available for the supplied email")
 
-var UnexpectedError = errors.New(UnexpectedErrorMsg)
+var ErrUnexpectedError = errors.New(UnexpectedErrorMsg)
 
-var NoSuitableCreds = errors.New(NoSuitableCredsMsg)
+var ErrNoSuitableCreds = errors.New(NoSuitableCredsMsg)
+
+var ErrNoSubLink = errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")

@@ -2,9 +2,11 @@ package sync
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
 	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
@@ -25,7 +27,7 @@ func New(args []string, flg flags.Accumulator) error {
 	}
 
 	if sub.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
 	// Check supplied components
@@ -39,7 +41,7 @@ func New(args []string, flg flags.Accumulator) error {
 	if err != nil {
 		return err
 	}
-	srcEnv, err := api.GetSubscriptionEnvironment(creds, sub.HashedID, srcEnvName)
+	srcEnv, err := api.GetSubscriptionEnvironment(creds, flg.Output, sub.HashedID, srcEnvName)
 	if err != nil {
 		return err
 	}
@@ -48,7 +50,7 @@ func New(args []string, flg flags.Accumulator) error {
 	if err != nil {
 		return err
 	}
-	destEnv, err := api.GetSubscriptionEnvironment(creds, sub.HashedID, destEnvName)
+	destEnv, err := api.GetSubscriptionEnvironment(creds, flg.Output, sub.HashedID, destEnvName)
 	if err != nil {
 		return err
 	}
@@ -57,7 +59,7 @@ func New(args []string, flg flags.Accumulator) error {
 		return errors.New("Cannot sync between the same environment.")
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, sub.Alias, sub.HashedID)
 
 	strategy := utils.CalculateRestoreStrat(flg.Strategy)
 
@@ -70,7 +72,7 @@ func New(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
-	sr, err := api.PostSyncRequest(creds, types.PostSyncRequestParams{
+	sr, err := api.PostSyncRequest(creds, flg.Output, types.PostSyncRequestParams{
 		SubscriptionID:  sub.HashedID,
 		SrcEnvironment:  srcEnv.HashedID,
 		DestEnvironment: destEnv.HashedID,
@@ -79,6 +81,11 @@ func New(args []string, flg flags.Accumulator) error {
 	})
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(sr)
+		return nil
 	}
 
 	fmt.Println()
@@ -98,7 +105,7 @@ func New(args []string, flg flags.Accumulator) error {
 }
 
 func RestoreFromLatestBackup(creds types.Keylink, flg flags.Accumulator, sub types.Subscription, srcEnv, destEnv types.Environment, components []string, strategy string) error {
-	rr, err := api.PostSyncRequestUseLatestBackup(creds, types.PostSyncRequestParams{
+	rr, err := api.PostSyncRequestUseLatestBackup(creds, flg.Output, types.PostSyncRequestParams{
 		SubscriptionID:  sub.HashedID,
 		RestoreStrategy: strategy,
 		SrcEnvironment:  srcEnv.HashedID,
@@ -107,6 +114,11 @@ func RestoreFromLatestBackup(creds types.Keylink, flg flags.Accumulator, sub typ
 	})
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(rr)
+		return nil
 	}
 
 	fmt.Println()

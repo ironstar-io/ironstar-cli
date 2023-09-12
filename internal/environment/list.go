@@ -3,14 +3,15 @@ package environment
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 
-	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
-	"github.com/pkg/errors"
 )
 
 func List(args []string, flg flags.Accumulator) error {
@@ -25,14 +26,19 @@ func List(args []string, flg flags.Accumulator) error {
 	}
 
 	if sub.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, sub.Alias, sub.HashedID)
 
-	envs, err := api.GetSubscriptionEnvironments(creds, sub.HashedID)
+	envs, err := api.GetSubscriptionEnvironments(creds, flg.Output, sub.HashedID)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(envs)
+		return nil
 	}
 
 	fmt.Println()

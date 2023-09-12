@@ -9,6 +9,7 @@ import (
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
 	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
@@ -17,7 +18,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
-	"github.com/pkg/errors"
 )
 
 func Info(args []string, flg flags.Accumulator) error {
@@ -32,10 +32,10 @@ func Info(args []string, flg flags.Accumulator) error {
 	}
 
 	if sub.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, sub.Alias, sub.HashedID)
 
 	if flg.Environment != "" {
 		env, err := api.GetEnvironmentContext(creds, flg, sub.HashedID)
@@ -44,12 +44,12 @@ func Info(args []string, flg flags.Accumulator) error {
 		}
 
 		if len(args) > 0 {
-			err = DisplayIndividualBackupInfo(creds, env, sub, args[0])
+			err = DisplayIndividualBackupInfo(creds, flg.Output, env, sub, args[0])
 			if err != nil {
 				return err
 			}
 		} else {
-			err = DisplayEnvironmentBackupInfo(creds, env, sub, flg.BackupType)
+			err = DisplayEnvironmentBackupInfo(creds, flg.Output, env, sub, flg.BackupType)
 			if err != nil {
 				return err
 			}
@@ -65,9 +65,14 @@ func Info(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
-	bis, err := api.GetSubscriptionBackupIterations(creds, sub.HashedID, flg.BackupType)
+	bis, err := api.GetSubscriptionBackupIterations(creds, flg.Output, sub.HashedID, flg.BackupType)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(bis)
+		return nil
 	}
 
 	fmt.Println()
@@ -99,10 +104,15 @@ func Info(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func DisplayEnvironmentBackupInfo(creds types.Keylink, env types.Environment, sub types.Subscription, backupType string) error {
-	bis, err := api.GetEnvironmentBackupIterations(creds, sub.HashedID, env.HashedID, backupType)
+func DisplayEnvironmentBackupInfo(creds types.Keylink, output string, env types.Environment, sub types.Subscription, backupType string) error {
+	bis, err := api.GetEnvironmentBackupIterations(creds, output, sub.HashedID, env.HashedID, backupType)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(output) == "json" {
+		utils.PrintInterfaceAsJSON(bis)
+		return nil
 	}
 
 	fmt.Println()
@@ -139,10 +149,15 @@ func DisplayEnvironmentBackupInfo(creds types.Keylink, env types.Environment, su
 	return nil
 }
 
-func DisplayIndividualBackupInfo(creds types.Keylink, env types.Environment, sub types.Subscription, backupName string) error {
-	b, err := api.GetEnvironmentBackup(creds, sub.HashedID, env.HashedID, backupName, constants.DISPLAY_ERRORS)
+func DisplayIndividualBackupInfo(creds types.Keylink, output string, env types.Environment, sub types.Subscription, backupName string) error {
+	b, err := api.GetEnvironmentBackup(creds, output, sub.HashedID, env.HashedID, backupName, constants.DISPLAY_ERRORS)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(output) == "json" {
+		utils.PrintInterfaceAsJSON(b)
+		return nil
 	}
 
 	if b.BackupIteration.Iteration != "" {

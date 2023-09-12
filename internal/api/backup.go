@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func PostBackupRequest(creds types.Keylink, payload types.PostBackupRequestParams) (types.BackupRequest, error) {
+func PostBackupRequest(creds types.Keylink, output string, payload types.PostBackupRequestParams) (types.BackupRequest, error) {
 	empty := types.BackupRequest{}
 	req := &Request{
 		Retries:         3,
@@ -32,7 +32,7 @@ func PostBackupRequest(creds types.Keylink, payload types.PostBackupRequestParam
 	}
 
 	if res.StatusCode != 201 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var br types.BackupRequest
@@ -44,7 +44,7 @@ func PostBackupRequest(creds types.Keylink, payload types.PostBackupRequestParam
 	return br, nil
 }
 
-func DeleteBackup(creds types.Keylink, payload types.DeleteBackupParams) error {
+func DeleteBackup(creds types.Keylink, output string, payload types.DeleteBackupParams) error {
 	req := &Request{
 		Retries:          3,
 		RunTokenRefresh:  true,
@@ -60,13 +60,13 @@ func DeleteBackup(creds types.Keylink, payload types.DeleteBackupParams) error {
 	}
 
 	if res.StatusCode != 204 {
-		return res.HandleFailure()
+		return res.HandleFailure(output)
 	}
 
 	return nil
 }
 
-func GetSubscriptionBackupIterations(creds types.Keylink, subAliasOrHashedID, backupType string) ([]types.BackupIteration, error) {
+func GetSubscriptionBackupIterations(creds types.Keylink, output, subAliasOrHashedID, backupType string) ([]types.BackupIteration, error) {
 	var qs string
 	if backupType != "" {
 		qs = "?backup-type=" + backupType
@@ -88,7 +88,7 @@ func GetSubscriptionBackupIterations(creds types.Keylink, subAliasOrHashedID, ba
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var bis []types.BackupIteration
@@ -100,7 +100,7 @@ func GetSubscriptionBackupIterations(creds types.Keylink, subAliasOrHashedID, ba
 	return bis, nil
 }
 
-func DownloadEnvironmentBackupComponent(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, backupName, savePath string, buComp types.BackupIterationComponent) error {
+func DownloadEnvironmentBackupComponent(creds types.Keylink, output, subAliasOrHashedID, envNameOrHashedID, backupName, savePath string, buComp types.BackupIterationComponent) error {
 	req := &Request{
 		Retries:          3,
 		RunTokenRefresh:  true,
@@ -122,7 +122,7 @@ func DownloadEnvironmentBackupComponent(creds types.Keylink, subAliasOrHashedID,
 	return nil
 }
 
-func GetEnvironmentBackupIterations(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, backupType string) ([]types.BackupIteration, error) {
+func GetEnvironmentBackupIterations(creds types.Keylink, output, subAliasOrHashedID, envNameOrHashedID, backupType string) ([]types.BackupIteration, error) {
 	var qs string
 	if backupType != "" {
 		qs = "?backup-type=" + backupType
@@ -144,7 +144,7 @@ func GetEnvironmentBackupIterations(creds types.Keylink, subAliasOrHashedID, env
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var bis []types.BackupIteration
@@ -156,7 +156,7 @@ func GetEnvironmentBackupIterations(creds types.Keylink, subAliasOrHashedID, env
 	return bis, nil
 }
 
-func GetLatestEnvironmentBackupIteration(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string) (types.BackupIteration, error) {
+func GetLatestEnvironmentBackupIteration(creds types.Keylink, output, subAliasOrHashedID, envNameOrHashedID string) (types.BackupIteration, error) {
 	empty := types.BackupIteration{}
 	req := &Request{
 		Retries:          3,
@@ -173,7 +173,7 @@ func GetLatestEnvironmentBackupIteration(creds types.Keylink, subAliasOrHashedID
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var bi types.BackupIteration
@@ -185,7 +185,7 @@ func GetLatestEnvironmentBackupIteration(creds types.Keylink, subAliasOrHashedID
 	return bi, nil
 }
 
-func GetEnvironmentBackup(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, backupName, errorOutput string) (types.Backup, error) {
+func GetEnvironmentBackup(creds types.Keylink, output, subAliasOrHashedID, envNameOrHashedID, backupName, errorOutput string) (types.Backup, error) {
 	empty := types.Backup{}
 	req := &Request{
 		Retries:          3,
@@ -205,7 +205,7 @@ func GetEnvironmentBackup(creds types.Keylink, subAliasOrHashedID, envNameOrHash
 		if errorOutput == constants.SKIP_ERRORS {
 			return empty, nil
 		}
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var b types.Backup
@@ -217,7 +217,7 @@ func GetEnvironmentBackup(creds types.Keylink, subAliasOrHashedID, envNameOrHash
 	return b, nil
 }
 
-func GetSubscriptionBackup(creds types.Keylink, subAliasOrHashedID, backupName, errorOutput string) (types.Backup, error) {
+func GetSubscriptionBackup(creds types.Keylink, output, subAliasOrHashedID, backupName, errorOutput string) (types.Backup, error) {
 	empty := types.Backup{}
 	req := &Request{
 		Retries:          3,
@@ -237,7 +237,7 @@ func GetSubscriptionBackup(creds types.Keylink, subAliasOrHashedID, backupName, 
 		if errorOutput == constants.SKIP_ERRORS {
 			return empty, nil
 		}
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var b types.Backup

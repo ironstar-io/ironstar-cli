@@ -2,14 +2,16 @@ package remote_command
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 
 	"github.com/fatih/color"
-	"github.com/pkg/errors"
 )
 
 func DrushCacheRebuild(args []string, flg flags.Accumulator) error {
@@ -24,19 +26,24 @@ func DrushCacheRebuild(args []string, flg flags.Accumulator) error {
 	}
 
 	if seCtx.Subscription.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, seCtx.Subscription.Alias, seCtx.Subscription.HashedID)
 
 	var timeout int
 	if flg.Timeout != 0 {
 		timeout = flg.Timeout
 	}
 
-	rc, err := api.PostRemoteCommandDrushCacheRebuild(creds, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, envVarKeyValue(flg.EnvironmentVars), timeout)
+	rc, err := api.PostRemoteCommandDrushCacheRebuild(creds, flg.Output, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, envVarKeyValue(flg.EnvironmentVars), timeout)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(rc)
+		return nil
 	}
 
 	fmt.Println()

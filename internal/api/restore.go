@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func PostRestoreRequest(creds types.Keylink, payload types.PostRestoreRequestParams) (types.RestoreRequest, error) {
+func PostRestoreRequest(creds types.Keylink, output string, payload types.PostRestoreRequestParams) (types.RestoreRequest, error) {
 	empty := types.RestoreRequest{}
 	req := &Request{
 		Retries:         3,
@@ -31,7 +31,7 @@ func PostRestoreRequest(creds types.Keylink, payload types.PostRestoreRequestPar
 	}
 
 	if res.StatusCode != 201 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var rr types.RestoreRequest
@@ -43,7 +43,7 @@ func PostRestoreRequest(creds types.Keylink, payload types.PostRestoreRequestPar
 	return rr, nil
 }
 
-func GetSubscriptionRestoreIterations(creds types.Keylink, subAliasOrHashedID string) ([]types.RestoreRequest, error) {
+func GetSubscriptionRestoreIterations(creds types.Keylink, output, subAliasOrHashedID string) ([]types.RestoreRequest, error) {
 	empty := []types.RestoreRequest{}
 	req := &Request{
 		Retries:          3,
@@ -60,7 +60,7 @@ func GetSubscriptionRestoreIterations(creds types.Keylink, subAliasOrHashedID st
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var ris []types.RestoreRequest
@@ -72,7 +72,7 @@ func GetSubscriptionRestoreIterations(creds types.Keylink, subAliasOrHashedID st
 	return ris, nil
 }
 
-func GetEnvironmentRestoreIterations(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID string) ([]types.RestoreRequest, error) {
+func GetEnvironmentRestoreIterations(creds types.Keylink, output, subAliasOrHashedID, envNameOrHashedID string) ([]types.RestoreRequest, error) {
 	empty := []types.RestoreRequest{}
 	req := &Request{
 		Retries:          3,
@@ -89,7 +89,7 @@ func GetEnvironmentRestoreIterations(creds types.Keylink, subAliasOrHashedID, en
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var ris []types.RestoreRequest
@@ -101,7 +101,7 @@ func GetEnvironmentRestoreIterations(creds types.Keylink, subAliasOrHashedID, en
 	return ris, nil
 }
 
-func GetEnvironmentRestore(creds types.Keylink, subAliasOrHashedID, envNameOrHashedID, restoreName string) (types.RestoreRequest, error) {
+func GetEnvironmentRestore(creds types.Keylink, output, subAliasOrHashedID, envNameOrHashedID, restoreName string) (types.RestoreRequest, error) {
 	empty := types.RestoreRequest{}
 	req := &Request{
 		Retries:          3,
@@ -118,7 +118,7 @@ func GetEnvironmentRestore(creds types.Keylink, subAliasOrHashedID, envNameOrHas
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var r types.RestoreRequest

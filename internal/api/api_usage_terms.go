@@ -26,7 +26,7 @@ func GetCurrentAPIUsageTerms() (types.APIUsageTerms, error) {
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure("text")
 	}
 
 	var aut types.APIUsageTerms
@@ -56,7 +56,7 @@ func PostAcceptAPIUsageTerms(authToken string) (*RawResponse, error) {
 	}
 
 	if res.StatusCode != 200 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure("text")
 	}
 
 	return res, nil

@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func PostSyncRequest(creds types.Keylink, payload types.PostSyncRequestParams) (types.SyncRequest, error) {
+func PostSyncRequest(creds types.Keylink, output string, payload types.PostSyncRequestParams) (types.SyncRequest, error) {
 	empty := types.SyncRequest{}
 	req := &Request{
 		Retries:         3,
@@ -31,7 +31,7 @@ func PostSyncRequest(creds types.Keylink, payload types.PostSyncRequestParams) (
 	}
 
 	if res.StatusCode != 201 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var sr types.SyncRequest
@@ -43,7 +43,7 @@ func PostSyncRequest(creds types.Keylink, payload types.PostSyncRequestParams) (
 	return sr, nil
 }
 
-func PostSyncRequestUseLatestBackup(creds types.Keylink, payload types.PostSyncRequestParams) (types.RestoreRequest, error) {
+func PostSyncRequestUseLatestBackup(creds types.Keylink, output string, payload types.PostSyncRequestParams) (types.RestoreRequest, error) {
 	empty := types.RestoreRequest{}
 	req := &Request{
 		Retries:         3,
@@ -65,7 +65,7 @@ func PostSyncRequestUseLatestBackup(creds types.Keylink, payload types.PostSyncR
 	}
 
 	if res.StatusCode != 201 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var rr types.RestoreRequest
@@ -77,7 +77,7 @@ func PostSyncRequestUseLatestBackup(creds types.Keylink, payload types.PostSyncR
 	return rr, nil
 }
 
-func GetSubscriptionSync(creds types.Keylink, subAliasOrHashedID, syncName string) (types.SyncRequest, error) {
+func GetSubscriptionSync(creds types.Keylink, output string, subAliasOrHashedID, syncName string) (types.SyncRequest, error) {
 	empty := types.SyncRequest{}
 	req := &Request{
 		Retries:          3,
@@ -94,7 +94,7 @@ func GetSubscriptionSync(creds types.Keylink, subAliasOrHashedID, syncName strin
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var sr types.SyncRequest
@@ -106,7 +106,7 @@ func GetSubscriptionSync(creds types.Keylink, subAliasOrHashedID, syncName strin
 	return sr, nil
 }
 
-func GetSubscriptionSyncRequests(creds types.Keylink, subAliasOrHashedID string) ([]types.SyncRequest, error) {
+func GetSubscriptionSyncRequests(creds types.Keylink, output string, subAliasOrHashedID string) ([]types.SyncRequest, error) {
 	empty := []types.SyncRequest{}
 	req := &Request{
 		Retries:          3,
@@ -123,7 +123,7 @@ func GetSubscriptionSyncRequests(creds types.Keylink, subAliasOrHashedID string)
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var srs []types.SyncRequest

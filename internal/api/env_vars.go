@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func GetEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias string) ([]types.EnvVars, error) {
+func GetEnvironmentEnvVars(creds types.Keylink, output, subHashOrAlias, envHashOrAlias string) ([]types.EnvVars, error) {
 	empty := []types.EnvVars{}
 	req := &Request{
 		Retries:          3,
@@ -26,7 +26,7 @@ func GetEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias s
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var env_vars []types.EnvVars
@@ -38,7 +38,7 @@ func GetEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias s
 	return env_vars, nil
 }
 
-func PostEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias, key, value, varType string) error {
+func PostEnvironmentEnvVars(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, key, value, varType string) error {
 	req := &Request{
 		Retries:         3,
 		RunTokenRefresh: true,
@@ -58,13 +58,13 @@ func PostEnvironmentEnvVars(creds types.Keylink, subHashOrAlias, envHashOrAlias,
 	}
 
 	if res.StatusCode != 201 {
-		return res.HandleFailure()
+		return res.HandleFailure(output)
 	}
 
 	return nil
 }
 
-func PatchEnvironmentEnvVar(creds types.Keylink, subHashOrAlias, envHashOrAlias, key, value, varType string) error {
+func PatchEnvironmentEnvVar(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, key, value, varType string) error {
 	req := &Request{
 		Retries:         3,
 		RunTokenRefresh: true,
@@ -83,13 +83,13 @@ func PatchEnvironmentEnvVar(creds types.Keylink, subHashOrAlias, envHashOrAlias,
 	}
 
 	if res.StatusCode != 204 {
-		return res.HandleFailure()
+		return res.HandleFailure(output)
 	}
 
 	return nil
 }
 
-func DeleteEnvironmentEnvVar(creds types.Keylink, subHashOrAlias, envHashOrAlias, key string) error {
+func DeleteEnvironmentEnvVar(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, key string) error {
 	req := &Request{
 		Retries:          3,
 		RunTokenRefresh:  true,
@@ -105,7 +105,7 @@ func DeleteEnvironmentEnvVar(creds types.Keylink, subHashOrAlias, envHashOrAlias
 	}
 
 	if res.StatusCode != 204 {
-		return res.HandleFailure()
+		return res.HandleFailure(output)
 	}
 
 	return nil

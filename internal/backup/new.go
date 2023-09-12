@@ -2,16 +2,17 @@ package backup
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
 	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
 	slugify "github.com/metal3d/go-slugify"
-	"github.com/pkg/errors"
 )
 
 func New(args []string, flg flags.Accumulator) error {
@@ -26,13 +27,13 @@ func New(args []string, flg flags.Accumulator) error {
 	}
 
 	if seCtx.Subscription.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, seCtx.Subscription.Alias, seCtx.Subscription.HashedID)
 
 	name := slugify.Marshal(flg.Name, false)
-	if name != flg.Name {
+	if name != flg.Name && strings.ToLower(flg.Output) != "json" {
 		fmt.Println()
 		color.Yellow("NOTE: '" + flg.Name + "' is not a valid name for a backup in the Ironstar system. We have slugified this value for you to be '" + name + "'")
 		fmt.Println()
@@ -40,7 +41,7 @@ func New(args []string, flg flags.Accumulator) error {
 
 	components := utils.CalculateBackupComponents(flg.Component)
 
-	br, err := api.PostBackupRequest(creds, types.PostBackupRequestParams{
+	br, err := api.PostBackupRequest(creds, flg.Output, types.PostBackupRequestParams{
 		SubscriptionID: seCtx.Subscription.HashedID,
 		EnvironmentID:  seCtx.Environment.HashedID,
 		Name:           name,
@@ -50,6 +51,11 @@ func New(args []string, flg flags.Accumulator) error {
 	})
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(br)
+		return nil
 	}
 
 	fmt.Println()

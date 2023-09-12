@@ -2,11 +2,13 @@ package restore
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/backup"
 	"github.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
 	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
@@ -27,14 +29,14 @@ func New(args []string, flg flags.Accumulator) error {
 	}
 
 	if seCtx.Subscription.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
 	if flg.Backup == "" {
 		return errors.New("A source backup must be specified with the --backup=[backup-name] flag")
 	}
 
-	b, err := api.GetSubscriptionBackup(creds, seCtx.Subscription.HashedID, flg.Backup, constants.DISPLAY_ERRORS)
+	b, err := api.GetSubscriptionBackup(creds, flg.Output, seCtx.Subscription.HashedID, flg.Backup, constants.DISPLAY_ERRORS)
 	if err != nil {
 		return err
 	}
@@ -48,12 +50,12 @@ func New(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, seCtx.Subscription.Alias, seCtx.Subscription.HashedID)
 
 	name := flg.Name
 	strategy := utils.CalculateRestoreStrat(flg.Strategy)
 
-	rr, err := api.PostRestoreRequest(creds, types.PostRestoreRequestParams{
+	rr, err := api.PostRestoreRequest(creds, flg.Output, types.PostRestoreRequestParams{
 		SubscriptionID: seCtx.Subscription.HashedID,
 		EnvironmentID:  seCtx.Environment.HashedID,
 		Name:           name,
@@ -63,6 +65,11 @@ func New(args []string, flg flags.Accumulator) error {
 	})
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(rr)
+		return nil
 	}
 
 	fmt.Println()

@@ -46,7 +46,7 @@ func PullActiveCredentials() (types.Keylink, error) {
 	}
 
 	if credMatch == empty {
-		return empty, errs.NoSuitableCreds
+		return empty, errs.ErrNoSuitableCreds
 	}
 
 	return credMatch, nil
@@ -55,7 +55,7 @@ func PullActiveCredentials() (types.Keylink, error) {
 func PullCredentialsByLogin(login string) (types.Keylink, error) {
 	empty := types.Keylink{}
 	if login == "" {
-		return empty, errs.NoSuitableCreds
+		return empty, errs.ErrNoSuitableCreds
 	}
 
 	creds, err := ReadInCredentials()
@@ -71,7 +71,7 @@ func PullCredentialsByLogin(login string) (types.Keylink, error) {
 	}
 
 	if credMatch == empty {
-		return empty, errs.NoSuitableCreds
+		return empty, errs.ErrNoSuitableCreds
 	}
 
 	return credMatch, nil
