@@ -30,7 +30,7 @@ func Status(args []string, flg flags.Accumulator) error {
 
 	color.Green("Using login [" + creds.Login + "]")
 
-	deployment, err := api.GetDeployment(creds, deployID)
+	deployment, err := api.GetDeployment(creds, flg.Output, deployID)
 	if err != nil {
 		return err
 	}

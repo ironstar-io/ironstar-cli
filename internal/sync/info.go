@@ -9,13 +9,13 @@ import (
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
 	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
-	"github.com/pkg/errors"
 )
 
 func Info(args []string, flg flags.Accumulator) error {
@@ -30,13 +30,13 @@ func Info(args []string, flg flags.Accumulator) error {
 	}
 
 	if sub.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, sub.Alias, sub.HashedID)
 
 	if len(args) > 0 {
-		err = DisplayIndividualSyncInfo(creds, sub, args[0])
+		err = DisplayIndividualSyncInfo(creds, flg.Output, sub, args[0])
 		if err != nil {
 			return err
 		}
@@ -44,9 +44,14 @@ func Info(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
-	srs, err := api.GetSubscriptionSyncRequests(creds, sub.HashedID)
+	srs, err := api.GetSubscriptionSyncRequests(creds, flg.Output, sub.HashedID)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(srs)
+		return nil
 	}
 
 	fmt.Println()
@@ -72,10 +77,15 @@ func Info(args []string, flg flags.Accumulator) error {
 	return nil
 }
 
-func DisplayIndividualSyncInfo(creds types.Keylink, sub types.Subscription, syncName string) error {
-	sr, err := api.GetSubscriptionSync(creds, sub.HashedID, syncName)
+func DisplayIndividualSyncInfo(creds types.Keylink, output string, sub types.Subscription, syncName string) error {
+	sr, err := api.GetSubscriptionSync(creds, output, sub.HashedID, syncName)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(output) == "json" {
+		utils.PrintInterfaceAsJSON(sr)
+		return nil
 	}
 
 	fmt.Println()
@@ -96,7 +106,7 @@ func DisplayIndividualSyncInfo(creds types.Keylink, sub types.Subscription, sync
 	fmt.Println("Reservation:")
 	fmt.Println(strings.Join(sr.BackupRequest.Components, ", "))
 
-	b, _ := api.GetEnvironmentBackup(creds, sub.HashedID, sr.SrcEnvironment.HashedID, sr.Name, constants.SKIP_ERRORS)
+	b, _ := api.GetEnvironmentBackup(creds, output, sub.HashedID, sr.SrcEnvironment.HashedID, sr.Name, constants.SKIP_ERRORS)
 
 	if b.BackupIteration.Iteration != "" {
 		size := utils.CalcBackupSize(b.BackupIteration.Components)

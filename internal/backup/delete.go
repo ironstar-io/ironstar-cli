@@ -2,10 +2,13 @@ package backup
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -28,22 +31,30 @@ func Delete(args []string, flg flags.Accumulator) error {
 	}
 
 	if seCtx.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Alias + "' (" + seCtx.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, seCtx.Alias, seCtx.HashedID)
 
 	name := flg.Name
 	if name == "" {
 		name = args[0]
 	}
 
-	err = api.DeleteBackup(creds, types.DeleteBackupParams{
+	err = api.DeleteBackup(creds, flg.Output, types.DeleteBackupParams{
 		SubscriptionID: seCtx.HashedID,
 		Name:           name,
 	})
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(map[string]string{
+			"result": "success",
+			"info":   "Successfully deleted backup [" + name + "]",
+		})
+		return nil
 	}
 
 	fmt.Println()

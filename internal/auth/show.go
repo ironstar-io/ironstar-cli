@@ -3,17 +3,25 @@ package auth
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 
 	"github.com/olekukonko/tablewriter"
 )
 
-func IronstarShowCredentials(args []string) error {
+func IronstarShowCredentials(args []string, flg flags.Accumulator) error {
 	credSet, err := services.ReadInCredentials()
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(credSet)
+		return nil
 	}
 
 	fmt.Println("Active Credentials:")

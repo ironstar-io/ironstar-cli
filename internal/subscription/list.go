@@ -8,6 +8,7 @@ import (
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
@@ -19,11 +20,18 @@ func List(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	color.Green("Using login [" + creds.Login + "]")
+	if strings.ToLower(flg.Output) != "json" {
+		color.Green("Using login [" + creds.Login + "]")
+	}
 
-	uar, err := api.GetUserSubscriptions(creds)
+	uar, err := api.GetUserSubscriptions(creds, flg.Output)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(uar)
+		return nil
 	}
 
 	fmt.Println()

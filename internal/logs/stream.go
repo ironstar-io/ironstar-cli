@@ -7,7 +7,9 @@ import (
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 
 	"github.com/fatih/color"
 	"github.com/pkg/errors"
@@ -25,10 +27,10 @@ func Display(args []string, flg flags.Accumulator) error {
 	}
 
 	if seCtx.Subscription.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, seCtx.Subscription.Alias, seCtx.Subscription.HashedID)
 
 	err = checkLogLabelFlags(flags.Acc.Filenames, flags.Acc.Sources)
 	if err != nil {
@@ -37,6 +39,26 @@ func Display(args []string, flg flags.Accumulator) error {
 
 	startTime := flg.Start
 	endTime := flg.End
+
+	custLogs, err := RetrieveEnvironmentLogs(
+		RetrieveEnvironmentLogsParams{
+			Creds:     creds,
+			SubAlias:  seCtx.Subscription.Alias,
+			EnvName:   seCtx.Environment.Name,
+			Search:    flags.Acc.Search,
+			Start:     startTime,
+			End:       endTime,
+			Filenames: flags.Acc.Filenames,
+			Sources:   flags.Acc.Sources,
+		})
+	if err != nil {
+		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(custLogs)
+		return nil
+	}
 
 	fmt.Println()
 	fmt.Println("Retrieving logs for environment '" + seCtx.Environment.Name + "'")
@@ -56,21 +78,6 @@ func Display(args []string, flg flags.Accumulator) error {
 	if len(flags.Acc.Sources) > 0 {
 		fmt.Println("Sources: " + strings.Join(flags.Acc.Filenames, ", "))
 		fmt.Println()
-	}
-
-	custLogs, err := RetrieveEnvironmentLogs(
-		RetrieveEnvironmentLogsParams{
-			Creds:     creds,
-			SubAlias:  seCtx.Subscription.Alias,
-			EnvName:   seCtx.Environment.Name,
-			Search:    flags.Acc.Search,
-			Start:     startTime,
-			End:       endTime,
-			Filenames: flags.Acc.Filenames,
-			Sources:   flags.Acc.Sources,
-		})
-	if err != nil {
-		return err
 	}
 
 	if custLogs == nil || len(custLogs.Results) == 0 {

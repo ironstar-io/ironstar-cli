@@ -10,9 +10,9 @@ import (
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
-	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
@@ -30,10 +30,10 @@ func List(args []string, flg flags.Accumulator) error {
 	}
 
 	if sub.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription <" + sub.Alias + ">")
+	utils.PrintCommandContext(flg.Output, creds.Login, sub.Alias, sub.HashedID)
 
 	req := &api.Request{
 		Retries:          3,
@@ -50,13 +50,18 @@ func List(args []string, flg flags.Accumulator) error {
 	}
 
 	if res.StatusCode != 200 {
-		return res.HandleFailure()
+		return res.HandleFailure(flg.Output)
 	}
 
 	var bs []types.Build
 	err = yaml.Unmarshal(res.Body, &bs)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(bs)
+		return nil
 	}
 
 	fmt.Println()

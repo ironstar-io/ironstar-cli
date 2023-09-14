@@ -2,14 +2,16 @@ package environment
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/constants"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 
 	"github.com/fatih/color"
-	"github.com/pkg/errors"
 )
 
 func EnableDisableRestore(args []string, flg flags.Accumulator, restoreState string) error {
@@ -24,21 +26,37 @@ func EnableDisableRestore(args []string, flg flags.Accumulator, restoreState str
 	}
 
 	if seCtx.Subscription.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, seCtx.Subscription.Alias, seCtx.Subscription.HashedID)
 
-	err = api.PatchEnvironment(creds, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, restoreState)
+	err = api.PatchEnvironment(creds, flg.Output, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, restoreState)
 	if err != nil {
 		return err
 	}
 
 	if restoreState == constants.RestorePermissionAllowed {
+		if strings.ToLower(flg.Output) == "json" {
+			utils.PrintInterfaceAsJSON(map[string]string{
+				"result": "success",
+				"info":   "Successfully enabled restores to the environment '" + seCtx.Environment.Name + "'",
+			})
+			return nil
+		}
+
 		fmt.Println()
 		color.Green("Successfully enabled restores to the environment '" + seCtx.Environment.Name + "'")
 	}
 	if restoreState == constants.RestorePermissionNotAllowed {
+		if strings.ToLower(flg.Output) == "json" {
+			utils.PrintInterfaceAsJSON(map[string]string{
+				"result": "success",
+				"info":   "Successfully disabled restores to the environment '" + seCtx.Environment.Name + "'",
+			})
+			return nil
+		}
+
 		fmt.Println()
 		color.Green("Successfully disabled restores to the environment '" + seCtx.Environment.Name + "'")
 	}

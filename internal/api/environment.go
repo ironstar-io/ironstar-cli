@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func GetSubscriptionEnvironments(creds types.Keylink, hashOrAlias string) ([]types.Environment, error) {
+func GetSubscriptionEnvironments(creds types.Keylink, output, hashOrAlias string) ([]types.Environment, error) {
 	empty := []types.Environment{}
 	req := &Request{
 		Retries:          3,
@@ -28,7 +28,7 @@ func GetSubscriptionEnvironments(creds types.Keylink, hashOrAlias string) ([]typ
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var envs []types.Environment
@@ -40,7 +40,7 @@ func GetSubscriptionEnvironments(creds types.Keylink, hashOrAlias string) ([]typ
 	return envs, nil
 }
 
-func GetSubscriptionEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAlias string) (types.Environment, error) {
+func GetSubscriptionEnvironment(creds types.Keylink, output, subHashOrAlias, envHashOrAlias string) (types.Environment, error) {
 	empty := types.Environment{}
 	req := &Request{
 		Retries:          3,
@@ -57,7 +57,7 @@ func GetSubscriptionEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAl
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var env types.Environment
@@ -69,7 +69,7 @@ func GetSubscriptionEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAl
 	return env, nil
 }
 
-func PatchEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAlias, restorePermission string) error {
+func PatchEnvironment(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, restorePermission string) error {
 	req := &Request{
 		Retries:         3,
 		RunTokenRefresh: true,
@@ -87,13 +87,13 @@ func PatchEnvironment(creds types.Keylink, subHashOrAlias, envHashOrAlias, resto
 	}
 
 	if res.StatusCode != 204 {
-		return res.HandleFailure()
+		return res.HandleFailure(output)
 	}
 
 	return nil
 }
 
-func PostEnvironmentHook(creds types.Keylink, subHashOrAlias, envHashOrAlias, hookName string) error {
+func PostEnvironmentHook(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, hookName string) error {
 	req := &Request{
 		Retries:         3,
 		RunTokenRefresh: true,
@@ -111,13 +111,13 @@ func PostEnvironmentHook(creds types.Keylink, subHashOrAlias, envHashOrAlias, ho
 	}
 
 	if res.StatusCode != 204 {
-		return res.HandleFailure()
+		return res.HandleFailure(output)
 	}
 
 	return nil
 }
 
-func DeleteEnvironmentHook(creds types.Keylink, subHashOrAlias, envHashOrAlias, hookName string) error {
+func DeleteEnvironmentHook(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, hookName string) error {
 	req := &Request{
 		Retries:          3,
 		RunTokenRefresh:  true,
@@ -133,7 +133,7 @@ func DeleteEnvironmentHook(creds types.Keylink, subHashOrAlias, envHashOrAlias, 
 	}
 
 	if res.StatusCode != 204 {
-		return res.HandleFailure()
+		return res.HandleFailure(output)
 	}
 
 	return nil
@@ -152,7 +152,7 @@ func GetEnvironmentContext(creds types.Keylink, flg flags.Accumulator, subHashOr
 		envID = env
 	}
 
-	env, err := GetSubscriptionEnvironment(creds, subHashOrAlias, envID)
+	env, err := GetSubscriptionEnvironment(creds, flg.Output, subHashOrAlias, envID)
 	if err != nil {
 		return empty, err
 	}

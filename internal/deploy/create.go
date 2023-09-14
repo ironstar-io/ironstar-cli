@@ -2,12 +2,14 @@ package deploy
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -27,10 +29,10 @@ func Create(args []string, flg flags.Accumulator) error {
 	}
 
 	if sub.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, sub.Alias, sub.HashedID)
 
 	var envID string
 	if flg.Environment == "" {
@@ -72,13 +74,18 @@ func Create(args []string, flg flags.Accumulator) error {
 	}
 
 	if res.StatusCode != 201 {
-		return res.HandleFailure()
+		return res.HandleFailure(flg.Output)
 	}
 
 	var d types.Deployment
 	err = yaml.Unmarshal(res.Body, &d)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(d)
+		return nil
 	}
 
 	fmt.Println()
@@ -112,7 +119,7 @@ func checkOperatingEnvironment(flg flags.Accumulator, creds types.Keylink, subID
 	}
 
 	if res.StatusCode != 200 {
-		return res.HandleFailure()
+		return res.HandleFailure(flg.Output)
 	}
 
 	var env types.Environment

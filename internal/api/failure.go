@@ -5,11 +5,18 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/fatih/color"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 )
 
-func (err *APIError) Error() {
+func (err *APIError) Error(output string) {
+	if strings.ToLower(output) == "json" {
+		utils.PrintInterfaceAsJSON(err)
+		return
+	}
+
 	fmt.Println()
 
 	switch err.StatusCode {
@@ -51,7 +58,7 @@ func (err *APIError) Error() {
 
 var ErrIronstarAPICall = errors.New("Ironstar API call was unsuccessful!")
 
-func (res *RawResponse) HandleFailure() error {
+func (res *RawResponse) HandleFailure(output string) error {
 	var apiErr APIError
 	var correlationId string
 
@@ -70,12 +77,14 @@ func (res *RawResponse) HandleFailure() error {
 		f := &FailureBody{}
 		err := json.Unmarshal(res.Body, f)
 		if err != nil {
-			fmt.Println()
-			fmt.Println("An unexpected error occurred")
-			fmt.Println()
-			fmt.Println("The server responded with status code " + strconv.Itoa(res.StatusCode))
-			if res.Body != nil {
-				fmt.Println(string(res.Body))
+			if strings.ToLower(output) != "json" {
+				fmt.Println()
+				fmt.Println("An unexpected error occurred")
+				fmt.Println()
+				fmt.Println("The server responded with status code " + strconv.Itoa(res.StatusCode))
+				if res.Body != nil {
+					fmt.Println(string(res.Body))
+				}
 			}
 			return errors.New("Unable to read server response body")
 		}
@@ -88,7 +97,8 @@ func (res *RawResponse) HandleFailure() error {
 		}
 	}
 
-	apiErr.Error()
+	apiErr.Result = "error"
+	apiErr.Error(output)
 
 	return ErrIronstarAPICall
 }

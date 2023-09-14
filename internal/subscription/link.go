@@ -1,6 +1,8 @@
 package subscription
 
 import (
+	"strings"
+
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
@@ -19,7 +21,9 @@ func Link(args []string, flg flags.Accumulator) error {
 		return err
 	}
 
-	color.Green("Using login [" + creds.Login + "]")
+	if strings.ToLower(flg.Output) != "json" {
+		color.Green("Using login [" + creds.Login + "]")
+	}
 
 	var hashOrAlias string
 	if len(args) == 0 {
@@ -33,7 +37,7 @@ func Link(args []string, flg flags.Accumulator) error {
 		hashOrAlias = args[0]
 	}
 
-	sub, err := api.GetSubscription(creds, hashOrAlias)
+	sub, err := api.GetSubscription(creds, flg.Output, hashOrAlias)
 	if err != nil {
 		return err
 	}

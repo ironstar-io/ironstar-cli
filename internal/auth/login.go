@@ -102,7 +102,7 @@ func postLogin(email, password string, lockSessionToIP bool) (*api.RawResponse, 
 	}
 
 	if res.StatusCode != 200 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure("text")
 	}
 
 	return res, nil
@@ -128,7 +128,7 @@ func postMFAValidate(MFAAuthToken, passcode string) (*api.RawResponse, error) {
 	}
 
 	if res.StatusCode != 200 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure("text")
 	}
 
 	return res, nil
@@ -221,7 +221,7 @@ func resetUserPassword(flg flags.Accumulator, email, PWResetAuthToken, mfaStatus
 	}
 
 	if res.StatusCode != 204 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure(flg.Output)
 	}
 
 	fmt.Println()

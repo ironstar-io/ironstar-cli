@@ -3,15 +3,16 @@ package deploy
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
-	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
@@ -37,10 +38,10 @@ func retrieveAndDisplayEnvDeployments(creds types.Keylink, flg flags.Accumulator
 	}
 
 	if seCtx.Subscription.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + seCtx.Subscription.Alias + "' (" + seCtx.Subscription.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, seCtx.Subscription.Alias, seCtx.Subscription.HashedID)
 
 	qs := services.BuildQSFilters(flg, "10")
 	req := &api.Request{
@@ -58,7 +59,7 @@ func retrieveAndDisplayEnvDeployments(creds types.Keylink, flg flags.Accumulator
 	}
 
 	if res.StatusCode != 200 {
-		return res.HandleFailure()
+		return res.HandleFailure(flg.Output)
 	}
 
 	var ds []types.Deployment
@@ -67,7 +68,7 @@ func retrieveAndDisplayEnvDeployments(creds types.Keylink, flg flags.Accumulator
 		return err
 	}
 
-	return displayDeployments(ds)
+	return displayDeployments(flg.Output, ds)
 }
 
 func retrieveAndDisplaySubDeployments(creds types.Keylink, flg flags.Accumulator) error {
@@ -77,10 +78,10 @@ func retrieveAndDisplaySubDeployments(creds types.Keylink, flg flags.Accumulator
 	}
 
 	if sub.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription '" + sub.Alias + "' (" + sub.HashedID + ")")
+	utils.PrintCommandContext(flg.Output, creds.Login, sub.Alias, sub.HashedID)
 
 	qs := services.BuildQSFilters(flg, "10")
 	req := &api.Request{
@@ -98,7 +99,7 @@ func retrieveAndDisplaySubDeployments(creds types.Keylink, flg flags.Accumulator
 	}
 
 	if res.StatusCode != 200 {
-		return res.HandleFailure()
+		return res.HandleFailure(flg.Output)
 	}
 
 	var ds []types.Deployment
@@ -107,10 +108,15 @@ func retrieveAndDisplaySubDeployments(creds types.Keylink, flg flags.Accumulator
 		return err
 	}
 
-	return displayDeployments(ds)
+	return displayDeployments(flg.Output, ds)
 }
 
-func displayDeployments(ds []types.Deployment) error {
+func displayDeployments(output string, ds []types.Deployment) error {
+	if strings.ToLower(output) == "json" {
+		utils.PrintInterfaceAsJSON(ds)
+		return nil
+	}
+
 	fmt.Println()
 	fmt.Println("Deployments:")
 

@@ -2,11 +2,13 @@ package pkg
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
 	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 
 	"github.com/fatih/color"
 	"github.com/pkg/errors"
@@ -24,10 +26,10 @@ func UpdateRef(args []string, flg flags.Accumulator) error {
 	}
 
 	if sub.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription <" + sub.Alias + ">")
+	utils.PrintCommandContext(flg.Output, creds.Login, sub.Alias, sub.HashedID)
 
 	pi, err := getBuildName(args)
 	if err != nil {
@@ -56,7 +58,12 @@ func UpdateRef(args []string, flg flags.Accumulator) error {
 	}
 
 	if res.StatusCode != 204 {
-		return res.HandleFailure()
+		return res.HandleFailure(flg.Output)
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(res)
+		return nil
 	}
 
 	fmt.Println()

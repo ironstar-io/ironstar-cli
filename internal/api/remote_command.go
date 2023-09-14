@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func GetRemoteCommands(creds types.Keylink, subHashOrAlias, envHashOrAlias string) ([]types.RemoteCommandResponse, error) {
+func GetRemoteCommands(creds types.Keylink, output, subHashOrAlias, envHashOrAlias string) ([]types.RemoteCommandResponse, error) {
 	empty := []types.RemoteCommandResponse{}
 	req := &Request{
 		Retries:          3,
@@ -28,7 +28,7 @@ func GetRemoteCommands(creds types.Keylink, subHashOrAlias, envHashOrAlias strin
 	}
 
 	if res.StatusCode != 200 {
-		return empty, res.HandleFailure()
+		return empty, res.HandleFailure(output)
 	}
 
 	var rcs []types.RemoteCommandResponse
@@ -40,7 +40,7 @@ func GetRemoteCommands(creds types.Keylink, subHashOrAlias, envHashOrAlias strin
 	return rcs, nil
 }
 
-func PostRemoteCommandDrushCacheRebuild(creds types.Keylink, subHashOrAlias, envHashOrAlias string, envVars []types.RemoteCommandEnvironmentVariable, timeout int) (*types.RemoteCommandResponse, error) {
+func PostRemoteCommandDrushCacheRebuild(creds types.Keylink, output, subHashOrAlias, envHashOrAlias string, envVars []types.RemoteCommandEnvironmentVariable, timeout int) (*types.RemoteCommandResponse, error) {
 	req := &Request{
 		Retries:         3,
 		RunTokenRefresh: true,
@@ -59,7 +59,7 @@ func PostRemoteCommandDrushCacheRebuild(creds types.Keylink, subHashOrAlias, env
 	}
 
 	if res.StatusCode != 201 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure(output)
 	}
 
 	var rcs *types.RemoteCommandResponse
@@ -71,7 +71,7 @@ func PostRemoteCommandDrushCacheRebuild(creds types.Keylink, subHashOrAlias, env
 	return rcs, nil
 }
 
-func PostRemoteCommandDrush(creds types.Keylink, subHashOrAlias, envHashOrAlias string, args string, envVars []types.RemoteCommandEnvironmentVariable, timeout int) (*types.RemoteCommandResponse, error) {
+func PostRemoteCommandDrush(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, args string, envVars []types.RemoteCommandEnvironmentVariable, timeout int) (*types.RemoteCommandResponse, error) {
 	req := &Request{
 		Retries:         3,
 		RunTokenRefresh: true,
@@ -91,7 +91,7 @@ func PostRemoteCommandDrush(creds types.Keylink, subHashOrAlias, envHashOrAlias 
 	}
 
 	if res.StatusCode != 201 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure(output)
 	}
 
 	var rcs *types.RemoteCommandResponse
@@ -103,7 +103,7 @@ func PostRemoteCommandDrush(creds types.Keylink, subHashOrAlias, envHashOrAlias 
 	return rcs, nil
 }
 
-func PostRemoteCommandShell(creds types.Keylink, subHashOrAlias, envHashOrAlias string, workDir, command string, envVars []types.RemoteCommandEnvironmentVariable, timeout int) (*types.RemoteCommandResponse, error) {
+func PostRemoteCommandShell(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, workDir, command string, envVars []types.RemoteCommandEnvironmentVariable, timeout int) (*types.RemoteCommandResponse, error) {
 	req := &Request{
 		Retries:         3,
 		RunTokenRefresh: true,
@@ -124,7 +124,7 @@ func PostRemoteCommandShell(creds types.Keylink, subHashOrAlias, envHashOrAlias 
 	}
 
 	if res.StatusCode != 201 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure(output)
 	}
 
 	var rcs *types.RemoteCommandResponse
@@ -136,7 +136,7 @@ func PostRemoteCommandShell(creds types.Keylink, subHashOrAlias, envHashOrAlias 
 	return rcs, nil
 }
 
-func GetRemoteCommand(creds types.Keylink, subHashOrAlias, envHashOrAlias string, rcni string) (*types.RemoteCommandResponse, error) {
+func GetRemoteCommand(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, rcni string) (*types.RemoteCommandResponse, error) {
 	req := &Request{
 		Retries:         3,
 		RunTokenRefresh: true,
@@ -151,7 +151,7 @@ func GetRemoteCommand(creds types.Keylink, subHashOrAlias, envHashOrAlias string
 	}
 
 	if res.StatusCode != 200 {
-		return nil, res.HandleFailure()
+		return nil, res.HandleFailure(output)
 	}
 
 	var rcs *types.RemoteCommandResponse

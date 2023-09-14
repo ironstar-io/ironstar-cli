@@ -2,13 +2,15 @@ package pkg
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/api"
+	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/services"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
-	"github.com/fatih/color"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -25,10 +27,10 @@ func Create(args []string, flg flags.Accumulator) error {
 	}
 
 	if sub.Alias == "" {
-		return errors.New("No Ironstar subscription has been linked to this project. Have you run `iron subscription link [subscription-name]`")
+		return errs.ErrNoSubLink
 	}
 
-	color.Green("Using login [" + creds.Login + "] for subscription <" + sub.Alias + ">")
+	utils.PrintCommandContext(flg.Output, creds.Login, sub.Alias, sub.HashedID)
 
 	if flg.Tag != "" && flg.Branch != "" {
 		return errors.New("The fields 'branch' and 'tag' should not be specified at the same time.")
@@ -48,6 +50,11 @@ func Create(args []string, flg flags.Accumulator) error {
 	err = yaml.Unmarshal(res.Body, &ur)
 	if err != nil {
 		return err
+	}
+
+	if strings.ToLower(flg.Output) == "json" {
+		utils.PrintInterfaceAsJSON(ur)
+		return nil
 	}
 
 	fmt.Println("PACKAGE ID: " + ur.BuildID)
