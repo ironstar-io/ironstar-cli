@@ -170,7 +170,7 @@ type RemoteCommandResponse struct {
 	Command              string                             `json:"command" yaml:"command"`
 	WorkDir              string                             `json:"work_dir" yaml:"work_dir"`
 	Timeout              int                                `json:"timeout" yaml:"timeout"`
-	EnvironmentVariables []RemoteCommandEnvironmentVariable `json:"environment_variables" yaml:"environment_variables"`
+	EnvironmentVariables []RemoteCommandEnvironmentVariable `json:"environment_variables,omitempty" yaml:"environment_variables"`
 	Status               CommandStatus                      `json:"status" yaml:"status"`
 	Creator              RemoteCommandCreator               `json:"creator" yaml:"creator"`
 	CreatedAt            time.Time                          `json:"created_at" yaml:"created_at"`
@@ -182,11 +182,11 @@ type RemoteCommandEnvironmentVariable struct {
 }
 
 type CommandStatus struct {
-	Lifecycle        string    `json:"lifecycle" yaml:""`
-	CancellationTime time.Time `json:"cancellationTime" yaml:"cancellationTime"`
-	ExecutionStart   time.Time `json:"executionStart" yaml:"executionStart"`
-	ExecutionEnd     time.Time `json:"executionEnd" yaml:"executionEnd"`
-	Error            string    `json:"error" yaml:"error"`
+	Lifecycle        string     `json:"lifecycle,omitempty" yaml:""`
+	CancellationTime *time.Time `json:"cancellationTime,omitempty" yaml:"cancellationTime"`
+	ExecutionStart   *time.Time `json:"executionStart,omitempty" yaml:"executionStart"`
+	ExecutionEnd     *time.Time `json:"executionEnd,omitempty" yaml:"executionEnd"`
+	Error            string     `json:"error,omitempty" yaml:"error"`
 }
 
 type RemoteCommandCreator struct {
