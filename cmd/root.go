@@ -203,6 +203,7 @@ func RootCmd() *cobra.Command {
 	backup.NewCmd.PersistentFlags().BoolVarP(&flags.Acc.LockTables, "lock-tables", "", false, "Pass the `--lock-tables` flag to mysqldump")
 	backup.DownloadCmd.PersistentFlags().StringVarP(&flags.Acc.SavePath, "save-path", "", "", "Select a custom save path for your backup download. Default: ./.ironstar/backups/{subscription}/{environment}")
 	backup.DownloadCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "Select the backup to be the base for download")
+	backup.DownloadCmd.PersistentFlags().BoolVarP(&flags.Acc.Latest, "latest", "", false, "Automatically select the latest available backup to be the base for download. Must set or supply an environment.")
 	backup.ListCmd.PersistentFlags().StringVarP(&flags.Acc.BackupType, "backup-type", "", "", "Filter the backup types to return. Either 'manual' or 'scheduled'")
 	backup.InfoCmd.PersistentFlags().StringVarP(&flags.Acc.BackupType, "backup-type", "", "", "Filter the backup types to return. Either 'manual' or 'scheduled'")
 
