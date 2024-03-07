@@ -39,6 +39,7 @@ type Accumulator struct {
 	CustomPackage     string
 	SrcEnvironment    string
 	DestEnvironment   string
+	Latest            bool
 	UseLatestBackup   bool
 	LockSessionToIP   bool
 	Timeout           int

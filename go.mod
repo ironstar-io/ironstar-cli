@@ -8,6 +8,7 @@ require (
 	github.com/fatih/color v1.15.0
 	github.com/gernest/wow v0.1.0
 	github.com/ironstar-io/cron v0.0.0-20200911073046-f389219e1823
+	github.com/jinzhu/copier v0.4.0
 	github.com/metal3d/go-slugify v0.0.0-20160607203414-7ac2014b2f23
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/pkg/errors v0.9.1
