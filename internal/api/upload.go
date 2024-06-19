@@ -15,7 +15,7 @@ import (
 
 // UploadPackage - Create a project tarball in tmp
 func UploadPackage(creds types.Keylink, subHash, tarpath string, flg flags.Accumulator) (*RawResponse, error) {
-	if flg.CustomPackage != "" {
+	if flg.CustomPackage == "" {
 		color.Red(`Warning! This command uploads the contents of this directory to your Ironstar Subscription. Only paths listed under the "exclude" settings in your .ironstar/config.yml file will be excluded.
 
 This means that any database files, .env files, or other potentially sensitive content that you have in this repository that is not in the exclude list will be uploaded to the remote environment and possibly made publicly visible.
@@ -60,6 +60,10 @@ Please proceed with caution.
 			if err != nil {
 				console.SpinPersist(wo, "⛔", "There was an error while uploading the package\n")
 				return nil, err
+			}
+			if res.StatusCode < 199 || res.StatusCode > 299 {
+				console.SpinPersist(wo, "⛔", "There was an error while uploading the package\n")
+				return nil, fmt.Errorf("an error occurred with status %d: %s", res.StatusCode, res.Body)
 			}
 
 			console.SpinPersist(wo, "💾", "Package upload completed successfully!\n")
