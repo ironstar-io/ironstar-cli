@@ -181,9 +181,6 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 		out.Close()
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
 
 	ir := &RawResponse{
 		StatusCode: resp.StatusCode,
