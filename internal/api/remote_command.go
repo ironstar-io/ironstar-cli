@@ -19,7 +19,7 @@ func GetRemoteCommands(creds types.Keylink, output, subHashOrAlias, envHashOrAli
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/remote-cmds",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

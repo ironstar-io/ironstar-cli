@@ -21,7 +21,7 @@ func GetRelease(version string) (*api.RawResponse, error) {
 	req := api.Request{
 		Method:           "GET",
 		URL:              "https://api.github.com/repos/ironstar-io/ironstar-cli/releases" + version,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 	res, err := req.HTTPSend()
 	if err != nil {

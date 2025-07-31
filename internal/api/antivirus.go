@@ -16,7 +16,7 @@ func GetEnvironmentAntivirusScans(creds types.Keylink, output, subHashOrAlias, e
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/antivirus-scans",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 		Retries:          3,
 	}
 

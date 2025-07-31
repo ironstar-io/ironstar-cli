@@ -79,7 +79,7 @@ func GetSubscriptionBackupIterations(creds types.Keylink, output, subAliasOrHash
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/backups" + qs,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -107,7 +107,7 @@ func DownloadEnvironmentBackupComponent(creds types.Keylink, output, subAliasOrH
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backups/" + backupName + "/download?component=" + buComp.Name,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	resp, err := req.ArimaDownload(savePath, buComp.Name)
@@ -135,7 +135,7 @@ func GetEnvironmentBackupIterations(creds types.Keylink, output, subAliasOrHashe
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backups" + qs,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -164,7 +164,7 @@ func GetLatestEnvironmentBackupIteration(creds types.Keylink, output, subAliasOr
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backup-iterations?latest=true",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -193,7 +193,7 @@ func GetEnvironmentBackup(creds types.Keylink, output, subAliasOrHashedID, envNa
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backups/" + backupName,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -225,7 +225,7 @@ func GetSubscriptionBackup(creds types.Keylink, output, subAliasOrHashedID, back
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/backups/" + backupName,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

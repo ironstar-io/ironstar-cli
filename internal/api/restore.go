@@ -51,7 +51,7 @@ func GetSubscriptionRestoreIterations(creds types.Keylink, output, subAliasOrHas
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/restores",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -80,7 +80,7 @@ func GetEnvironmentRestoreIterations(creds types.Keylink, output, subAliasOrHash
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/restore-requests",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -109,7 +109,7 @@ func GetEnvironmentRestore(creds types.Keylink, output, subAliasOrHashedID, envN
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/restore-requests/" + restoreName,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

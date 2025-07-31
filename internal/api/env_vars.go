@@ -17,7 +17,7 @@ func GetEnvironmentEnvVars(creds types.Keylink, output, subHashOrAlias, envHashO
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/env-vars",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

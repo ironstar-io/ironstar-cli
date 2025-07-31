@@ -85,7 +85,7 @@ func GetSubscriptionSync(creds types.Keylink, output string, subAliasOrHashedID,
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/sync-requests/" + syncName,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -114,7 +114,7 @@ func GetSubscriptionSyncRequests(creds types.Keylink, output string, subAliasOrH
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/sync-requests",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

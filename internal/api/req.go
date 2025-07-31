@@ -31,6 +31,8 @@ type Request struct {
 const IronstarProductionAPIDomain = "https://api.ironstar.io"
 const IronstarArimaProductionAPIDomain = "https://uploads.ironstar.io"
 
+var version string
+
 func GetNankaiBaseURL() string {
 	ipa := os.Getenv("IRONSTAR_API_ADDRESS")
 	if ipa != "" {
@@ -167,6 +169,7 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 	}
 
 	req.Header.Add("content-type", "application/json")
+	req.Header.Add("user-agent", fmt.Sprintf("ironstar-cli/%s", version))
 	if r.Credentials.AuthToken != "" {
 		req.Header.Add("authorization", "Bearer "+r.Credentials.AuthToken)
 	}
@@ -246,6 +249,7 @@ func (r *Request) HTTPSend() (*RawResponse, error) {
 	}
 
 	req.Header.Add("content-type", "application/json")
+	req.Header.Add("user-agent", fmt.Sprintf("ironstar-cli/%s", version))
 	if r.Credentials.AuthToken != "" {
 		req.Header.Add("authorization", "Bearer "+r.Credentials.AuthToken)
 	}
