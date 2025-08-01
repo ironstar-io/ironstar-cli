@@ -2,7 +2,7 @@ VERSION_PATH ?= github.com/ironstar-io/ironstar-cli/internal/system/version
 API_PATH     ?= github.com/ironstar-io/ironstar-cli/internal/api
 BUILD_DATE   ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 VERSION      ?= $(shell git describe --tags)
-GO_IMAGE     ?= golang:1.22
+GO_IMAGE     ?= golang:1.24.3
 
 DOCKER_SCRIPT=docker run --rm \
 		-v $(PWD)/.cache/go:/.cache \
