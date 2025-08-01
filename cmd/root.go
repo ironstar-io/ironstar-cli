@@ -180,6 +180,7 @@ func RootCmd() *cobra.Command {
 	// rootCmd.PersistentFlags().BoolP("force", "", false, "Forcefully skip destructive confirmation prompts")
 	// rootCmd.PersistentFlags().BoolP("debug", "d", false, "Enable debug mode, command output is printed to the console")
 	rootCmd.PersistentFlags().BoolVarP(&flags.Acc.AutoAccept, "yes", "y", false, "Auto-accept any non-destructive confirmation prompts")
+	rootCmd.PersistentFlags().BoolVarP(&flags.Acc.InsecureSkipVerify, "insecure", "i", false, "Disable TLS verification (Warning: this should only be used in local development)")
 
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Login, "login", "l", "", "Force use of a specified logins' credentials")
 	rootCmd.PersistentFlags().StringVarP(&flags.Acc.Output, "output", "o", "", "Use a certain output type. Not applicable on all commands.")

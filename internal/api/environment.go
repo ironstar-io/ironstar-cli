@@ -124,7 +124,7 @@ func DeleteEnvironmentHook(creds types.Keylink, output, subHashOrAlias, envHashO
 		Credentials:      creds,
 		Method:           "DELETE",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/hook/" + hookName,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

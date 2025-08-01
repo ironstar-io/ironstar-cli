@@ -9,8 +9,10 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 
+	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
@@ -76,6 +78,12 @@ func (wc WriteCounter) PrintProgress() {
 }
 
 func (r *Request) BuildBytePayload() error {
+	// Remove request body if not one of the supported methods.
+	methodsWithBody := []string{http.MethodPost, http.MethodPatch, http.MethodPut}
+	if !slices.Contains(methodsWithBody, r.Method) {
+		r.MapStringPayload = nil
+	}
+
 	if r.MapStringPayload != nil {
 		b, err := json.Marshal(r.MapStringPayload)
 		if err != nil {
@@ -176,7 +184,7 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 
 	client := &http.Client{
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: flags.Acc.InsecureSkipVerify},
 		},
 	}
 	resp, err := client.Do(req)
@@ -243,6 +251,7 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 }
 
 func (r *Request) HTTPSend() (*RawResponse, error) {
+
 	req, err := http.NewRequest(r.Method, r.URL, bytes.NewBuffer(r.BytePayload))
 	if err != nil {
 		return nil, err
@@ -256,7 +265,7 @@ func (r *Request) HTTPSend() (*RawResponse, error) {
 
 	client := &http.Client{
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: flags.Acc.InsecureSkipVerify},
 		},
 	}
 	resp, err := client.Do(req)

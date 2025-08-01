@@ -96,7 +96,7 @@ func DeleteEnvironmentEnvVar(creds types.Keylink, output, subHashOrAlias, envHas
 		Credentials:      creds,
 		Method:           "DELETE",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/env-var/" + key,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

@@ -51,7 +51,7 @@ func DeleteBackup(creds types.Keylink, output string, payload types.DeleteBackup
 		Credentials:      creds,
 		Method:           "DELETE",
 		Path:             "/subscription/" + payload.SubscriptionID + "/backups/" + payload.Name,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
