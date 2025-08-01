@@ -16,62 +16,37 @@ DOCKER_SCRIPT=docker run --rm \
 		-it \
 		$(GO_IMAGE) \
 
+GO_BUILD=go build \
+	-trimpath \
+	-ldflags "-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
+	-X $(VERSION_PATH).version=$(VERSION) \
+	-X $(API_PATH).version=$(VERSION)"
+
 build:
 	time \
-	go build \
-	-trimpath \
-	-ldflags "\
-	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
-	-X $(VERSION_PATH).version=$(VERSION) \
-	-X $(API_PATH).version=$(VERSION) \
-	" -o ./dist/iron
+	$(GO_BUILD) -o ./dist/iron
 
 build-all: build-macos-amd64 build-macos-arm64 build-windows build-linux-amd64 build-linux-arm64
 
 build-windows:
 	env GOOS=windows GOARCH=amd64 \
-	go build \
-	-trimpath \
-	-ldflags "\
-	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
-	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/iron-windows.exe
+	$(GO_BUILD) -o ./dist/iron-windows.exe
 
 build-linux-amd64:
 	env GOOS=linux GOARCH=amd64 \
-	go build \
-	-trimpath \
-	-ldflags "\
-	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
-	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/iron-linux-amd64
+	$(GO_BUILD) -o ./dist/iron-linux-amd64
 
 build-linux-arm64:
 	env GOOS=linux GOARCH=arm64 \
-	go build \
-	-trimpath \
-	-ldflags "\
-	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
-	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/iron-linux-arm64
+	$(GO_BUILD) -o ./dist/iron-linux-arm64
 
 build-macos-amd64:
 	env GOOS=darwin GOARCH=amd64 \
-	go build \
-	-trimpath \
-	-ldflags "\
-	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
-	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/iron-macos
+	$(GO_BUILD) -o ./dist/iron-macos
 
 build-macos-arm64:
 	env GOOS=darwin GOARCH=arm64 \
-	go build \
-	-trimpath \
-	-ldflags "\
-	-X $(VERSION_PATH).buildDate=$(BUILD_DATE) \
-	-X $(VERSION_PATH).version=$(VERSION) \
-	" -o ./dist/iron-macos-arm64
+	$(GO_BUILD) -o ./dist/iron-macos-arm64
 
 .PHONY: docker-run
 docker-run: ## Run a CLI command in Docker, exiting immediately
