@@ -19,7 +19,7 @@ func GetSubscriptionEnvironments(creds types.Keylink, output, hashOrAlias string
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + hashOrAlias + "/environments",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -48,7 +48,7 @@ func GetSubscriptionEnvironment(creds types.Keylink, output, subHashOrAlias, env
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -124,7 +124,7 @@ func DeleteEnvironmentHook(creds types.Keylink, output, subHashOrAlias, envHashO
 		Credentials:      creds,
 		Method:           "DELETE",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/hook/" + hookName,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

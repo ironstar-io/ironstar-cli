@@ -17,7 +17,7 @@ func GetEnvironmentCacheInvalidations(creds types.Keylink, output, subHashOrAlia
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/cache-invalidations",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -46,7 +46,7 @@ func GetEnvironmentCacheInvalidation(creds types.Keylink, output, subHashOrAlias
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/cache-invalidations/" + invalidationName,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

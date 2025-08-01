@@ -9,8 +9,10 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 
+	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
@@ -30,6 +32,8 @@ type Request struct {
 
 const IronstarProductionAPIDomain = "https://api.ironstar.io"
 const IronstarArimaProductionAPIDomain = "https://uploads.ironstar.io"
+
+var version string
 
 func GetNankaiBaseURL() string {
 	ipa := os.Getenv("IRONSTAR_API_ADDRESS")
@@ -74,6 +78,12 @@ func (wc WriteCounter) PrintProgress() {
 }
 
 func (r *Request) BuildBytePayload() error {
+	// Remove request body if not one of the supported methods.
+	methodsWithBody := []string{http.MethodPost, http.MethodPatch, http.MethodPut}
+	if !slices.Contains(methodsWithBody, r.Method) {
+		r.MapStringPayload = nil
+	}
+
 	if r.MapStringPayload != nil {
 		b, err := json.Marshal(r.MapStringPayload)
 		if err != nil {
@@ -167,13 +177,14 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 	}
 
 	req.Header.Add("content-type", "application/json")
+	req.Header.Add("user-agent", fmt.Sprintf("ironstar-cli/%s", version))
 	if r.Credentials.AuthToken != "" {
 		req.Header.Add("authorization", "Bearer "+r.Credentials.AuthToken)
 	}
 
 	client := &http.Client{
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: flags.Acc.InsecureSkipVerify},
 		},
 	}
 	resp, err := client.Do(req)
@@ -240,19 +251,21 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 }
 
 func (r *Request) HTTPSend() (*RawResponse, error) {
+
 	req, err := http.NewRequest(r.Method, r.URL, bytes.NewBuffer(r.BytePayload))
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Add("content-type", "application/json")
+	req.Header.Add("user-agent", fmt.Sprintf("ironstar-cli/%s", version))
 	if r.Credentials.AuthToken != "" {
 		req.Header.Add("authorization", "Bearer "+r.Credentials.AuthToken)
 	}
 
 	client := &http.Client{
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: flags.Acc.InsecureSkipVerify},
 		},
 	}
 	resp, err := client.Do(req)

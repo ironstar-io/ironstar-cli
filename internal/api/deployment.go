@@ -17,7 +17,7 @@ func GetDeployment(creds types.Keylink, output, deployID string) (types.Deployme
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/deployment/" + deployID,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -46,7 +46,7 @@ func GetDeploymentActivity(creds types.Keylink, output, deployID string) ([]type
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/deployment/" + deployID + "/activity",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

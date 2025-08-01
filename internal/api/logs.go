@@ -45,7 +45,7 @@ func GetEnvironmentLogStreams(creds types.Keylink, subAliasOrHashedID, envNameOr
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/log-streams",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	resp, err := req.ArimaSend()
@@ -73,7 +73,7 @@ func GetEnvironmentLogLabelValues(creds types.Keylink, subAliasOrHashedID, envNa
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             fmt.Sprintf("/subscription/%s/environment/%s/log-label-values?label=%s", subAliasOrHashedID, envNameOrHashedID, label),
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	resp, err := req.NankaiSend()

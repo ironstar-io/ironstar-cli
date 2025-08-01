@@ -16,7 +16,7 @@ func GetCurrentAPIUsageTerms() (types.APIUsageTerms, error) {
 		Credentials:      types.Keylink{},
 		Method:           "GET",
 		Path:             "/api-usage-terms",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 		Retries:          3,
 	}
 

@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 )
 
@@ -81,7 +82,7 @@ func (s *Stream) Send() (*RawResponse, error) {
 
 	client := &http.Client{
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: flags.Acc.InsecureSkipVerify},
 		},
 	}
 	resp, err := client.Do(req)

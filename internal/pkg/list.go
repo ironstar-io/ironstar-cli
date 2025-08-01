@@ -41,7 +41,7 @@ func List(args []string, flg flags.Accumulator) error {
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + sub.HashedID + "/builds",
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()

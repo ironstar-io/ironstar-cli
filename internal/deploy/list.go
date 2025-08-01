@@ -50,7 +50,7 @@ func retrieveAndDisplayEnvDeployments(creds types.Keylink, flg flags.Accumulator
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + seCtx.Subscription.HashedID + "/environment/" + seCtx.Environment.HashedID + "/deployments" + qs,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
@@ -90,7 +90,7 @@ func retrieveAndDisplaySubDeployments(creds types.Keylink, flg flags.Accumulator
 		Credentials:      creds,
 		Method:           "GET",
 		Path:             "/subscription/" + sub.HashedID + "/deployments" + qs,
-		MapStringPayload: map[string]interface{}{},
+		MapStringPayload: nil,
 	}
 
 	res, err := req.NankaiSend()
