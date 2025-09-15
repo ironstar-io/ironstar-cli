@@ -195,10 +195,19 @@ func UploadPackage(creds types.Keylink, subHash, tarpath string, flg flags.Accum
 		return empty, err
 	}
 
-	fmt.Println("PACKAGE ID: " + ur.BuildID)
-	fmt.Println("PACKAGE NAME: " + ur.BuildName)
+	buildID := ur.HashedId
+	if buildID == "" {
+		buildID = ur.BuildID
+	}
+	buildName := ur.Name
+	if buildName == "" {
+		buildName = ur.BuildName
+	}
+
+	fmt.Println("PACKAGE ID: " + buildID)
+	fmt.Println("PACKAGE NAME: " + buildName)
 	fmt.Println()
 	color.Green("Continuing to deployment...")
 
-	return ur.BuildID, nil
+	return buildID, nil
 }

@@ -76,7 +76,7 @@ Please proceed with caution.
 		return nil, errors.Wrap(err, errs.UploadFailedErrorMsg)
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode < 199 || res.StatusCode > 299 {
 		return nil, res.HandleFailure(flg.Output)
 	}
 

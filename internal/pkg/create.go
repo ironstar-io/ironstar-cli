@@ -57,6 +57,20 @@ func Create(args []string, flg flags.Accumulator) error {
 		return nil
 	}
 
+	// Ensure both BuildID and HashedId are populated
+	if ur.BuildID == "" && ur.HashedId != "" {
+		ur.BuildID = ur.HashedId
+	} else if ur.HashedId == "" && ur.BuildID != "" {
+		ur.HashedId = ur.BuildID
+	}
+
+	// Ensure both BuildName and Name are populated
+	if ur.BuildName == "" && ur.Name != "" {
+		ur.BuildName = ur.Name
+	} else if ur.Name == "" && ur.BuildName != "" {
+		ur.Name = ur.BuildName
+	}
+
 	fmt.Println("PACKAGE ID: " + ur.BuildID)
 	fmt.Println("PACKAGE NAME: " + ur.BuildName)
 

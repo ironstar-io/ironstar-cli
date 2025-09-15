@@ -340,6 +340,18 @@ type UploadResponse struct {
 	PackageName string `json:"packageName,omitempty" yaml:"packageName,omitempty"`
 	BuildID     string `json:"buildId,omitempty" yaml:"buildId,omitempty"`
 	BuildName   string `json:"buildName,omitempty" yaml:"buildName,omitempty"`
+
+	// Key response fields from Nankai
+	HashedId string `json:"build_id,omitempty" yaml:"build_id,omitempty"`
+	Name     string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Other fields from Nankai
+	Status    string    `json:"status,omitempty" yaml:"status,omitempty"`
+	Ref       string    `json:"ref,omitempty" yaml:"ref,omitempty"`
+	Branch    string    `json:"branch,omitempty" yaml:"branch,omitempty"`
+	Tag       string    `json:"tag,omitempty" yaml:"tag,omitempty"`
+	CreatedBy string    `json:"created_by,omitempty" yaml:"created_by,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
 
 type SyncRequestFlat struct {
