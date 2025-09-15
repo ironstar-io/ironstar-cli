@@ -45,7 +45,7 @@ func GetNankaiBaseURL() string {
 }
 
 func GetArimaBaseURL() string {
-	ipa := os.Getenv("IRONSTAR_ARIMA_API_ADDRESS")
+	ipa := os.Getenv("IRONSTAR_UPLOAD_DOMAIN")
 	if ipa != "" {
 		return ipa
 	}
