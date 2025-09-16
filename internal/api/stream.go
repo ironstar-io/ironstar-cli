@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"crypto/tls"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -24,13 +25,22 @@ type Stream struct {
 
 const IronstarUploadAPIDomain = "https://uploads.ironstar.io"
 
-func GetBaseUploadURL() string {
-	ipa := os.Getenv("IRONSTAR_ARIMA_API_ADDRESS")
-	if ipa != "" {
-		return ipa
+func GetUploadURL(subHash string) string {
+	if os.Getenv("IRONSTAR_USE_ARIMA_UPLOAD") != "" {
+		// Specifically use Arima for uploads
+		domain := IronstarUploadAPIDomain
+		if override := os.Getenv("IRONSTAR_UPLOAD_DOMAIN"); override != "" {
+			domain = override
+		}
+		return fmt.Sprintf("%s/upload/subscription/%s", domain, subHash)
 	}
 
-	return IronstarUploadAPIDomain
+	// Default - Use Nankai API
+	domain := IronstarProductionAPIDomain
+	if override := os.Getenv("IRONSTAR_UPLOAD_DOMAIN"); override != "" {
+		domain = override
+	}
+	return fmt.Sprintf("%s/subscription/%s/upload-package", domain, subHash)
 }
 
 // Send - Make a HTTP request to the Ironstar API

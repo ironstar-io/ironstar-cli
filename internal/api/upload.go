@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/errs"
@@ -41,9 +42,9 @@ Please proceed with caution.
 	req := &Stream{
 		RunTokenRefresh: true,
 		Credentials:     creds,
-		Method:          "POST",
+		Method:          http.MethodPost,
 		FilePath:        tarpath,
-		URL:             fmt.Sprintf("%s/upload/subscription/%s", GetBaseUploadURL(), subHash),
+		URL:             GetUploadURL(subHash),
 		Payload: map[string]string{
 			"ref":        flg.Ref,
 			"branch":     flg.Branch,
@@ -75,7 +76,7 @@ Please proceed with caution.
 		return nil, errors.Wrap(err, errs.UploadFailedErrorMsg)
 	}
 
-	if res.StatusCode != 200 {
+	if res.StatusCode < 199 || res.StatusCode > 299 {
 		return nil, res.HandleFailure(flg.Output)
 	}
 

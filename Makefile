@@ -10,7 +10,7 @@ DOCKER_SCRIPT=docker run --rm \
 		-e GOCACHE=/.cache/go-build \
 		-e GOMODCACHE=/.cache/go-mod \
 		-e IRONSTAR_API_ADDRESS=https://nankai-dev:8443 \
-		-e IRONSTAR_ARIMA_API_ADDRESS=http://arima:8000 \
+		-e IRONSTAR_UPLOAD_DOMAIN=https://nankai-dev:8443 \
 		--network nankai_nankai \
 		-w /src \
 		-it \
