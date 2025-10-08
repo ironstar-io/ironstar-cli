@@ -8,6 +8,7 @@ import (
 	"github.com/ironstar-io/ironstar-cli/internal/errs"
 	"github.com/ironstar-io/ironstar-cli/internal/system/console"
 	"github.com/ironstar-io/ironstar-cli/internal/system/fs"
+	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"github.com/fatih/color"
@@ -46,11 +47,11 @@ Please proceed with caution.
 		FilePath:        tarpath,
 		URL:             GetUploadURL(subHash),
 		Payload: map[string]string{
-			"ref":        flg.Ref,
-			"branch":     flg.Branch,
-			"tag":        flg.Tag,
-			"checksum":   flg.Checksum,
-			"commit_sha": flg.CommitSHA,
+			"ref":        utils.TruncateString(flg.Ref, 255),
+			"branch":     utils.TruncateString(flg.Branch, 255),
+			"tag":        utils.TruncateString(flg.Tag, 255),
+			"checksum":   utils.TruncateString(flg.Checksum, 255),
+			"commit_sha": utils.TruncateString(flg.CommitSHA, 255),
 		},
 	}
 
