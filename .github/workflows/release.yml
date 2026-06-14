@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   release:
-    runs-on: macos-15
+    runs-on: macos-14
     env:
       APPLE_DEV_ID_P12_BASE64: ${{ secrets.APPLE_DEV_ID_P12_BASE64 }}
       APPLE_DEV_ID_P12_PASSWORD: ${{ secrets.APPLE_DEV_ID_P12_PASSWORD }}
