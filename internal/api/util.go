@@ -68,7 +68,12 @@ func getIPFromURL(urlString string) (string, error) {
 }
 
 func getClientIPAddress() (string, error) {
-	resp, err := http.Get("https://api.ironstar.io/cdn-cgi/trace")
+	req, err := http.NewRequest(http.MethodGet, "https://api.ironstar.io/cdn-cgi/trace", nil)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := newAPIHTTPClient().Do(req)
 	if err != nil {
 		return "", err
 	}

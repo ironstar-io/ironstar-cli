@@ -11,6 +11,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
 	"github.com/ironstar-io/ironstar-cli/internal/errs"
@@ -34,6 +35,20 @@ const IronstarProductionAPIDomain = "https://api.ironstar.io"
 const IronstarArimaProductionAPIDomain = "https://uploads.ironstar.io"
 
 var version string
+
+const apiHTTPClientTimeout = 30 * time.Second
+
+var newAPIHTTPClient = func() *http.Client {
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.TLSClientConfig = &tls.Config{
+		InsecureSkipVerify: flags.Acc.InsecureSkipVerify,
+	}
+
+	return &http.Client{
+		Timeout:   apiHTTPClientTimeout,
+		Transport: transport,
+	}
+}
 
 func GetNankaiBaseURL() string {
 	ipa := os.Getenv("IRONSTAR_API_ADDRESS")
@@ -182,11 +197,7 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 		req.Header.Add("authorization", "Bearer "+r.Credentials.AuthToken)
 	}
 
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: flags.Acc.InsecureSkipVerify},
-		},
-	}
+	client := newAPIHTTPClient()
 	resp, err := client.Do(req)
 	if err != nil {
 		out.Close()
@@ -263,11 +274,7 @@ func (r *Request) HTTPSend() (*RawResponse, error) {
 		req.Header.Add("authorization", "Bearer "+r.Credentials.AuthToken)
 	}
 
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: flags.Acc.InsecureSkipVerify},
-		},
-	}
+	client := newAPIHTTPClient()
 	resp, err := client.Do(req)
 
 	var bodyBytes []byte
