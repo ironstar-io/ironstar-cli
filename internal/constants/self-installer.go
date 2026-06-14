@@ -13,14 +13,14 @@ const (
 	// BaseInstallPathWindows is where Ironstar CLI binaries are installed on Windows
 	BaseInstallPathWindows = "AppData/Local/Ironstar/CLI"
 
-	// BinaryNameLinux is the name of the Ironstar CLI Linux binary on Github
-	BinaryNameLinux = "iron-linux-amd64"
+	// BinaryNameMacOS is the name of the Ironstar CLI macOS universal (amd64 + arm64) binary on Github
+	BinaryNameMacOS = "iron-macos"
 
-	// BinaryNameIntelMacOS is the name of the Ironstar CLI (Intel) macOS binary on Github
-	BinaryNameIntelMacOS = "iron-macos"
+	// BinaryNameLinuxAMD64 is the name of the Ironstar CLI Linux x86-64 binary on Github
+	BinaryNameLinuxAMD64 = "iron-linux-amd64"
 
-	// BinaryNameARMMacOS is the name of the Ironstar CLI (ARM) macOS binary on Github
-	BinaryNameARMMacOS = "iron-macos-arm64"
+	// BinaryNameLinuxARM64 is the name of the Ironstar CLI Linux arm64 binary on Github
+	BinaryNameLinuxARM64 = "iron-linux-arm64"
 
 	// BinaryNameWindows is the name of the Ironstar CLI Windows binary on Github
 	BinaryNameWindows = "iron-windows.exe"

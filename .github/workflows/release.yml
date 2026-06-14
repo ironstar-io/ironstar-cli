@@ -1,0 +1,139 @@
+# Ironstar CLI release pipeline.
+#
+# On a v*.*.* tag (or a manual dispatch against a tag ref) this builds the
+# release binaries, code-signs + notarises the macOS universal binary, and
+# publishes a draft GitHub release with the assets attached.
+#
+# linux/windows are cross-compiled (pure Go, CGO disabled), so the whole build
+# runs on a single macOS runner; only macOS needs the signing toolchain. Bare
+# CLI binaries cannot be stapled, so notarisation relies on online ticket
+# lookup (Gatekeeper fetches it on first run).
+
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: macos-15
+    env:
+      APPLE_DEV_ID_P12_BASE64: ${{ secrets.APPLE_DEV_ID_P12_BASE64 }}
+      APPLE_DEV_ID_P12_PASSWORD: ${{ secrets.APPLE_DEV_ID_P12_PASSWORD }}
+      ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      APPLE_DEVELOPER_ID: ${{ secrets.APPLE_DEVELOPER_ID }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Create ephemeral keychain + import Developer ID
+        run: |
+          set -euo pipefail
+          CERT_PATH=$RUNNER_TEMP/dev_id.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/ironstar-build.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+          ASC_KEY_PATH=$RUNNER_TEMP/asc.p8
+          echo -n "$APPLE_DEV_ID_P12_BASE64" | base64 --decode -o "$CERT_PATH"
+          echo -n "$ASC_KEY_P8_BASE64"       | base64 --decode -o "$ASC_KEY_PATH"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$APPLE_DEV_ID_P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          echo "ASC_KEY_PATH=$ASC_KEY_PATH" >> "$GITHUB_ENV"
+
+      - name: GoReleaser build + sign (skip publish)
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: v2.15.4
+          args: release --clean --skip=publish
+
+      - name: Stage backwards-compatible macOS arm64 alias
+        # Pre-universal CLI versions request iron-macos-arm64 on Apple Silicon.
+        # Publish a byte-identical copy of the universal binary under that name
+        # so their `iron upgrade` keeps working. Identical bytes => identical
+        # cdhash => already covered by the universal binary's notarisation.
+        run: |
+          set -euo pipefail
+          cp dist/iron-macos dist/iron-macos-arm64
+          ( cd dist && shasum -a 256 iron-macos-arm64 >> checksums.txt )
+
+      - name: Verify release artifacts
+        run: |
+          set -euo pipefail
+          missing=0
+          for f in iron-macos iron-macos-arm64 iron-linux-amd64 iron-linux-arm64 iron-windows.exe checksums.txt; do
+            if [ ! -f "dist/$f" ]; then
+              echo "::error::expected artifact dist/$f not found"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "dist/ contents:"; ls -la dist
+            exit 1
+          fi
+
+      - name: Notarise macOS universal binary
+        # notarytool only accepts .zip/.pkg/.dmg, so submit a zip of the bare
+        # binary. The ticket is keyed to the binary's cdhash, so it also covers
+        # the identical iron-macos-arm64 copy. No stapling (bare CLI binaries
+        # cannot be stapled; Gatekeeper fetches the ticket online).
+        run: |
+          set -euo pipefail
+          ZIP="$RUNNER_TEMP/iron-macos.zip"
+          /usr/bin/zip -j "$ZIP" dist/iron-macos
+          echo "Submitting iron-macos to notarytool..."
+          UUID=$(xcrun notarytool submit "$ZIP" --key "$ASC_KEY_PATH" --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" --wait --output-format json | jq -r .id)
+          if [[ ! "$UUID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]]; then
+            echo "::error::notarytool submit returned malformed UUID: $UUID"
+            exit 1
+          fi
+          STATUS=$(xcrun notarytool info "$UUID" --key "$ASC_KEY_PATH" --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" --output-format json | jq -r .status)
+          if [ "$STATUS" != "Accepted" ]; then
+            echo "::error::notarisation failed: status=$STATUS uuid=$UUID"
+            xcrun notarytool log "$UUID" --key "$ASC_KEY_PATH" --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" || true
+            exit 1
+          fi
+          echo "Notarisation accepted (uuid=$UUID)"
+
+      - name: Publish draft GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/iron-macos
+            dist/iron-macos-arm64
+            dist/iron-linux-amd64
+            dist/iron-linux-arm64
+            dist/iron-windows.exe
+            dist/checksums.txt
+          draft: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+
+      - name: Cleanup keychain + secrets
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/ironstar-build.keychain-db" || true
+          rm -f "$RUNNER_TEMP/dev_id.p12" "$RUNNER_TEMP/asc.p8" "$RUNNER_TEMP/iron-macos.zip" || true
