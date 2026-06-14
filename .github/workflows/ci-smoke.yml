@@ -1,0 +1,14 @@
+# Temporary smoke test: confirms this repo can start ANY Actions job.
+# Minimal on purpose — ubuntu, no secrets, no third-party actions.
+# Delete once the release pipeline is confirmed working.
+name: ci-smoke
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "actions can start in this repo"
