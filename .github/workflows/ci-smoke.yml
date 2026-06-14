@@ -1,5 +1,5 @@
-# Temporary smoke test: confirms this repo can start ANY Actions job.
-# Minimal on purpose — ubuntu, no secrets, no third-party actions.
+# Temporary smoke test: isolates whether macOS runners provision for this repo.
+# ubuntu-latest already succeeded; this tests macos-14 alone.
 # Delete once the release pipeline is confirmed working.
 name: ci-smoke
 
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  smoke:
-    runs-on: ubuntu-latest
+  macos14:
+    runs-on: macos-14
     steps:
-      - run: echo "actions can start in this repo"
+      - run: echo "macos-14 provisioned and ran"
