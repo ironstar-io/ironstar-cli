@@ -70,28 +70,37 @@ jobs:
           version: v2.15.4
           args: release --clean --skip=publish
 
-      - name: Stage backwards-compatible macOS arm64 alias
-        # Pre-universal CLI versions request iron-macos-arm64 on Apple Silicon.
-        # Publish a byte-identical copy of the universal binary under that name
-        # so their `iron upgrade` keeps working. Identical bytes => identical
-        # cdhash => already covered by the universal binary's notarisation.
+      - name: Stage release artifacts
+        # GoReleaser's format:binary leaves each binary in its per-target build
+        # dir (dist/<id>_<target>/<binary>), not at dist root. Copy them to the
+        # canonical names the self-updater downloads by. iron-macos-arm64 is a
+        # byte-identical copy of the universal binary, kept so pre-universal CLI
+        # versions (which request that name on Apple Silicon) can still upgrade —
+        # identical bytes => identical cdhash => covered by the same notarisation.
         run: |
           set -euo pipefail
-          cp dist/iron-macos dist/iron-macos-arm64
-          ( cd dist && shasum -a 256 iron-macos-arm64 >> checksums.txt )
+          rel=dist/release
+          mkdir -p "$rel"
+          cp dist/macos-universal_darwin_all/iron-macos "$rel/iron-macos"
+          cp "$rel/iron-macos"                          "$rel/iron-macos-arm64"
+          cp dist/linux-amd64_*/iron-linux-amd64        "$rel/iron-linux-amd64"
+          cp dist/linux-arm64_*/iron-linux-arm64        "$rel/iron-linux-arm64"
+          cp dist/windows-amd64_*/iron-windows.exe      "$rel/iron-windows.exe"
+          ( cd "$rel" && shasum -a 256 iron-macos iron-macos-arm64 iron-linux-amd64 iron-linux-arm64 iron-windows.exe > checksums.txt )
+          ls -l "$rel"
 
       - name: Verify release artifacts
         run: |
           set -euo pipefail
           missing=0
           for f in iron-macos iron-macos-arm64 iron-linux-amd64 iron-linux-arm64 iron-windows.exe checksums.txt; do
-            if [ ! -f "dist/$f" ]; then
-              echo "::error::expected artifact dist/$f not found"
+            if [ ! -f "dist/release/$f" ]; then
+              echo "::error::expected artifact dist/release/$f not found"
               missing=1
             fi
           done
           if [ "$missing" -ne 0 ]; then
-            echo "dist/ contents:"; ls -la dist
+            echo "dist/release contents:"; ls -la dist/release
             exit 1
           fi
 
@@ -103,7 +112,7 @@ jobs:
         run: |
           set -euo pipefail
           ZIP="$RUNNER_TEMP/iron-macos.zip"
-          /usr/bin/zip -j "$ZIP" dist/iron-macos
+          /usr/bin/zip -j "$ZIP" dist/release/iron-macos
           echo "Submitting iron-macos to notarytool..."
           UUID=$(xcrun notarytool submit "$ZIP" --key "$ASC_KEY_PATH" --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" --wait --output-format json | jq -r .id)
           if [[ ! "$UUID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]]; then
@@ -122,12 +131,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/iron-macos
-            dist/iron-macos-arm64
-            dist/iron-linux-amd64
-            dist/iron-linux-arm64
-            dist/iron-windows.exe
-            dist/checksums.txt
+            dist/release/iron-macos
+            dist/release/iron-macos-arm64
+            dist/release/iron-linux-amd64
+            dist/release/iron-linux-arm64
+            dist/release/iron-windows.exe
+            dist/release/checksums.txt
           draft: true
           prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true

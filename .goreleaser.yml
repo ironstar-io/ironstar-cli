@@ -80,18 +80,12 @@ universal_binaries:
         # notarisation. Do NOT add --deep/--recursive.
         - cmd: codesign --sign "{{ .Env.APPLE_DEVELOPER_ID }}" --options runtime --timestamp --entitlements ./build/entitlements.plist "{{ .Path }}"
 
+# format: binary keeps each build's bare binary (no tarball). GoReleaser leaves
+# these in per-target build dirs (dist/<id>_<target>/<binary>); the release
+# workflow stages them into dist/release/ under the canonical asset names the
+# self-updater expects and generates checksums there.
 archives:
-  - id: binaries
-    ids: [macos-universal, linux-amd64, linux-arm64, windows-amd64]
-    # format: binary publishes the bare binary (no tarball) so the asset name
-    # equals {{ .Binary }} exactly — required by the self-updater, which
-    # downloads raw binaries by fixed name.
-    formats: [binary]
-    name_template: "{{ .Binary }}"
-
-checksum:
-  name_template: checksums.txt
-  algorithm: sha256
+  - formats: [binary]
 
 release:
   # The workflow publishes via softprops/action-gh-release (after notarisation),
