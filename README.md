@@ -6,13 +6,13 @@ We welcome any feedback or suggestions from our customers to continue improving 
 
 ## Installation
 
-This command will install `iron` to `/usr/local/bin` for MacOS users
+This command will install `iron` to `/usr/local/bin` for macOS users. It installs a signed, notarised universal binary that runs natively on both Intel and Apple Silicon Macs.
 
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ironstar-io/ironstar-cli/main/install/macos.sh)"
 ```
 
-Linux and Windows users can find the binaries on the [releases page](https://github.com/ironstar-io/ironstar-cli/releases). There currently isn't and automated installer for these platforms.
+Linux (`iron-linux-amd64`, `iron-linux-arm64`) and Windows (`iron-windows.exe`) users can find the binaries on the [releases page](https://github.com/ironstar-io/ironstar-cli/releases). There currently isn't an automated installer for these platforms.
 
 ## Basic Usage
 

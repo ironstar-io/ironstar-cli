@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 
 	"github.com/ironstar-io/ironstar-cli/internal/constants"
 	"github.com/ironstar-io/ironstar-cli/internal/system/console"
@@ -36,7 +35,9 @@ func DownloadCLIBinary(version string) (string, error) {
 		return empty, errors.Wrap(err, "There was an error creating the install directory")
 	}
 
-	bin := calcBinaryName()
+	// macOS ships a single signed, notarised universal binary that runs on
+	// both Intel and Apple Silicon.
+	bin := constants.BinaryNameMacOS
 
 	fmt.Println()
 
@@ -48,12 +49,4 @@ func DownloadCLIBinary(version string) (string, error) {
 	console.SpinPersist(w, "🚉", "Download complete!")
 
 	return b, nil
-}
-
-func calcBinaryName() string {
-	if runtime.GOARCH == "arm64" {
-		return constants.BinaryNameARMMacOS
-	}
-
-	return constants.BinaryNameIntelMacOS
 }

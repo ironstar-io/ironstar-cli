@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/ironstar-io/ironstar-cli/internal/constants"
 	"github.com/ironstar-io/ironstar-cli/internal/system/console"
@@ -35,9 +36,14 @@ func DownloadCLIBinary(version string) (string, error) {
 		return empty, errors.Wrap(err, "There was an error creating the install directory")
 	}
 
+	bin := constants.BinaryNameLinuxAMD64
+	if runtime.GOARCH == "arm64" {
+		bin = constants.BinaryNameLinuxARM64
+	}
+
 	fmt.Println()
 	w := console.SpinStart("Downloading the specified release from GitHub.")
-	err = utils.DownloadFile(b, constants.BaseBinaryURL+version+"/"+constants.BinaryNameLinux)
+	err = utils.DownloadFile(b, constants.BaseBinaryURL+version+"/"+bin)
 	if err != nil {
 		return empty, err
 	}

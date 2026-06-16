@@ -1,63 +1,96 @@
+# GoReleaser config for the Ironstar CLI.
+#
+# Produces release assets named to match the CLI's self-updater
+# (internal/constants/self-installer.go) and install/macos.sh:
+#
+#   iron-macos         macOS universal (amd64 + arm64), signed + notarised
+#   iron-linux-amd64   Linux x86-64
+#   iron-linux-arm64   Linux arm64
+#   iron-windows.exe   Windows x86-64
+#
+# The release workflow also publishes iron-macos-arm64 as a copy of iron-macos,
+# so older CLI versions that request that name on Apple Silicon can still
+# self-update. New clients only request iron-macos.
+#
+# codesign runs in universal_binaries.hooks.post so it signs the merged
+# universal binary (a binary_signs block cannot sign a universal binary).
+# Notarisation happens in the release workflow after this builds with
+# --skip=publish. Signing needs APPLE_DEVELOPER_ID plus a Developer ID identity
+# in the keychain, so `goreleaser release` only runs in CI — use `make build`
+# locally.
+
+version: 2
+
 project_name: ironstar-cli
+
 builds:
   - id: macos-amd64
     binary: iron-macos-amd64
-    goos:
-      - darwin
-    goarch:
-      - amd64
-    ldflags:
+    env:
+      - CGO_ENABLED=0
+    goos: [darwin]
+    goarch: [amd64]
+    ldflags: &ldflags
+      - -s -w
       - -X github.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
       - -X github.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+      - -X github.com/ironstar-io/ironstar-cli/internal/api.version={{.Version}}
+
   - id: macos-arm64
     binary: iron-macos-arm64
-    goos:
-      - darwin
-    goarch:
-      - arm64
-    ldflags:
-      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
-      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
-  - id: windows-amd64
-    binary: iron-windows-amd64.exe
-    goos:
-      - windows
-    goarch:
-      - amd64
-    ldflags:
-      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
-      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+    env:
+      - CGO_ENABLED=0
+    goos: [darwin]
+    goarch: [arm64]
+    ldflags: *ldflags
+
   - id: linux-amd64
     binary: iron-linux-amd64
-    goos:
-      - linux
-    goarch:
-      - amd64
-    ldflags:
-      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.version={{.Version}}
-      - -X github.com/ironstar-io/ironstar-cli/internal/system/version.buildDate={{.Date}}
+    env:
+      - CGO_ENABLED=0
+    goos: [linux]
+    goarch: [amd64]
+    ldflags: *ldflags
+
+  - id: linux-arm64
+    binary: iron-linux-arm64
+    env:
+      - CGO_ENABLED=0
+    goos: [linux]
+    goarch: [arm64]
+    ldflags: *ldflags
+
+  - id: windows-amd64
+    binary: iron-windows
+    env:
+      - CGO_ENABLED=0
+    goos: [windows]
+    goarch: [amd64]
+    ldflags: *ldflags
 
 universal_binaries:
--
-  ids:
-  - macos-amd64
-  - macos-arm64
-  replace: true
-  name_template: 'iron-macos'
-  hooks:
-    post: gon gon.hcl
+  - id: macos-universal
+    ids: [macos-amd64, macos-arm64]
+    name_template: iron-macos
+    replace: true
+    hooks:
+      post:
+        # Sign the lipo-merged universal binary in place. {{ .Path }} is the
+        # universal binary. --options runtime + --timestamp are required for
+        # notarisation. Do NOT add --deep/--recursive.
+        - cmd: codesign --sign "{{ .Env.APPLE_DEVELOPER_ID }}" --options runtime --timestamp --entitlements ./build/entitlements.plist "{{ .Path }}"
 
-signs:
-  - signature: "${artifact}.dmg"
-    ids: ["macos-amd64", "macos-arm64"]
-    cmd: gon
-    args: ["gon.hcl"]
-    artifacts: all
-
+# format: binary keeps each build's bare binary (no tarball). GoReleaser leaves
+# these in per-target build dirs (dist/<id>_<target>/<binary>); the release
+# workflow stages them into dist/release/ under the canonical asset names the
+# self-updater expects and generates checksums there.
 archives:
-  - id: binaries
-    builds: ["iron-macos"]
-    format: binary
+  - formats: [binary]
 
 release:
+  # The workflow publishes via softprops/action-gh-release (after notarisation),
+  # so goreleaser runs with --skip=publish. These settings only apply if
+  # goreleaser is ever run without that flag.
   draft: true
+  prerelease: auto
+  mode: replace
