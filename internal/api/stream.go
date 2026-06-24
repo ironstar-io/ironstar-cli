@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -80,15 +81,26 @@ func (s *Stream) Send() (*RawResponse, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(s.Method, s.URL, body)
+	bodyLen := int64(body.Len())
+
+	ctx, cancel := context.WithCancelCause(context.Background())
+	defer cancel(nil)
+
+	req, err := http.NewRequestWithContext(ctx, s.Method, s.URL, nil)
 	if err != nil {
 		return nil, err
 	}
 
+	guard := newStallGuard(cancel, body, transferIdleTimeout(), bodyLen)
+	defer guard.Stop()
+	req.Body = io.NopCloser(guard)
+	req.ContentLength = bodyLen
+
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.Header.Add("authorization", "Bearer "+s.Credentials.AuthToken)
+	req.Header.Add("user-agent", fmt.Sprintf("ironstar-cli/%s", version))
 
-	client := newAPIHTTPClient()
+	client := newTransferHTTPClient()
 	resp, err := client.Do(req)
 
 	var bodyBytes []byte
@@ -101,6 +113,9 @@ func (s *Stream) Send() (*RawResponse, error) {
 	}
 
 	if err != nil {
+		if cause := context.Cause(ctx); cause != nil && cause != context.Canceled {
+			return nil, cause
+		}
 		return nil, err
 	}
 
