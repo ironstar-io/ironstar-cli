@@ -147,3 +147,12 @@ func (sg *stallGuard) Stop() {
 func (sg *stallGuard) trip() {
 	sg.cancel(fmt.Errorf("transfer stalled: no data transferred for %s", sg.idleTimeout))
 }
+
+// Sent reports how many bytes have moved through the wrapped stream so far — for
+// an upload, how much of the request body reached the transport before the
+// transfer completed or failed.
+func (sg *stallGuard) Sent() int64 {
+	sg.mu.Lock()
+	defer sg.mu.Unlock()
+	return sg.read
+}

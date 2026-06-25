@@ -18,6 +18,11 @@ type RawResponse struct {
 	CallMethod string      `json:"call_method,omitempty"`
 	Header     http.Header `json:"header,omitempty"`
 	Body       []byte      `json:"body,omitempty"`
+	// BytesSent / BodySize report upload progress at the point the response was
+	// received, so a server error mid-transfer can be told apart from one that
+	// fired only after the whole body was sent.
+	BytesSent int64 `json:"bytes_sent,omitempty"`
+	BodySize  int64 `json:"body_size,omitempty"`
 }
 
 type FailureBody struct {

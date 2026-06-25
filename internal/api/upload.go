@@ -12,6 +12,7 @@ import (
 	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
+	"github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 )
 
@@ -57,7 +58,7 @@ func UploadPackage(creds types.Keylink, subHash, tarpath string, flg flags.Accum
 				return nil, err
 			}
 			if res.StatusCode < 199 || res.StatusCode > 299 {
-				console.SpinPersist(wo, "⛔", fmt.Sprintf("Package upload failed after %s with response code %d\n", elapsed, res.StatusCode))
+				console.SpinPersist(wo, "⛔", fmt.Sprintf("Package upload failed after %s with response code %d (uploaded %s of %s)\n", elapsed, res.StatusCode, humanize.IBytes(uint64(res.BytesSent)), humanize.IBytes(uint64(res.BodySize))))
 				return nil, fmt.Errorf("an error occurred with status %d: %s", res.StatusCode, res.Body)
 			}
 

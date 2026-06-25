@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 
 	"github.com/ironstar-io/ironstar-cli/internal/types"
+
+	"github.com/dustin/go-humanize"
 )
 
 type Stream struct {
@@ -102,6 +104,7 @@ func (s *Stream) Send() (*RawResponse, error) {
 
 	client := newTransferHTTPClient()
 	resp, err := client.Do(req)
+	sent := guard.Sent()
 
 	var bodyBytes []byte
 	if resp != nil && resp.Body != nil {
@@ -114,15 +117,17 @@ func (s *Stream) Send() (*RawResponse, error) {
 
 	if err != nil {
 		if cause := context.Cause(ctx); cause != nil && cause != context.Canceled {
-			return nil, cause
+			err = cause
 		}
-		return nil, err
+		return nil, fmt.Errorf("%w (uploaded %s of %s before failure)", err, humanize.IBytes(uint64(sent)), humanize.IBytes(uint64(bodyLen)))
 	}
 
 	ir := &RawResponse{
 		StatusCode: resp.StatusCode,
 		Body:       bodyBytes,
 		Header:     resp.Header,
+		BytesSent:  sent,
+		BodySize:   bodyLen,
 	}
 
 	defer resp.Body.Close()
