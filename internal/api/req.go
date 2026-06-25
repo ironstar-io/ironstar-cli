@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
@@ -185,7 +186,10 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 		return nil, err
 	}
 
-	req, err := http.NewRequest(r.Method, r.URL, bytes.NewBuffer(r.BytePayload))
+	ctx, cancel := context.WithCancelCause(context.Background())
+	defer cancel(nil)
+
+	req, err := http.NewRequestWithContext(ctx, r.Method, r.URL, bytes.NewBuffer(r.BytePayload))
 	if err != nil {
 		out.Close()
 		return nil, err
@@ -197,7 +201,7 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 		req.Header.Add("authorization", "Bearer "+r.Credentials.AuthToken)
 	}
 
-	client := newAPIHTTPClient()
+	client := newTransferHTTPClient()
 	resp, err := client.Do(req)
 	if err != nil {
 		out.Close()
@@ -237,8 +241,13 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 	counter := &WriteCounter{
 		FriendlyName: friendlyName,
 	}
-	if _, err = io.Copy(out, io.TeeReader(resp.Body, counter)); err != nil {
+	guard := newStallGuard(cancel, resp.Body, transferIdleTimeout(), resp.ContentLength)
+	defer guard.Stop()
+	if _, err = io.Copy(out, io.TeeReader(guard, counter)); err != nil {
 		out.Close()
+		if cause := context.Cause(ctx); cause != nil && cause != context.Canceled {
+			return nil, cause
+		}
 		return nil, err
 	}
 

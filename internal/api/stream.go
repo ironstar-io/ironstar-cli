@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -10,6 +11,8 @@ import (
 	"path/filepath"
 
 	"github.com/ironstar-io/ironstar-cli/internal/types"
+
+	"github.com/dustin/go-humanize"
 )
 
 type Stream struct {
@@ -80,16 +83,28 @@ func (s *Stream) Send() (*RawResponse, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(s.Method, s.URL, body)
+	bodyLen := int64(body.Len())
+
+	ctx, cancel := context.WithCancelCause(context.Background())
+	defer cancel(nil)
+
+	req, err := http.NewRequestWithContext(ctx, s.Method, s.URL, nil)
 	if err != nil {
 		return nil, err
 	}
 
+	guard := newStallGuard(cancel, body, transferIdleTimeout(), bodyLen)
+	defer guard.Stop()
+	req.Body = io.NopCloser(guard)
+	req.ContentLength = bodyLen
+
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.Header.Add("authorization", "Bearer "+s.Credentials.AuthToken)
+	req.Header.Add("user-agent", fmt.Sprintf("ironstar-cli/%s", version))
 
-	client := newAPIHTTPClient()
+	client := newTransferHTTPClient()
 	resp, err := client.Do(req)
+	sent := guard.Sent()
 
 	var bodyBytes []byte
 	if resp != nil && resp.Body != nil {
@@ -101,13 +116,18 @@ func (s *Stream) Send() (*RawResponse, error) {
 	}
 
 	if err != nil {
-		return nil, err
+		if cause := context.Cause(ctx); cause != nil && cause != context.Canceled {
+			err = cause
+		}
+		return nil, fmt.Errorf("%w (uploaded %s of %s before failure)", err, humanize.IBytes(uint64(sent)), humanize.IBytes(uint64(bodyLen)))
 	}
 
 	ir := &RawResponse{
 		StatusCode: resp.StatusCode,
 		Body:       bodyBytes,
 		Header:     resp.Header,
+		BytesSent:  sent,
+		BodySize:   bodyLen,
 	}
 
 	defer resp.Body.Close()

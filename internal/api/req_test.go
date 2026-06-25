@@ -75,12 +75,14 @@ func TestNewAPIHTTPClientClonesDefaultTransportWithProxyAndTLSSettings(t *testin
 
 func TestAPIRequestPathsUseSharedHTTPClient(t *testing.T) {
 	originalNewAPIHTTPClient := newAPIHTTPClient
+	originalNewTransferHTTPClient := newTransferHTTPClient
 	t.Cleanup(func() {
 		newAPIHTTPClient = originalNewAPIHTTPClient
+		newTransferHTTPClient = originalNewTransferHTTPClient
 	})
 
 	var requestedURLs []string
-	newAPIHTTPClient = func() *http.Client {
+	mockClient := func() *http.Client {
 		return &http.Client{
 			Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
 				requestedURLs = append(requestedURLs, req.URL.String())
@@ -99,6 +101,10 @@ func TestAPIRequestPathsUseSharedHTTPClient(t *testing.T) {
 			}),
 		}
 	}
+	// HTTPSend and the IP lookup use the JSON API client; HTTPSDownload uses the
+	// transfer client. Route both through the same mock transport.
+	newAPIHTTPClient = mockClient
+	newTransferHTTPClient = mockClient
 
 	sendReq := &Request{
 		Method:      http.MethodPost,

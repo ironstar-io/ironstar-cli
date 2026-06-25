@@ -11,11 +11,35 @@ import (
 	"github.com/ironstar-io/ironstar-cli/internal/system/utils"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
+	"github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
 )
 
 func Create(args []string, flg flags.Accumulator) error {
+	// A dry run previews what would be packaged and uploads nothing, so it needs
+	// no credentials or subscription context — keep it a purely local operation.
+	if flg.DryRun {
+		indexPath, total, count, err := services.WritePackageIndex(flg)
+		if err != nil {
+			return err
+		}
+
+		if strings.ToLower(flg.Output) == "json" {
+			utils.PrintInterfaceAsJSON(map[string]any{
+				"dryRun":            true,
+				"indexFile":         indexPath,
+				"fileCount":         count,
+				"uncompressedBytes": total,
+			})
+			return nil
+		}
+
+		fmt.Println()
+		fmt.Printf("Dry run — no upload performed.\nWould package %d files, %s (uncompressed).\nIndex written to %s\n", count, humanize.IBytes(uint64(total)), indexPath)
+		return nil
+	}
+
 	creds, err := services.ResolveUserCredentials(flg.Login)
 	if err != nil {
 		return err

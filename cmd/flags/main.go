@@ -46,6 +46,7 @@ type Accumulator struct {
 	Timeout            int
 	WorkDir            string
 	EnvironmentVars    []string
+	DryRun             bool
 }
 
 var Acc Accumulator

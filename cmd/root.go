@@ -44,6 +44,7 @@ func init() {
 	rootCmd.AddCommand(LoginCmd)
 	rootCmd.AddCommand(LogoutCmd)
 	rootCmd.AddCommand(InitCmd)
+	InitCmd.AddCommand(InitIgnoreCmd)
 
 	// `iron auth x`
 	rootCmd.AddCommand(auth.AuthCmd)
@@ -257,6 +258,10 @@ func RootCmd() *cobra.Command {
 	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.Checksum, "checksum", "", "", "A checksum value for the package")
 	pkg.PackageCmd.PersistentFlags().StringVarP(&flags.Acc.CommitSHA, "commit-sha", "", "", "A git commit SHA value for the package")
 	pkg.UpdateRefCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
+
+	// Local (non-persistent) so it stays on `package`/`pkg` only and never reaches deploy or subcommands.
+	pkg.PackageCmd.Flags().BoolVarP(&flags.Acc.DryRun, "dry-run", "", false, "List what would be packaged to /tmp/ironstar-package-index-<datestamp>.txt without uploading")
+	pkg.PkgCmd.Flags().BoolVarP(&flags.Acc.DryRun, "dry-run", "", false, "List what would be packaged to /tmp/ironstar-package-index-<datestamp>.txt without uploading")
 
 	deploy.DeployCmd.PersistentFlags().StringVarP(&flags.Acc.Ref, "ref", "", "", "A user defined reference used for being able to easily identify the package. This could be a git commit SHA, UUID, or tag of your choice. It is not mandatory.")
 	deploy.DeployCmd.PersistentFlags().StringVarP(&flags.Acc.Tag, "tag", "", "", "The git tag used to reference the package, if creating a new package. The flags 'branch' and 'tag' cannot be set at the same time")
