@@ -18,7 +18,7 @@ import (
 var CreateCmd = &cobra.Command{
 	Use:   "create [flags]",
 	Short: "Purge the cache",
-	Long:  "Purge the entire cache for an environment, or selectively purge one or more HTTPS URLs with --url",
+	Long:  "Purge the entire cache for an environment, or selectively purge one HTTPS URL with --url",
 	Args:  cobra.NoArgs,
 	Run:   create,
 }

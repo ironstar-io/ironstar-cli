@@ -2,6 +2,7 @@ package cache
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/ironstar-io/ironstar-cli/cmd/flags"
@@ -16,7 +17,7 @@ import (
 )
 
 func Purge(args []string, flg flags.Accumulator) error {
-	urls, err := normalizeCachePurgeURLs(flg.URLs)
+	purgeURL, err := normalizeCachePurgeURL(flg.URLs)
 	if err != nil {
 		return err
 	}
@@ -37,55 +38,71 @@ func Purge(args []string, flg flags.Accumulator) error {
 
 	utils.PrintCommandContext(flg.Output, creds.Login, seCtx.Subscription.Alias, seCtx.Subscription.HashedID)
 
-	targets := urls
-	if len(targets) == 0 {
-		targets = []string{""}
-	}
-
-	invalidations := make([]types.CacheInvalidation, 0, len(targets))
-	for _, url := range targets {
-		ci, err := api.PostEnvironmentCacheInvalidation(creds, flg.Output, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, url)
-		if err != nil {
-			if url != "" {
-				if err == api.ErrIronstarAPICall {
-					return err
-				}
-				return errors.Wrapf(err, "Failed to purge URL %q", url)
+	request := makeCacheInvalidationRequest(purgeURL)
+	ci, err := api.PostEnvironmentCacheInvalidation(creds, flg.Output, seCtx.Subscription.HashedID, seCtx.Environment.HashedID, request)
+	if err != nil {
+		if purgeURL != "" {
+			if err == api.ErrIronstarAPICall {
+				return err
 			}
-			return err
+			return errors.Wrapf(err, "Failed to purge URL %q", purgeURL)
 		}
-		invalidations = append(invalidations, ci)
+		return err
 	}
 
 	if strings.ToLower(flg.Output) == "json" {
-		if len(invalidations) == 1 {
-			utils.PrintInterfaceAsJSON(invalidations[0])
-		} else {
-			utils.PrintInterfaceAsJSON(invalidations)
-		}
+		utils.PrintInterfaceAsJSON(ci)
 		return nil
 	}
 
-	for index, ci := range invalidations {
-		fmt.Println()
-		if len(urls) > 0 {
-			color.Green("Cache purge has commenced for " + urls[index] + ". To see an up-to-date status please run `iron cache invalidation show " + ci.Name + " --subscription=" + seCtx.Subscription.Alias + " --environment=" + seCtx.Environment.Name + "`")
-		} else {
-			color.Green("Cache purge has commenced. To see an up-to-date status please run `iron cache invalidation show " + ci.Name + " --subscription=" + seCtx.Subscription.Alias + " --environment=" + seCtx.Environment.Name + "`")
-		}
+	fmt.Println()
+	if purgeURL != "" {
+		color.Green("Cache purge has commenced for " + purgeURL + ". To see an up-to-date status please run `iron cache invalidation show " + ci.Name + " --subscription=" + seCtx.Subscription.Alias + " --environment=" + seCtx.Environment.Name + "`")
+	} else {
+		color.Green("Cache purge has commenced. To see an up-to-date status please run `iron cache invalidation show " + ci.Name + " --subscription=" + seCtx.Subscription.Alias + " --environment=" + seCtx.Environment.Name + "`")
 	}
 
 	return nil
 }
 
-func normalizeCachePurgeURLs(values []string) ([]string, error) {
-	urls := make([]string, 0, len(values))
-	for _, value := range values {
-		url := strings.TrimSpace(value)
-		if url == "" {
-			return nil, errors.New("URL must not be empty")
-		}
-		urls = append(urls, url)
+func normalizeCachePurgeURL(values []string) (string, error) {
+	if len(values) == 0 {
+		return "", nil
 	}
-	return urls, nil
+	if len(values) > 1 {
+		return "", errors.New("only one URL may be purged at a time")
+	}
+
+	rawURL := strings.TrimSpace(values[0])
+	if rawURL == "" {
+		return "", errors.New("URL must not be empty")
+	}
+
+	parsedURL, err := url.Parse(rawURL)
+	if err != nil || !parsedURL.IsAbs() || !strings.EqualFold(parsedURL.Scheme, "https") || parsedURL.Hostname() == "" {
+		return "", errors.Errorf("URL %q must be an absolute HTTPS URL", rawURL)
+	}
+	if parsedURL.User != nil {
+		return "", errors.Errorf("URL %q must not include user information", rawURL)
+	}
+	if parsedURL.Fragment != "" {
+		return "", errors.Errorf("URL %q must not include a fragment", rawURL)
+	}
+
+	return rawURL, nil
+}
+
+func makeCacheInvalidationRequest(purgeURL string) types.PostCacheInvalidationRequestParams {
+	if purgeURL == "" {
+		return types.PostCacheInvalidationRequestParams{
+			Kind:             types.CacheInvalidationKindEnvironment,
+			InvalidationType: types.CacheInvalidationTypeHard,
+		}
+	}
+
+	return types.PostCacheInvalidationRequestParams{
+		Kind:             types.CacheInvalidationKindURL,
+		InvalidationType: types.CacheInvalidationTypeSoft,
+		URL:              purgeURL,
+	}
 }

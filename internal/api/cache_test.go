@@ -12,12 +12,16 @@ import (
 
 func TestPostEnvironmentCacheInvalidationBuildsFastlyPayload(t *testing.T) {
 	tests := []struct {
-		name string
-		url  string
-		want map[string]interface{}
+		name    string
+		payload types.PostCacheInvalidationRequestParams
+		want    map[string]interface{}
 	}{
 		{
 			name: "entire environment",
+			payload: types.PostCacheInvalidationRequestParams{
+				Kind:             types.CacheInvalidationKindEnvironment,
+				InvalidationType: types.CacheInvalidationTypeHard,
+			},
 			want: map[string]interface{}{
 				"kind":              "environment",
 				"invalidation_type": "hard",
@@ -25,7 +29,11 @@ func TestPostEnvironmentCacheInvalidationBuildsFastlyPayload(t *testing.T) {
 		},
 		{
 			name: "single URL",
-			url:  "https://www.example.com/articles/one",
+			payload: types.PostCacheInvalidationRequestParams{
+				Kind:             types.CacheInvalidationKindURL,
+				InvalidationType: types.CacheInvalidationTypeSoft,
+				URL:              "https://www.example.com/articles/one",
+			},
 			want: map[string]interface{}{
 				"kind":              "url",
 				"invalidation_type": "soft",
@@ -61,7 +69,7 @@ func TestPostEnvironmentCacheInvalidationBuildsFastlyPayload(t *testing.T) {
 				})}
 			}
 
-			_, err := PostEnvironmentCacheInvalidation(types.Keylink{}, "text", "sub", "env", tt.url)
+			_, err := PostEnvironmentCacheInvalidation(types.Keylink{}, "text", "sub", "env", tt.payload)
 			if err != nil {
 				t.Fatal(err)
 			}
