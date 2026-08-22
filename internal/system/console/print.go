@@ -21,9 +21,9 @@ func Println(message string, replacement string) {
 // Printf ...
 func Printf(message string, replacement string) {
 	if runtime.GOOS == "windows" {
-		fmt.Printf(StripEmoji(message, replacement))
+		fmt.Print(StripEmoji(message, replacement))
 	} else {
-		fmt.Printf(message + "  ")
+		fmt.Print(message + "  ")
 	}
 }
 

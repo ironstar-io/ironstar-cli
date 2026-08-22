@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/pkg/errors"
 	"github.com/ironstar-io/ironstar-cli/internal/services/github"
 	"github.com/ironstar-io/ironstar-cli/internal/system/version/goos"
+	"github.com/pkg/errors"
 )
 
 // GetInstallPath - Check if Ironstar CLI version is installed or not

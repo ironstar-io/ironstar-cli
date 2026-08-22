@@ -2,19 +2,33 @@ VERSION_PATH ?= github.com/ironstar-io/ironstar-cli/internal/system/version
 API_PATH     ?= github.com/ironstar-io/ironstar-cli/internal/api
 BUILD_DATE   ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 VERSION      ?= $(shell git describe --tags)
-GO_IMAGE     ?= golang:1.24.3
+GO_IMAGE     ?= golang:1.27.0
+GO_CACHE_DIR ?= $(PWD)/.cache/go
+GOVULNCHECK_VERSION ?= v1.7.0
 
-DOCKER_SCRIPT=docker run --rm \
-		-v $(PWD)/.cache/go:/.cache \
+# Optional trust root for development networks that intercept HTTPS traffic:
+#   make checks LOCAL_CA_CERT=/path/to/root-ca.crt
+LOCAL_CA_CERT ?=
+LOCAL_CA_MOUNT=$(if $(strip $(LOCAL_CA_CERT)),-v $(LOCAL_CA_CERT):/usr/local/share/ca-certificates/local-root.crt:ro)
+
+DOCKER_BASE=docker run --rm \
+		-v $(GO_CACHE_DIR):/.cache \
 		-v $(PWD):/src \
+		$(LOCAL_CA_MOUNT) \
 		-e GOCACHE=/.cache/go-build \
 		-e GOMODCACHE=/.cache/go-mod \
+		-w /src
+
+DOCKER_GO=$(DOCKER_BASE) $(GO_IMAGE)
+
+DOCKER_NANKAI=$(DOCKER_BASE) \
 		-e IRONSTAR_API_ADDRESS=https://nankai-dev:8443 \
 		-e IRONSTAR_UPLOAD_DOMAIN=https://nankai-dev:8443 \
 		--network nankai_nankai \
-		-w /src \
 		-it \
-		$(GO_IMAGE) \
+		$(GO_IMAGE)
+
+DOCKER_GO_RUN=$(DOCKER_GO) sh -c 'update-ca-certificates >/dev/null 2>&1 && exec "$$@"' sh
 
 GO_BUILD=go build \
 	-trimpath \
@@ -48,20 +62,34 @@ build-macos-arm64:
 	env GOOS=darwin GOARCH=arm64 \
 	$(GO_BUILD) -o ./dist/iron-macos-arm64
 
-.PHONY: docker-run
+.PHONY: docker-run docker-exec docker-test fmt fmt/check vet test vuln build/check checks
 docker-run: ## Run a CLI command in Docker, exiting immediately
-docker-run:
-	$(DOCKER_SCRIPT) /bin/bash -c "go run main.go $(CMD)"
+	$(DOCKER_NANKAI) /bin/bash -c "update-ca-certificates >/dev/null 2>&1 && go run main.go $(CMD)"
 
-.PHONY: docker-exec
-docker-exec:
-docker-exec:
-	$(DOCKER_SCRIPT) /bin/bash
+docker-exec: ## Open an interactive Go shell on the Nankai Docker network
+	$(DOCKER_NANKAI) /bin/bash -c "update-ca-certificates >/dev/null 2>&1 && exec /bin/bash"
 
-.PHONY: docker-test
-docker-test:
-docker-test:
-	$(DOCKER_SCRIPT) go test ./...
+docker-test: test ## Backwards-compatible alias for the Docker test target
+
+fmt: ## Format Go source files in Docker
+	$(DOCKER_GO) sh -c 'update-ca-certificates >/dev/null 2>&1 && gofmt -w main.go $$(find cmd internal -name "*.go" -type f)'
+
+fmt/check: ## Fail when Go source files need formatting
+	$(DOCKER_GO) sh -ec 'update-ca-certificates >/dev/null 2>&1; files="$$(gofmt -l main.go $$(find cmd internal -name "*.go" -type f))"; test -z "$$files" || { printf "Go files need formatting:\n%s\n" "$$files"; exit 1; }'
+
+vet: ## Run go vet in Docker
+	$(DOCKER_GO_RUN) go vet ./...
+
+test: ## Run unit tests in Docker without requiring the Nankai network
+	$(DOCKER_GO_RUN) go test ./...
+
+vuln: ## Scan reachable Go code for known vulnerabilities
+	$(DOCKER_GO_RUN) go run golang.org/x/vuln/cmd/govulncheck@$(GOVULNCHECK_VERSION) ./...
+
+build/check: ## Compile all packages in Docker without writing release binaries
+	$(DOCKER_GO_RUN) go build ./...
+
+checks: fmt/check vet test vuln build/check ## Run all local verification gates
 
 # --- Local signed macOS release -------------------------------------------
 # Mirrors the CI release pipeline (.github/workflows/release.yml): build a
@@ -140,4 +168,4 @@ release-macos:
 clean:
 	rm -rf ./dist/*
 
-.PHONY: build build-windows build-linux-arm64 build-linux-amd-64 build-macos-amd64 build-macos-arm64 test clean
+.PHONY: build build-windows build-linux-arm64 build-linux-amd64 build-macos-amd64 build-macos-arm64 clean
