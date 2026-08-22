@@ -13,7 +13,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 )
 
 // packageSizeWarnBytes is the built-tarball size above which we caution the
@@ -42,7 +42,7 @@ func CreateProjectTar(flg flags.Accumulator) (string, error) {
 	fmt.Println()
 	wo := console.SpinStart("Creating a tarball containing your project files")
 
-	tarpath := "/tmp/ironstar/" + uuid.NewV4().String() + ".tar.gz"
+	tarpath := "/tmp/ironstar/" + uuid.NewString() + ".tar.gz"
 	err = tarball.NewTarGZ(tarpath, pr, ex)
 	if err != nil {
 		console.SpinPersist(wo, "⛔", "There was an error while creating a tarball for this project\n")

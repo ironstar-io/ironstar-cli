@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/olekukonko/tablewriter"
 	"github.com/ironstar-io/ironstar-cli/internal/constants"
 	"github.com/ironstar-io/ironstar-cli/internal/types"
+	"github.com/olekukonko/tablewriter"
 )
 
 func DisplayRestoreComponentInfo(components []types.RestoreRequestResult) {
