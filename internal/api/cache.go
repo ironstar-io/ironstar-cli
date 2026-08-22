@@ -67,17 +67,27 @@ func GetEnvironmentCacheInvalidation(creds types.Keylink, output, subHashOrAlias
 	return ci, nil
 }
 
-func PostEnvironmentCacheInvalidation(creds types.Keylink, output, subHashOrAlias, envHashOrAlias string) (types.CacheInvalidation, error) {
+func PostEnvironmentCacheInvalidation(creds types.Keylink, output, subHashOrAlias, envHashOrAlias, url string) (types.CacheInvalidation, error) {
 	empty := types.CacheInvalidation{}
+	payload := map[string]interface{}{
+		"kind":              "environment",
+		"invalidation_type": "hard",
+	}
+	if url != "" {
+		payload = map[string]interface{}{
+			"kind":              "url",
+			"invalidation_type": "soft",
+			"url":               url,
+		}
+	}
+
 	req := &Request{
-		Retries:         3,
-		RunTokenRefresh: true,
-		Credentials:     creds,
-		Method:          "POST",
-		Path:            "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/cache-invalidation",
-		MapStringPayload: map[string]interface{}{
-			"objects": []string{"*"},
-		},
+		Retries:          3,
+		RunTokenRefresh:  true,
+		Credentials:      creds,
+		Method:           "POST",
+		Path:             "/subscription/" + subHashOrAlias + "/environment/" + envHashOrAlias + "/cache-invalidation",
+		MapStringPayload: payload,
 	}
 
 	res, err := req.NankaiSend()

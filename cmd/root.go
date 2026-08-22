@@ -215,6 +215,8 @@ func RootCmd() *cobra.Command {
 	logs.LogsCmd.PersistentFlags().Int64VarP(&flags.Acc.End, "end", "", 0, "The end time of the logs. Doesn't work for log streaming. Should be unix time in miliseconds. Defaults to now.")
 	logs.LogsCmd.PersistentFlags().Int64VarP(&flags.Acc.Start, "start", "", 0, "The start time of the logs. Should be unix time in miliseconds. Defaults to 2 minutes prior to the last available log.")
 
+	cache.CreateCmd.Flags().StringArrayVarP(&flags.Acc.URLs, "url", "", []string{}, "Purge a specific HTTPS URL; repeat the flag to purge multiple URLs")
+
 	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
 	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
 	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Backup, "backup", "", "", "The source backup identifier to restore from")

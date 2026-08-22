@@ -16,9 +16,10 @@ import (
 
 // CreateCmd - `iron cache invalidation create`
 var CreateCmd = &cobra.Command{
-	Use:   "create",
+	Use:   "create [flags]",
 	Short: "Purge the cache",
-	Long:  "Purge the cache for an environment",
+	Long:  "Purge the entire cache for an environment, or selectively purge one or more HTTPS URLs with --url",
+	Args:  cobra.NoArgs,
 	Run:   create,
 }
 

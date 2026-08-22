@@ -197,10 +197,13 @@ type RemoteCommandCreator struct {
 }
 
 type CacheInvalidation struct {
-	Name      string    `json:"name,omitempty" yaml:"name,omitempty"`
-	Status    string    `json:"status,omitempty" yaml:"status,omitempty"`
-	Objects   []string  `json:"objects,omitempty" yaml:"objects,omitempty"`
-	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Name             string    `json:"name,omitempty" yaml:"name,omitempty"`
+	Status           string    `json:"status,omitempty" yaml:"status,omitempty"`
+	Kind             string    `json:"kind,omitempty" yaml:"kind,omitempty"`
+	InvalidationType string    `json:"invalidation_type,omitempty" yaml:"invalidation_type,omitempty"`
+	URL              string    `json:"url,omitempty" yaml:"url,omitempty"`
+	CreatedBy        string    `json:"created_by,omitempty" yaml:"created_by,omitempty"`
+	CreatedAt        time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
 
 type AntivirusScan struct {
