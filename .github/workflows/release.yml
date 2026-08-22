@@ -65,6 +65,12 @@ jobs:
 
       - name: GoReleaser build + sign (skip publish)
         uses: goreleaser/goreleaser-action@v6
+        env:
+          # Pin the version to the triggering tag so the build never relies on
+          # `git describe`, which is ambiguous when an rc tag and the final tag
+          # point at the same commit. Empty on non-tag dispatch, where
+          # goreleaser falls back to its own resolution.
+          GORELEASER_CURRENT_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
         with:
           distribution: goreleaser
           version: v2.15.4
