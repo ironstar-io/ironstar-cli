@@ -139,9 +139,14 @@ func init() {
 
 	// `iron cache x`
 	rootCmd.AddCommand(cache.CacheCmd)
+	cache.CacheCmd.AddCommand(cache.InvalidateCmd)
+	cache.CacheCmd.AddCommand(cache.ListInvalidationsCmd)
+	cache.CacheCmd.AddCommand(cache.ShowInvalidationCmd)
+
+	// Legacy `iron cache invalidation x` paths (hidden)
 	cache.CacheCmd.AddCommand(cache.InvalidationCmd)
-	cache.InvalidationCmd.AddCommand(cache.ListInvalidationsCmd)
-	cache.InvalidationCmd.AddCommand(cache.ShowInvalidationCmd)
+	cache.InvalidationCmd.AddCommand(cache.LegacyListInvalidationsCmd)
+	cache.InvalidationCmd.AddCommand(cache.LegacyShowInvalidationCmd)
 	cache.InvalidationCmd.AddCommand(cache.CreateCmd)
 
 	// `iron package x`
@@ -215,7 +220,10 @@ func RootCmd() *cobra.Command {
 	logs.LogsCmd.PersistentFlags().Int64VarP(&flags.Acc.End, "end", "", 0, "The end time of the logs. Doesn't work for log streaming. Should be unix time in miliseconds. Defaults to now.")
 	logs.LogsCmd.PersistentFlags().Int64VarP(&flags.Acc.Start, "start", "", 0, "The start time of the logs. Should be unix time in miliseconds. Defaults to 2 minutes prior to the last available log.")
 
-	cache.CreateCmd.Flags().StringArrayVarP(&flags.Acc.URLs, "url", "", []string{}, "Purge one specific HTTPS URL")
+	cache.InvalidateCmd.Flags().StringArrayVarP(&flags.Acc.URLs, "url", "", []string{}, "Invalidate one HTTPS URL (may be supplied once)")
+	cache.InvalidateCmd.Flags().StringVarP(&flags.Acc.Type, "type", "", "", "Invalidation type: soft or hard (default: soft for a URL, hard for the environment)")
+	cache.CreateCmd.Flags().StringArrayVarP(&flags.Acc.URLs, "url", "", []string{}, "Invalidate one HTTPS URL (may be supplied once)")
+	cache.CreateCmd.Flags().StringVarP(&flags.Acc.Type, "type", "", "", "Invalidation type: soft or hard (default: soft for a URL, hard for the environment)")
 
 	restore.RestoreCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")
 	restore.NewCmd.PersistentFlags().StringVarP(&flags.Acc.Strategy, "strategy", "", "", "Provide the strategy for a restore")

@@ -14,12 +14,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ListInvalidationsCmd - `iron cache invalidation list`
-var ListInvalidationsCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List of cache invalidations",
-	Long:  "List of cache invalidations for an environment",
-	Run:   listInvalidations,
+// ListInvalidationsCmd - `iron cache list`
+var ListInvalidationsCmd = newListInvalidationsCmd(false)
+
+// LegacyListInvalidationsCmd preserves `iron cache invalidation list`.
+var LegacyListInvalidationsCmd = newListInvalidationsCmd(true)
+
+func newListInvalidationsCmd(hidden bool) *cobra.Command {
+	return &cobra.Command{
+		Hidden:  hidden,
+		Use:     "list",
+		Short:   "List recent cache invalidations",
+		Long:    "List recent cache invalidations and their status for an environment.",
+		Example: "  iron cache list --subscription example --environment dev",
+		Args:    cobra.NoArgs,
+		Run:     listInvalidations,
+	}
 }
 
 func listInvalidations(cmd *cobra.Command, args []string) {

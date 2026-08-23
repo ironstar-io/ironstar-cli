@@ -28,7 +28,7 @@ func TestPostEnvironmentCacheInvalidationBuildsFastlyPayload(t *testing.T) {
 			},
 		},
 		{
-			name: "single URL",
+			name: "soft URL",
 			payload: types.PostCacheInvalidationRequestParams{
 				Kind:             types.CacheInvalidationKindURL,
 				InvalidationType: types.CacheInvalidationTypeSoft,
@@ -38,6 +38,19 @@ func TestPostEnvironmentCacheInvalidationBuildsFastlyPayload(t *testing.T) {
 				"kind":              "url",
 				"invalidation_type": "soft",
 				"url":               "https://www.example.com/articles/one",
+			},
+		},
+		{
+			name: "hard URL",
+			payload: types.PostCacheInvalidationRequestParams{
+				Kind:             types.CacheInvalidationKindURL,
+				InvalidationType: types.CacheInvalidationTypeHard,
+				URL:              "https://www.example.com/articles/two",
+			},
+			want: map[string]interface{}{
+				"kind":              "url",
+				"invalidation_type": "hard",
+				"url":               "https://www.example.com/articles/two",
 			},
 		},
 	}
@@ -64,7 +77,7 @@ func TestPostEnvironmentCacheInvalidationBuildsFastlyPayload(t *testing.T) {
 					return &http.Response{
 						StatusCode: http.StatusCreated,
 						Header:     make(http.Header),
-						Body:       io.NopCloser(strings.NewReader(`{"name":"purge-test","status":"PENDING"}`)),
+						Body:       io.NopCloser(strings.NewReader(`{"name":"invalidate-test","status":"PENDING"}`)),
 					}, nil
 				})}
 			}
