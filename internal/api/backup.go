@@ -6,6 +6,8 @@ import (
 	"github.com/ironstar-io/ironstar-cli/internal/types"
 
 	"encoding/json"
+	"net/http"
+	"net/url"
 
 	"github.com/pkg/errors"
 )
@@ -106,17 +108,46 @@ func DownloadEnvironmentBackupComponent(creds types.Keylink, output, subAliasOrH
 		RunTokenRefresh:  true,
 		Credentials:      creds,
 		Method:           "GET",
-		Path:             "/subscription/" + subAliasOrHashedID + "/environment/" + envNameOrHashedID + "/backups/" + backupName + "/download?component=" + buComp.Name,
+		Path:             "/subscription/" + url.PathEscape(subAliasOrHashedID) + "/environment/" + url.PathEscape(envNameOrHashedID) + "/backups/" + url.PathEscape(backupName) + "/download-link?component=" + url.QueryEscape(buComp.Name),
 		MapStringPayload: nil,
 	}
 
-	resp, err := req.ArimaDownload(savePath, buComp.Name)
+	resp, err := req.NankaiSend()
 	if err != nil {
 		return errors.Wrap(err, errs.APIGetBackupErrorMsg)
 	}
 
 	if resp.StatusCode != 200 {
 		return errors.New(string(resp.Body))
+	}
+
+	var link struct {
+		DownloadURL string `json:"downloadURL"`
+	}
+	if err := json.Unmarshal(resp.Body, &link); err != nil {
+		return errors.Wrap(err, errs.APIGetBackupErrorMsg)
+	}
+	downloadURL, err := url.Parse(link.DownloadURL)
+	if err != nil || downloadURL.Host == "" || (downloadURL.Scheme != "https" && downloadURL.Scheme != "http") || downloadURL.User != nil {
+		return errors.New("The API did not return a valid backup download URL")
+	}
+
+	// Storage authenticates using the signed URL, never the Ironstar token.
+	download := &Request{Method: http.MethodGet, URL: link.DownloadURL}
+	resp, err = retryHTTPWithExpBackoff(func() (*RawResponse, error) {
+		res, err := download.HTTPSDownload(savePath, buComp.Name)
+		if err != nil {
+			// Retry logging must not expose the signed URL in transport errors.
+			return nil, errors.New(errs.APIGetBackupErrorMsg)
+		}
+		return res, nil
+	}, req.Retries)
+	if err != nil {
+		// Transport errors can contain the signed URL. Keep it out of output.
+		return errors.New(errs.APIGetBackupErrorMsg)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return errors.Errorf("Backup download failed with HTTP status %d", resp.StatusCode)
 	}
 
 	return nil

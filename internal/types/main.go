@@ -328,12 +328,6 @@ type CustomerLogsStream struct {
 	Pod          string `json:"pod,omitempty" yaml:"pod,omitempty"`
 }
 
-// CWLogStreamsResponse ...
-type CWLogStreamsResponse struct {
-	LastEventTimestamp int64  `json:"lastEventTimestamp,omitempty" yaml:"lastEventTimestamp,omitempty"`
-	LogStreamName      string `json:"logStreamName,omitempty" yaml:"logStreamName,omitempty"`
-}
-
 // LogLabelValuesResponse ...
 type LogLabelValuesResponse struct {
 	Result []string `json:"result,omitempty" yaml:"result,omitempty"`
