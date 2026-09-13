@@ -1,5 +1,21 @@
 package types
 
+type CacheInvalidationKind string
+type CacheInvalidationType string
+
+const (
+	CacheInvalidationKindEnvironment CacheInvalidationKind = "environment"
+	CacheInvalidationKindURL         CacheInvalidationKind = "url"
+	CacheInvalidationTypeHard        CacheInvalidationType = "hard"
+	CacheInvalidationTypeSoft        CacheInvalidationType = "soft"
+)
+
+type PostCacheInvalidationRequestParams struct {
+	Kind             CacheInvalidationKind `json:"kind"`
+	InvalidationType CacheInvalidationType `json:"invalidation_type"`
+	URL              string                `json:"url,omitempty"`
+}
+
 type PostBackupRequestParams struct {
 	SubscriptionID string
 	EnvironmentID  string

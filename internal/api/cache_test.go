@@ -1,0 +1,103 @@
+package api
+
+import (
+	"encoding/json"
+	"io"
+	"net/http"
+	"strings"
+	"testing"
+
+	"github.com/ironstar-io/ironstar-cli/internal/types"
+)
+
+func TestPostEnvironmentCacheInvalidationBuildsFastlyPayload(t *testing.T) {
+	tests := []struct {
+		name    string
+		payload types.PostCacheInvalidationRequestParams
+		want    map[string]interface{}
+	}{
+		{
+			name: "entire environment",
+			payload: types.PostCacheInvalidationRequestParams{
+				Kind:             types.CacheInvalidationKindEnvironment,
+				InvalidationType: types.CacheInvalidationTypeHard,
+			},
+			want: map[string]interface{}{
+				"kind":              "environment",
+				"invalidation_type": "hard",
+			},
+		},
+		{
+			name: "soft URL",
+			payload: types.PostCacheInvalidationRequestParams{
+				Kind:             types.CacheInvalidationKindURL,
+				InvalidationType: types.CacheInvalidationTypeSoft,
+				URL:              "https://www.example.com/articles/one",
+			},
+			want: map[string]interface{}{
+				"kind":              "url",
+				"invalidation_type": "soft",
+				"url":               "https://www.example.com/articles/one",
+			},
+		},
+		{
+			name: "hard URL",
+			payload: types.PostCacheInvalidationRequestParams{
+				Kind:             types.CacheInvalidationKindURL,
+				InvalidationType: types.CacheInvalidationTypeHard,
+				URL:              "https://www.example.com/articles/two",
+			},
+			want: map[string]interface{}{
+				"kind":              "url",
+				"invalidation_type": "hard",
+				"url":               "https://www.example.com/articles/two",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			originalClient := newAPIHTTPClient
+			t.Cleanup(func() { newAPIHTTPClient = originalClient })
+			t.Setenv("IRONSTAR_API_ADDRESS", "https://api.example.test")
+
+			var gotPayload map[string]interface{}
+			newAPIHTTPClient = func() *http.Client {
+				return &http.Client{Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+					if req.Method != http.MethodPost {
+						t.Fatalf("expected POST request, got %s", req.Method)
+					}
+					if req.URL.String() != "https://api.example.test/subscription/sub/environment/env/cache-invalidation" {
+						t.Fatalf("unexpected request URL %s", req.URL.String())
+					}
+					if err := json.NewDecoder(req.Body).Decode(&gotPayload); err != nil {
+						t.Fatal(err)
+					}
+
+					return &http.Response{
+						StatusCode: http.StatusCreated,
+						Header:     make(http.Header),
+						Body:       io.NopCloser(strings.NewReader(`{"name":"invalidate-test","status":"PENDING"}`)),
+					}, nil
+				})}
+			}
+
+			_, err := PostEnvironmentCacheInvalidation(types.Keylink{}, "text", "sub", "env", tt.payload)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if len(gotPayload) != len(tt.want) {
+				t.Fatalf("expected payload %#v, got %#v", tt.want, gotPayload)
+			}
+			for key, wantValue := range tt.want {
+				if gotPayload[key] != wantValue {
+					t.Errorf("expected %s=%q, got %q", key, wantValue, gotPayload[key])
+				}
+			}
+			if _, found := gotPayload["objects"]; found {
+				t.Fatal("payload must not use the retired objects field")
+			}
+		})
+	}
+}

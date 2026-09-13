@@ -14,12 +14,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ShowInvalidationCmd - `iron cache invalidation show [name]`
-var ShowInvalidationCmd = &cobra.Command{
-	Use:   "show [name]",
-	Short: "Show status of a single cache invalidation",
-	Long:  "Show status of a single cache invalidation",
-	Run:   showInvalidation,
+// ShowInvalidationCmd - `iron cache show [name]`
+var ShowInvalidationCmd = newShowInvalidationCmd(false)
+
+// LegacyShowInvalidationCmd preserves `iron cache invalidation show [name]`.
+var LegacyShowInvalidationCmd = newShowInvalidationCmd(true)
+
+func newShowInvalidationCmd(hidden bool) *cobra.Command {
+	return &cobra.Command{
+		Hidden:  hidden,
+		Use:     "show [name]",
+		Short:   "Show a cache invalidation",
+		Long:    "Show the current status and details of one cache invalidation.",
+		Example: "  iron cache show <name> --subscription example --environment stage",
+		Args:    cobra.ExactArgs(1),
+		Run:     showInvalidation,
+	}
 }
 
 func showInvalidation(cmd *cobra.Command, args []string) {
