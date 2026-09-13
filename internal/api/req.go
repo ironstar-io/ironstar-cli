@@ -33,7 +33,6 @@ type Request struct {
 }
 
 const IronstarProductionAPIDomain = "https://api.ironstar.io"
-const IronstarArimaProductionAPIDomain = "https://uploads.ironstar.io"
 
 var version string
 
@@ -58,15 +57,6 @@ func GetNankaiBaseURL() string {
 	}
 
 	return IronstarProductionAPIDomain
-}
-
-func GetArimaBaseURL() string {
-	ipa := os.Getenv("IRONSTAR_UPLOAD_DOMAIN")
-	if ipa != "" {
-		return ipa
-	}
-
-	return IronstarArimaProductionAPIDomain
 }
 
 // WriteCounter counts the number of bytes written to it. It implements to the io.Writer interface
@@ -134,50 +124,6 @@ func (r *Request) NankaiSend() (*RawResponse, error) {
 	return res, nil
 }
 
-// ArimaSend - Make a HTTP request to the Ironstar upload/download API (ARIMA)
-func (r *Request) ArimaSend() (*RawResponse, error) {
-	err := r.BuildBytePayload()
-	if err != nil {
-		return nil, err
-	}
-
-	r.URL = GetArimaBaseURL() + r.Path
-
-	res, err := retryHTTPWithExpBackoff(
-		func() (*RawResponse, error) {
-			return r.HTTPSend()
-		}, r.Retries)
-	if err != nil {
-		debugLogs(r.URL, r.Retries, err)
-
-		return nil, errors.New(errs.IronstarAPIConnectionErrorMsg)
-	}
-
-	return res, nil
-}
-
-// ArimaSend - Make a HTTP request to the Ironstar upload/download API (ARIMA)
-func (r *Request) ArimaDownload(filepath, friendlyName string) (*RawResponse, error) {
-	err := r.BuildBytePayload()
-	if err != nil {
-		return nil, err
-	}
-
-	r.URL = GetArimaBaseURL() + r.Path
-
-	res, err := retryHTTPWithExpBackoff(
-		func() (*RawResponse, error) {
-			return r.HTTPSDownload(filepath, friendlyName)
-		}, r.Retries)
-	if err != nil {
-		debugLogs(r.URL, r.Retries, err)
-
-		return nil, errors.New(errs.IronstarAPIConnectionErrorMsg)
-	}
-
-	return res, nil
-}
-
 func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, error) {
 	// Create the file, but give it a tmp file extension, this means we won't overwrite a
 	// file until it's downloaded, but we'll remove the tmp extension once downloaded.
@@ -185,6 +131,9 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 	if err != nil {
 		return nil, err
 	}
+
+	defer out.Close()
+	defer os.Remove(filepath + ".tmp")
 
 	ctx, cancel := context.WithCancelCause(context.Background())
 	defer cancel(nil)
@@ -215,7 +164,7 @@ func (r *Request) HTTPSDownload(filepath, friendlyName string) (*RawResponse, er
 		Header:     resp.Header,
 	}
 
-	if resp.StatusCode > 399 {
+	if resp.StatusCode != http.StatusOK {
 		if resp != nil && resp.Body != nil {
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {

@@ -24,20 +24,8 @@ type Stream struct {
 	Payload         map[string]string
 }
 
-const IronstarUploadAPIDomain = "https://uploads.ironstar.io"
-
 func GetUploadURL(subHash string) string {
-	if os.Getenv("IRONSTAR_USE_ARIMA_UPLOAD") != "" {
-		// Specifically use Arima for uploads
-		domain := IronstarUploadAPIDomain
-		if override := os.Getenv("IRONSTAR_UPLOAD_DOMAIN"); override != "" {
-			domain = override
-		}
-		return fmt.Sprintf("%s/upload/subscription/%s", domain, subHash)
-	}
-
-	// Default - Use Nankai API
-	domain := IronstarProductionAPIDomain
+	domain := GetNankaiBaseURL()
 	if override := os.Getenv("IRONSTAR_UPLOAD_DOMAIN"); override != "" {
 		domain = override
 	}
